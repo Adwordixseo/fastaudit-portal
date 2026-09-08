@@ -15,6 +15,11 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [company, setCompany] = useState("");
+  const [website, setWebsite] = useState("");
+  const [location, setLocation] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -45,6 +50,17 @@ export default function Register() {
       const result = await base44.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
+        try {
+          await base44.auth.updateMe({
+            full_name: fullName || undefined,
+            phone: phone || undefined,
+            company: company || undefined,
+            website: website || undefined,
+            location: location || undefined,
+          });
+        } catch (_e) {
+          // Profile extras are best-effort; don't block login on them.
+        }
       }
       window.location.href = safeReturnTo();
     } catch (err) {
@@ -168,6 +184,19 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
+          <Label htmlFor="name">Full name</Label>
+          <Input
+            id="name"
+            type="text"
+            autoComplete="name"
+            autoFocus
+            placeholder="Jane Doe"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="h-12"
+          />
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -175,7 +204,6 @@ export default function Register() {
               id="email"
               type="email"
               autoComplete="email"
-              autoFocus
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -183,6 +211,56 @@ export default function Register() {
               required
             />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone">Phone number</Label>
+          <Input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="+1 555 123 4567"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="h-12"
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="company">Company</Label>
+            <Input
+              id="company"
+              type="text"
+              autoComplete="organization"
+              placeholder="Acme Inc."
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              className="h-12"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="location">Business location</Label>
+            <Input
+              id="location"
+              type="text"
+              autoComplete="address-level2"
+              placeholder="City, Country"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="h-12"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="website">Website URL</Label>
+          <Input
+            id="website"
+            type="url"
+            autoComplete="url"
+            placeholder="https://yourwebsite.com"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            className="h-12"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
