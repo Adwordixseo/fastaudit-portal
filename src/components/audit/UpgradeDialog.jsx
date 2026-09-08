@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Lock, Check, ArrowRight } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 const perks = ['Full downloadable PDF audit report', 'Dedicated project dashboard & milestones', 'Monthly reports, documents and spreadsheets', 'Priority support tickets'];
@@ -14,7 +14,7 @@ export default function UpgradeDialog({ open, onOpenChange }) {
           <div className="grid-fade absolute inset-0 opacity-50" />
           <div className="relative">
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15"><Lock className="h-5 w-5" /></span>
-            <h3 className="mt-5 text-2xl font-bold">Your full report is ready to download</h3>
+            <DialogTitle className="mt-5 text-2xl font-bold">Your full report is ready to download</DialogTitle>
             <p className="mt-2 text-sm text-indigo-100">Choose a package to unlock the complete PDF — plus everything you need to actually fix what we found.</p>
           </div>
         </div>
