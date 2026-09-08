@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FolderKanban, Globe, ArrowRight } from 'lucide-react';
+import { FolderKanban, Globe, ArrowRight, List, CalendarDays } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
 import MilestoneList from '@/components/projects/MilestoneList';
+import ProjectCalendar from '@/components/projects/ProjectCalendar';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ export default function ProjectsPage() {
   const { user } = useUser();
   const uid = user?.id;
   const [selectedId, setSelectedId] = useState(new URLSearchParams(window.location.search).get('id'));
+  const [view, setView] = useState('list');
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id }, 'due_date')))).flat(), enabled: projects.length > 0 });
   const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
@@ -32,7 +34,16 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow="Projects" title="Your projects" description="Each project has its own progress, milestones and deliverables." />
+      <PageHeader eyebrow="Projects" title="Your projects" description="Each project has its own progress, milestones and deliverables."
+        action={
+          <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
+            <button onClick={() => setView('list')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><List className="h-4 w-4" /> List</button>
+            <button onClick={() => setView('calendar')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'calendar' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><CalendarDays className="h-4 w-4" /> Calendar</button>
+          </div>
+        } />
+      {view === 'calendar' ? (
+        <ProjectCalendar milestones={milestones} documents={docs} projects={projects} />
+      ) : (
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div className="space-y-3">{projects.map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => setSelectedId(p.id)} />)}</div>
         {project && (
@@ -60,6 +71,7 @@ export default function ProjectsPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
