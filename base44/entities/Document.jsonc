@@ -1,0 +1,69 @@
+{
+  "name": "Document",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "pdf",
+        "document",
+        "spreadsheet",
+        "other"
+      ],
+      "default": "pdf"
+    },
+    "report_month": {
+      "type": "string",
+      "description": "YYYY-MM"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "awaiting_approval",
+        "approved",
+        "changes_requested"
+      ],
+      "default": "awaiting_approval"
+    },
+    "admin_comment": {
+      "type": "string"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "file_url"
+  ]
+}

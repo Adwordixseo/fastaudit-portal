@@ -1,0 +1,72 @@
+{
+  "name": "Audit",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "overall_score": {
+      "type": "number"
+    },
+    "scores": {
+      "type": "object",
+      "properties": {
+        "seo": {
+          "type": "number"
+        },
+        "performance": {
+          "type": "number"
+        },
+        "content": {
+          "type": "number"
+        },
+        "technical": {
+          "type": "number"
+        },
+        "ai_readiness": {
+          "type": "number"
+        }
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "url"
+  ]
+}
