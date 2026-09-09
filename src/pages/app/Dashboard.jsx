@@ -5,8 +5,8 @@ import { FolderKanban, Package, Search, Clock, ArrowRight, FileText } from 'luci
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
-import PageHeader from '@/components/portal/PageHeader';
 import StatCard from '@/components/portal/StatCard';
+import WelcomeBanner from '@/components/dashboard/WelcomeBanner';
 import UpsellBanner from '@/components/dashboard/UpsellBanner';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
 import ScoreTrendChart from '@/components/dashboard/ScoreTrendChart';
@@ -31,8 +31,10 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <OnboardingWalkthrough user={user} />
-      <PageHeader eyebrow="Dashboard" title={`Welcome back${user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}`} description="Here's where your projects, reports and audits stand today."
-        action={<div className="flex items-center gap-2"><ExportButtons data={audits} filename="audit-history" title="Audit History" headers={[{ key: 'url', label: 'URL' }, { key: 'overall_score', label: 'Score' }, { key: 'created_date', label: 'Date' }]} /><Button asChild className="rounded-full"><Link to="/app/audit"><Search className="mr-2 h-4 w-4" /> New audit</Link></Button></div>} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        <ExportButtons data={audits} filename="audit-history" title="Audit History" headers={[{ key: 'url', label: 'URL' }, { key: 'overall_score', label: 'Score' }, { key: 'created_date', label: 'Date' }]} />
+      </div>
+      <WelcomeBanner user={user} auditCount={audits.length} projectCount={projects.filter((p) => p.status === 'active').length} />
 
       {!subLoading && !hasActive && <UpsellBanner />}
 
