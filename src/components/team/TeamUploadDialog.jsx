@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { base44 } from '@/api/base44Client';
 import { fileTypeFromName } from '@/lib/format';
 
@@ -15,7 +16,7 @@ export default function TeamUploadDialog({ open, onOpenChange, projects, onSaved
   const [file, setFile] = useState(null);
   const [reviewLink, setReviewLink] = useState('');
   const [saving, setSaving] = useState(false);
-  const [shareMode, setShareMode] = useState('awaiting_approval');
+  const [requiresApproval, setRequiresApproval] = useState(true);
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
   const submit = async (e) => {
@@ -33,8 +34,7 @@ export default function TeamUploadDialog({ open, onOpenChange, projects, onSaved
         fileUrl = reviewLink.trim();
       }
       const project = projects.find((p) => p.id === form.project_id);
-      const status = shareMode; // awaiting_approval | shared | draft
-      const shared = status !== 'draft';
+      const status = requiresApproval ? 'awaiting_approval' : 'shared';
       await base44.entities.Document.create({
         ...form,
         client_id: project?.client_id || '',
@@ -42,15 +42,13 @@ export default function TeamUploadDialog({ open, onOpenChange, projects, onSaved
         file_type: fileType,
         review_link: file ? reviewLink.trim() || undefined : reviewLink.trim(),
         status,
-        history: [{ action: shared ? (status === 'awaiting_approval' ? 'uploaded' : 'shared') : 'uploaded_draft', by: 'Team', note: form.admin_comment, date: new Date().toISOString() }]
+        history: [{ action: requiresApproval ? 'uploaded' : 'shared', by: 'Team', note: form.admin_comment, date: new Date().toISOString() }]
       });
-      if (shared) {
-        try {
-          await base44.functions.invoke('sendDocumentNotification', { clientEmail: project?.client_email, documentTitle: form.title, projectName: project?.name, comment: form.admin_comment, uploadedBy: 'Team' });
-        } catch (_e) { /* notification is best-effort */ }
-      }
+      try {
+        await base44.functions.invoke('sendDocumentNotification', { clientEmail: project?.client_email, documentTitle: form.title, projectName: project?.name, comment: form.admin_comment, uploadedBy: 'Team' });
+      } catch (_e) { /* notification is best-effort */ }
       setFile(null); setReviewLink(''); setForm((f) => ({ ...f, title: '', admin_comment: '' }));
-      toast.success(status === 'draft' ? 'Saved as internal draft' : status === 'shared' ? 'Shared with the client' : 'Shared with the client for approval');
+      toast.success(requiresApproval ? 'Shared with the client — pending approval' : 'Shared with the client');
       onOpenChange(false); onSaved?.();
     } catch (err) { toast.error(err.message || 'Could not upload'); }
     setSaving(false);
@@ -72,18 +70,14 @@ export default function TeamUploadDialog({ open, onOpenChange, projects, onSaved
           <div className="flex items-center gap-2 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200" />or attach a link <span className="h-px flex-1 bg-slate-200" /></div>
           <div><Label className="flex items-center gap-1.5"><LinkIcon className="h-3.5 w-3.5" /> Review link (Google Doc, Sheet, etc.)</Label><Input type="url" value={reviewLink} onChange={(e) => setReviewLink(e.target.value)} placeholder="https://docs.google.com/..." className="mt-1.5" /></div>
           <div><Label>Comment for client (optional)</Label><Textarea rows={2} value={form.admin_comment} onChange={(e) => set('admin_comment')(e.target.value)} className="mt-1.5" /></div>
-          <div><Label>Sharing</Label>
-            <Select value={shareMode} onValueChange={setShareMode}>
-              <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="awaiting_approval">Request client approval</SelectItem>
-                <SelectItem value="shared">Share — no approval needed</SelectItem>
-                <SelectItem value="draft">Keep as internal draft</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="mt-1.5 text-xs text-slate-500">{shareMode === 'awaiting_approval' ? 'The client will review and approve or request changes.' : shareMode === 'shared' ? 'The client can view and download — no approval step.' : 'Only your team can see this. The client will not be notified.'}</p>
+          <div className="flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3">
+            <div>
+              <Label className="text-sm">Requires client approval</Label>
+              <p className="mt-0.5 text-xs text-slate-500">{requiresApproval ? 'The client reviews and approves or requests changes — status shows as Pending until approved.' : 'The client can view and download — no approval step.'}</p>
+            </div>
+            <Switch checked={requiresApproval} onCheckedChange={setRequiresApproval} />
           </div>
-          <Button type="submit" disabled={saving || !form.project_id || (!file && !reviewLink.trim())} className="w-full rounded-xl">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Upload className="mr-2 h-4 w-4" /> {shareMode === 'draft' ? 'Save as draft' : 'Share with client'}</>}</Button>
+          <Button type="submit" disabled={saving || !form.project_id || (!file && !reviewLink.trim())} className="w-full rounded-xl">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Upload className="mr-2 h-4 w-4" /> Share with client</>}</Button>
         </form>
       </DialogContent>
     </Dialog>

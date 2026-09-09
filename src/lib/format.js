@@ -31,7 +31,8 @@ export const statusTone = {
   medium: 'bg-amber-50 text-amber-700 border-amber-200',
   low: 'bg-slate-100 text-slate-600 border-slate-200',
 };
-export const humanize = (s) => (s || '').replace(/_/g, ' ');
+export const statusLabel = { awaiting_approval: 'Pending' };
+export const humanize = (s) => statusLabel[s] || (s || '').replace(/_/g, ' ');
 
 export const fileTypeFromName = (name = '') => {
   const ext = name.split('?')[0].split('.').pop().toLowerCase();
