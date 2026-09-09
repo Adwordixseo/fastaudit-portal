@@ -49,6 +49,31 @@
       ],
       "default": "todo"
     },
+    "hours_logged": {
+      "type": "number",
+      "default": 0,
+      "description": "Total hours logged against this task"
+    },
+    "time_entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hours": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "feedback": {
       "type": "array",
       "items": {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Paperclip, MessageSquare, Upload, Flag } from 'lucide-react';
+import { Calendar, Paperclip, MessageSquare, Upload, Flag, Clock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,6 +14,16 @@ export default function TeamTaskCard({ task, onSaved }) {
   const { user } = useAuth();
   const [comment, setComment] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [hours, setHours] = useState('');
+  const [timeNote, setTimeNote] = useState('');
+
+  const logTime = async () => {
+    const h = parseFloat(hours);
+    if (!h || h <= 0) return;
+    const entries = [...(task.time_entries || []), { hours: h, note: timeNote.trim(), by: user?.email, date: new Date().toISOString() }];
+    setHours(''); setTimeNote('');
+    await update({ time_entries: entries, hours_logged: (task.hours_logged || 0) + h });
+  };
 
   const update = async (patch) => { await base44.entities.TeamTask.update(task.id, patch); onSaved(); };
   const saveStatus = (v) => update({ status: v });
@@ -61,6 +71,28 @@ export default function TeamTaskCard({ task, onSaved }) {
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+        <div className="flex items-center justify-between">
+          <p className="flex items-center gap-1 text-xs font-medium text-slate-600"><Clock className="h-3.5 w-3.5" /> Time logged</p>
+          <span className="text-sm font-semibold text-slate-900">{(task.hours_logged || 0).toFixed(1)}h</span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <Input type="number" min="0" step="0.25" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="Hours" className="h-8 w-24 text-xs" onKeyDown={(e) => e.key === 'Enter' && logTime()} />
+          <Input value={timeNote} onChange={(e) => setTimeNote(e.target.value)} placeholder="Note (optional)" className="h-8 flex-1 text-xs" onKeyDown={(e) => e.key === 'Enter' && logTime()} />
+          <Button size="sm" variant="outline" className="rounded-full" onClick={logTime}>Log</Button>
+        </div>
+        {task.time_entries?.length > 0 && (
+          <ul className="mt-2 space-y-1">
+            {task.time_entries.map((e, i) => (
+              <li key={i} className="flex items-center justify-between rounded-lg bg-slate-50 px-2.5 py-1 text-xs">
+                <span className="truncate text-slate-600">{e.note || '—'} <span className="text-slate-400">· {e.by}</span></span>
+                <span className="font-medium text-slate-800">{e.hours}h</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="mt-4">
