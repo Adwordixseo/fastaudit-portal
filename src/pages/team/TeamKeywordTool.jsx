@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Loader2, Globe, TrendingUp, ExternalLink, Upload } from 'lucide-react';
+import { Search, Loader2, Globe, TrendingUp, ExternalLink, Upload, Save, FolderKanban } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
@@ -16,6 +16,8 @@ export default function TeamKeywordTool() {
   const [projectFilter, setProjectFilter] = useState('');
   const [results, setResults] = useState(null);
   const [running, setRunning] = useState(false);
+  const [saveProjectId, setSaveProjectId] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
 
@@ -41,6 +43,31 @@ export default function TeamKeywordTool() {
     const rows = ['keyword,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'keyword-rankings.csv'; link.click();
+  };
+
+  const saveToProject = async () => {
+    if (!saveProjectId) { toast.error('Select a project to save to'); return; }
+    setSaving(true);
+    try {
+      const rows = ['keyword,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+      const file = new File([blob], `keyword-rankings-${results.hostname}-${new Date().toISOString().slice(0, 10)}.csv`, { type: 'text/csv' });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const project = projects.find((p) => p.id === saveProjectId);
+      await base44.entities.Document.create({
+        project_id: saveProjectId,
+        client_id: project?.client_id || '',
+        title: `Keyword Rankings — ${results.hostname} (${new Date().toLocaleDateString()})`,
+        file_url,
+        file_type: 'spreadsheet',
+        report_month: new Date().toISOString().slice(0, 7),
+        status: 'awaiting_approval',
+        history: [{ action: 'uploaded', by: 'Team', note: 'Bulk keyword ranking report', date: new Date().toISOString() }],
+      });
+      toast.success('Saved to project files — client can review it now');
+      setSaveProjectId('');
+    } catch (err) { toast.error(err.message || 'Could not save'); }
+    setSaving(false);
   };
 
   return (
@@ -88,7 +115,14 @@ export default function TeamKeywordTool() {
             <div className="rounded-3xl border border-slate-200 bg-white p-5"><div className="flex items-center gap-1.5 text-sm font-medium text-slate-500"><TrendingUp className="h-4 w-4" /> Avg position</div><div className="mt-2 font-heading text-3xl font-bold text-slate-900">{avgPos || '—'}</div></div>
           </div>
           <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
-            <div className="border-b border-slate-100 px-6 py-4"><h2 className="text-base font-semibold text-slate-900">Results for {results.hostname}</h2></div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
+              <h2 className="text-base font-semibold text-slate-900">Results for {results.hostname}</h2>
+              <div className="flex items-center gap-2">
+                <Select value={saveProjectId} onValueChange={setSaveProjectId}><SelectTrigger className="w-48 rounded-full"><SelectValue placeholder="Save to project..." /></SelectTrigger>
+                  <SelectContent>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select>
+                <Button onClick={saveToProject} disabled={saving || !saveProjectId} className="rounded-full">{saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} Save to files</Button>
+              </div>
+            </div>
             <div className="divide-y divide-slate-100">
               {results.results.map((r, i) => (
                 <div key={i} className="flex items-center gap-4 px-6 py-3.5">

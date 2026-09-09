@@ -7,13 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { base44 } from '@/api/base44Client';
 
-export default function InviteUserDialog({ open, onOpenChange }) {
+export default function InviteUserDialog({ open, onOpenChange, defaultRole = 'user' }) {
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('user');
+  const [role, setRole] = useState(defaultRole);
   const [saving, setSaving] = useState(false);
   const invite = async (e) => {
     e.preventDefault(); setSaving(true);
-    try { await base44.users.inviteUser(email.trim(), role); toast.success(`Invitation sent to ${email}`); setEmail(''); setRole('user'); onOpenChange(false); }
+    try { await base44.users.inviteUser(email.trim(), role); toast.success(`Invitation sent to ${email}`); setEmail(''); setRole(defaultRole); onOpenChange(false); }
     catch (err) { toast.error(err.message || 'Could not send invite'); }
     setSaving(false);
   };
