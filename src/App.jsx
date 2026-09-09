@@ -32,6 +32,7 @@ import AdminFinancials from './pages/admin/AdminFinancials';
 import AdminTickets from './pages/admin/AdminTickets';
 import TeamLayout from '@/components/portal/TeamLayout';
 import TeamDashboard from './pages/team/TeamDashboard';
+import TeamProjects from './pages/team/TeamProjects';
 import TeamKeywordTool from './pages/team/TeamKeywordTool';
 
 const AuthenticatedApp = () => {
@@ -89,6 +90,7 @@ const AuthenticatedApp = () => {
         </Route>
         <Route element={<TeamLayout />}>
           <Route path="/team" element={<TeamDashboard />} />
+          <Route path="/team/projects" element={<TeamProjects />} />
           <Route path="/team/keywords" element={<TeamKeywordTool />} />
         </Route>
       </Route>
