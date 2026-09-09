@@ -34,6 +34,7 @@ import TeamLayout from '@/components/portal/TeamLayout';
 import TeamDashboard from './pages/team/TeamDashboard';
 import TeamProjects from './pages/team/TeamProjects';
 import TeamKeywordTool from './pages/team/TeamKeywordTool';
+import TeamTasks from './pages/team/TeamTasks';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -92,6 +93,7 @@ const AuthenticatedApp = () => {
           <Route path="/team" element={<TeamDashboard />} />
           <Route path="/team/projects" element={<TeamProjects />} />
           <Route path="/team/keywords" element={<TeamKeywordTool />} />
+          <Route path="/team/tasks" element={<TeamTasks />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

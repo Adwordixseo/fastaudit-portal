@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Search } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Search, ListTodo } from 'lucide-react';
 import PortalLayout from '@/components/portal/PortalLayout';
 import { useUser } from '@/hooks/useUser';
 
@@ -8,6 +8,7 @@ const nav = [
   { to: '/team', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/team/projects', label: 'Projects', icon: FolderKanban },
   { to: '/team/keywords', label: 'Keyword Tracker', icon: Search },
+  { to: '/team/tasks', label: 'Tasks', icon: ListTodo },
 ];
 
 export default function TeamLayout() {
