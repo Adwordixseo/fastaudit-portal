@@ -41,6 +41,9 @@ export default function TeamUploadDialog({ open, onOpenChange, projects, onSaved
         status: 'awaiting_approval',
         history: [{ action: 'uploaded', by: 'Team', note: form.admin_comment, date: new Date().toISOString() }]
       });
+      try {
+        await base44.functions.invoke('sendDocumentNotification', { clientEmail: project?.client_email, documentTitle: form.title, projectName: project?.name, comment: form.admin_comment, uploadedBy: 'Team' });
+      } catch (_e) { /* notification is best-effort */ }
       setFile(null); setReviewLink(''); setForm((f) => ({ ...f, title: '', admin_comment: '' }));
       toast.success('Shared with the client for approval');
       onOpenChange(false); onSaved?.();

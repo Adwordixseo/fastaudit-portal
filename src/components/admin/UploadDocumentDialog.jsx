@@ -22,6 +22,9 @@ export default function UploadDocumentDialog({ open, onOpenChange, projects, onS
     const project = projects.find((p) => p.id === form.project_id);
     await base44.entities.Document.create({ ...form, client_id: project.client_id, file_url, file_type: fileTypeFromName(file.name), status: 'awaiting_approval',
       history: [{ action: 'uploaded', by: 'Support team', note: form.admin_comment, date: new Date().toISOString() }] });
+    try {
+      await base44.functions.invoke('sendDocumentNotification', { clientEmail: project.client_email, documentTitle: form.title, projectName: project.name, comment: form.admin_comment, uploadedBy: 'Support team' });
+    } catch (_e) { /* notification is best-effort */ }
     setSaving(false); setFile(null); setForm((f) => ({ ...f, title: '', admin_comment: '' }));
     toast.success('Document uploaded and shared with the client'); onOpenChange(false); onSaved?.();
   };
