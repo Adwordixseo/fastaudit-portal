@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FolderKanban, Upload, Search } from 'lucide-react';
+import { FolderKanban, Upload, Search, ListTodo } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import StatCard from '@/components/portal/StatCard';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
 import ProjectKanban from '@/components/team/ProjectKanban';
+import TeamTaskKanban from '@/components/team/TeamTaskKanban';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 
@@ -16,6 +17,7 @@ export default function TeamDashboard() {
   const [search, setSearch] = useState('');
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
+  const { data: tasks = [] } = useQuery({ queryKey: ['team-tasks'], queryFn: () => base44.entities.TeamTask.list('-updated_date') });
 
   const inProgress = projects.filter((p) => p.status === 'in_progress');
   const filtered = projects.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.client_email?.toLowerCase().includes(search.toLowerCase()));
@@ -23,6 +25,7 @@ export default function TeamDashboard() {
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-projects'] }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
   const saveStatus = async (id, val) => { await base44.entities.Project.update(id, { status: val }); refresh(); };
+  const saveTaskStatus = async (id, status) => { await base44.entities.TeamTask.update(id, { status }); qc.invalidateQueries({ queryKey: ['team-tasks'] }); };
 
   return (
     <div className="space-y-8">
@@ -47,6 +50,15 @@ export default function TeamDashboard() {
       ) : (
         <ProjectKanban projects={filtered} onMove={saveStatus} />
       )}
+
+      <section>
+        <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold text-slate-900">Task board</h2></div>
+        {tasks.length === 0 ? (
+          <EmptyState icon={ListTodo} title="No tasks yet" text="Tasks assigned to the team will appear here." />
+        ) : (
+          <TeamTaskKanban tasks={tasks} onMove={saveTaskStatus} />
+        )}
+      </section>
 
       <TeamUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} projects={projects} onSaved={refresh} />
     </div>
