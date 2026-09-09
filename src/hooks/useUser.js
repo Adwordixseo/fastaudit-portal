@@ -11,5 +11,16 @@ export function useUser() {
     retry: false,
     staleTime: 60_000,
   });
-  return { user: q.data || null, isLoading: q.isLoading, isAdmin: q.data?.role === 'admin', isTeam: q.data?.is_team_member === true || q.data?.role === 'team' };
+  const email = q.data?.email;
+  const needsTeamCheck = !!email && q.data?.is_team_member !== true && q.data?.role !== 'admin' && q.data?.role !== 'team';
+  const ta = useQuery({
+    queryKey: ['team-access', email],
+    queryFn: () => base44.entities.TeamAccess.filter({ email }),
+    enabled: needsTeamCheck,
+    retry: false,
+    staleTime: 60_000,
+  });
+  const isTeam = q.data?.is_team_member === true || q.data?.role === 'team' || (ta.data?.length > 0);
+  const isLoading = q.isLoading || (needsTeamCheck && ta.isLoading);
+  return { user: q.data || null, isLoading, isAdmin: q.data?.role === 'admin', isTeam };
 }
