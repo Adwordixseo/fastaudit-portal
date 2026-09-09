@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Search, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Search } from 'lucide-react';
 import PortalLayout from '@/components/portal/PortalLayout';
 import { useUser } from '@/hooks/useUser';
 
@@ -15,5 +15,5 @@ export default function TeamLayout() {
   if (isLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (!isTeam && !isAdmin) return <Navigate to="/app" replace />;
-  return <PortalLayout nav={nav} label="Team panel" footerLink={isAdmin ? { to: '/admin', label: 'Admin panel', icon: ShieldCheck } : null} />;
+  return <PortalLayout nav={nav} label="Team panel" footerLink={null} />;
 }

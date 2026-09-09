@@ -10,6 +10,7 @@ import TeamUploadDialog from '@/components/team/TeamUploadDialog';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { fmtDate } from '@/lib/format';
 
 export default function TeamDashboard() {
@@ -24,6 +25,7 @@ export default function TeamDashboard() {
   const pendingApprovals = docs.filter((d) => d.status === 'awaiting_approval').length;
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-projects'] }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
+  const saveStatus = async (id, val) => { await base44.entities.Project.update(id, { status: val }); refresh(); };
 
   return (
     <div className="space-y-8">
@@ -63,6 +65,17 @@ export default function TeamDashboard() {
                 {p.description && <p className="mt-3 line-clamp-2 text-sm text-slate-600">{p.description}</p>}
                 <div className="mt-4 flex items-center justify-between text-xs text-slate-500"><span>Progress</span><span className="font-semibold text-slate-900">{p.progress || 0}%</span></div>
                 <Progress value={p.progress || 0} className="mt-1.5 h-2" />
+                <div className="mt-4 flex items-center gap-2">
+                  <span className="text-xs text-slate-500">Status</span>
+                  <Select value={p.status} onValueChange={(v) => saveStatus(p.id, v)}>
+                    <SelectTrigger className="h-8 w-36 rounded-full text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="on_hold">On hold</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
                   <span className="text-xs text-slate-500">{pdocs.length} deliverables{pending > 0 && <span className="text-amber-600"> · {pending} pending</span>}</span>
                   <Button size="sm" variant="outline" className="rounded-full" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-3.5 w-3.5" /> Upload</Button>
