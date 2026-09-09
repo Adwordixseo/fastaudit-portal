@@ -42,6 +42,7 @@ export default function AdminProjects() {
                   <button onClick={(e) => { e.stopPropagation(); remove(p); }} className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button></div>
               </div>
               <div className="mt-4 flex items-center gap-3"><Progress value={p.progress || 0} className="h-2" /><span className="text-xs font-semibold text-slate-700">{p.progress || 0}%</span></div>
+              {p.assigned_to_name && <p className="mt-2 text-xs text-slate-500">Assigned to <span className="font-medium text-indigo-600">{p.assigned_to_name}</span></p>}
             </div>
           ))}
         </div>

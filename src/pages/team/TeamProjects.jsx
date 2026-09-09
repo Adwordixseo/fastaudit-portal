@@ -63,6 +63,7 @@ export default function TeamProjects() {
                   </div>
                   <p className="mt-0.5 truncate text-xs text-slate-500">{p.client_email}</p>
                   <div className="mt-2 flex items-center justify-between"><StatusBadge status={p.status} /><span className="text-xs font-medium text-slate-700">{p.progress || 0}%</span></div>
+                  {p.assigned_to_name && <p className="mt-1.5 truncate text-xs text-slate-500">Assigned to <span className="font-medium text-slate-700">{p.assigned_to_name}</span></p>}
                   {pending > 0 && <p className="mt-1.5 text-xs text-amber-600">{pending} deliverable{pending > 1 ? 's' : ''} pending approval</p>}
                 </button>
               );
@@ -79,6 +80,7 @@ export default function TeamProjects() {
                   <h2 className="text-xl font-semibold text-slate-900">{selected.name}</h2>
                   {selected.website && <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500"><Globe className="h-3 w-3" /> {selected.website}</p>}
                   <p className="mt-0.5 text-xs text-slate-400">Client: {selected.client_email}</p>
+                  {selected.assigned_to_name && <p className="mt-0.5 text-xs text-slate-400">Assigned to: <span className="font-medium text-indigo-600">{selected.assigned_to_name}</span></p>}
                 </div>
                 <StatusBadge status={selected.status} />
               </div>
@@ -110,15 +112,21 @@ export default function TeamProjects() {
               <div className="mt-4 space-y-2.5">
                 {sdocs.length === 0 ? (
                   <p className="text-sm text-slate-400">No deliverables shared yet.</p>
-                ) : sdocs.map((d) => (
+                ) : sdocs.map((d) => {
+                  const approval = (d.history || []).find((h) => h.action === 'approved');
+                  return (
                   <div key={d.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-slate-800">{d.title}</p>
                       <p className="text-xs text-slate-400">{fileTypeFromName(d.file_url || d.title)} · {fmtDate(d.created_date)}</p>
+                      {d.status === 'approved' && approval && <p className="mt-0.5 text-xs font-medium text-emerald-600">✓ Approved by client{approval.by ? ` · ${approval.by}` : ''}{approval.date ? ` · ${fmtDate(approval.date)}` : ''}</p>}
+                      {d.status === 'changes_requested' && <p className="mt-0.5 text-xs font-medium text-rose-600">Changes requested by client</p>}
+                      {d.status === 'draft' && <p className="mt-0.5 text-xs text-slate-400">Internal draft — not shared with client</p>}
                     </div>
                     <StatusBadge status={d.status} />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

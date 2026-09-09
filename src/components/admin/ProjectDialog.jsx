@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { UserCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { base44 } from '@/api/base44Client';
 
-const empty = { name: '', website: '', client_id: '', status: 'todo', progress: 0, description: '' };
+const empty = { name: '', website: '', client_id: '', assigned_to_email: '', assigned_to_name: '', status: 'todo', progress: 0, description: '' };
 
 export default function ProjectDialog({ open, onOpenChange, project, users, onSave }) {
   const [form, setForm] = useState(empty);
+  const { data: teamAccess = [] } = useQuery({ queryKey: ['team-access'], queryFn: () => base44.entities.TeamAccess.list() });
+  const teamEmails = new Set(teamAccess.map((t) => t.email));
+  const teamMembers = users.filter((u) => teamEmails.has(u.email));
+
   useEffect(() => { setForm(project ? { ...empty, ...project } : empty); }, [project, open]);
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
-  const submit = (e) => { e.preventDefault(); const client = users.find((u) => u.id === form.client_id); onSave({ ...form, progress: Number(form.progress) || 0, client_email: client?.email || form.client_email }); };
+  const submit = (e) => {
+    e.preventDefault();
+    const client = users.find((u) => u.id === form.client_id);
+    const member = teamMembers.find((u) => u.email === form.assigned_to_email);
+    onSave({ ...form, progress: Number(form.progress) || 0, client_email: client?.email || form.client_email, assigned_to_name: member?.full_name || member?.email || form.assigned_to_name || '' });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -25,6 +37,16 @@ export default function ProjectDialog({ open, onOpenChange, project, users, onSa
             <div><Label>Client</Label>
               <Select value={form.client_id} onValueChange={set('client_id')}><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select client" /></SelectTrigger>
                 <SelectContent>{users.map((u) => <SelectItem key={u.id} value={u.id}>{u.full_name || u.email}</SelectItem>)}</SelectContent></Select></div>
+          </div>
+          <div><Label className="flex items-center gap-1.5"><UserCircle className="h-3.5 w-3.5" /> Assign to team member</Label>
+            <Select value={form.assigned_to_email || 'none'} onValueChange={(v) => set('assigned_to_email')(v === 'none' ? '' : v)}>
+              <SelectTrigger className="mt-1.5"><SelectValue placeholder="Unassigned" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Unassigned</SelectItem>
+                {teamMembers.map((u) => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {teamMembers.length === 0 && <p className="mt-1.5 text-xs text-slate-400">No team members yet. Invite team members from Team Access settings.</p>}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label>Status</Label>

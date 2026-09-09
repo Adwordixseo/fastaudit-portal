@@ -14,6 +14,14 @@
     "client_email": {
       "type": "string"
     },
+    "assigned_to_email": {
+      "type": "string",
+      "description": "Email of the team member assigned to this project"
+    },
+    "assigned_to_name": {
+      "type": "string",
+      "description": "Display name of the assigned team member"
+    },
     "status": {
       "type": "string",
       "enum": [

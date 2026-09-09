@@ -24,7 +24,7 @@ export default function ReportsPage() {
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }), enabled: !!uid });
   const { data: docs = [], isLoading } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
   const projectName = (id) => projects.find((p) => p.id === id)?.name || 'Project';
-  const filtered = docs.filter((d) => (projectFilter === 'all' || d.project_id === projectFilter) && (!monthFilter || d.report_month === monthFilter));
+  const filtered = docs.filter((d) => (projectFilter === 'all' || d.project_id === projectFilter) && (!monthFilter || d.report_month === monthFilter) && d.status !== 'draft');
 
   const decide = async (doc, status, note = '') => {
     await base44.entities.Document.update(doc.id, { status, history: [...(doc.history || []), { action: status, by: user.email, note, date: new Date().toISOString() }] });
