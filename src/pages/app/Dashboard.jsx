@@ -13,6 +13,7 @@ import ScoreTrendChart from '@/components/dashboard/ScoreTrendChart';
 import ExportButtons from '@/components/portal/ExportButtons';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/portal/EmptyState';
+import OnboardingWalkthrough from '@/components/onboarding/OnboardingWalkthrough';
 import { Button } from '@/components/ui/button';
 import { fmtDate, scoreColor } from '@/lib/format';
 
@@ -29,6 +30,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
+      <OnboardingWalkthrough user={user} />
       <PageHeader eyebrow="Dashboard" title={`Welcome back${user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}`} description="Here's where your projects, reports and audits stand today."
         action={<div className="flex items-center gap-2"><ExportButtons data={audits} filename="audit-history" title="Audit History" headers={[{ key: 'url', label: 'URL' }, { key: 'overall_score', label: 'Score' }, { key: 'created_date', label: 'Date' }]} /><Button asChild className="rounded-full"><Link to="/app/audit"><Search className="mr-2 h-4 w-4" /> New audit</Link></Button></div>} />
 
