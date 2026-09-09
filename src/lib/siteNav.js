@@ -1,4 +1,4 @@
-import { Search, FolderKanban, FileText, CheckCircle2, LifeBuoy, RefreshCw, Building2, Rocket, ShoppingBag, MapPin } from 'lucide-react';
+import { Search, FolderKanban, FileText, CheckCircle2, LifeBuoy, RefreshCw, Building2, Rocket, ShoppingBag, MapPin, Gauge, Bot, Target } from 'lucide-react';
 
 export const platformItems = [
   {
@@ -305,6 +305,56 @@ export const solutionsItems = [
     ],
   },
 ];
+
+export const resourceItems = [
+  {
+    slug: 'what-a-good-seo-score-means',
+    icon: Gauge,
+    tag: 'Guide',
+    title: 'What a good SEO score actually means',
+    excerpt: 'How to read your audit scores and which fixes move the needle first.',
+    readTime: '6 min read',
+    author: 'FastAudit Team',
+    date: 'Aug 2026',
+    sections: [
+      { heading: 'The five axes, explained', body: ['Your audit is scored across five axes — SEO, performance, content, technical and AI-readiness — each on a 0–100 scale. The overall score is a weighted composite, not a simple average, so a catastrophic technical issue can pull the whole number down even when content scores well.', 'A score above 85 means your site is in strong shape and you should focus on compounding gains. Between 60 and 85 there are clear, prioritised fixes that will move the needle. Below 60 usually signals foundational problems worth addressing before anything else.'] },
+      { heading: 'Which fixes matter first', body: ['Not all issues are equal. A missing meta description on a low-traffic page is low impact; a blocked robots.txt or a slow LCP on your money page is high impact. The audit ranks issues by severity so you can work top-down.', 'As a rule of thumb: fix technical blockers first (crawlability, indexability, speed), then content gaps, then on-page SEO refinements. AI-readiness is a newer axis — treat it as a forward-looking signal rather than an emergency.'] },
+      { heading: 'Reading the trend, not the snapshot', body: ['A single score is a snapshot. What matters is the trend over weeks and months. A score that climbs steadily means your work is compounding. A score that drops after a redesign or migration is an early warning — investigate before it hits rankings.', 'Run audits on a regular cadence and keep the PDFs. Over time, the trend line tells you far more than any single number.'] },
+    ],
+  },
+  {
+    slug: 'getting-cited-by-ai-search',
+    icon: Bot,
+    tag: 'AI Search',
+    title: 'Getting cited by ChatGPT & Google AI Overviews',
+    excerpt: 'Structured data, quotable passages and entity clarity — explained simply.',
+    readTime: '8 min read',
+    author: 'FastAudit Team',
+    date: 'Aug 2026',
+    sections: [
+      { heading: 'Why AI citations are a new channel', body: ['Answer engines like ChatGPT, Perplexity and Google AI Overviews don\'t rank links — they synthesise answers and cite sources. Being cited means your brand shows up inside the answer, not just in a list of ten blue links.', 'This is a distinct channel from classic SEO. A page can rank well and still never get cited, because citation rewards clarity and quotability as much as authority.'] },
+      { heading: 'Three levers that drive citations', body: ['First, structured data: schema markup helps models confidently identify what your page is about. Second, quotable passages: short, self-contained sentences that answer a question directly are far more likely to be lifted verbatim. Third, entity clarity: consistent naming, facts and context across your site and the wider web make you a recognisable entity.', 'Together these tell a model "this is the canonical source for this fact" — which is exactly what triggers a citation.'] },
+      { heading: 'How to measure AI-readiness', body: ['Our audit\'s AI-readiness axis checks whether your content is crawlable by answer engines, whether key facts are marked up, and whether your pages contain quotable answer passages. A low score doesn\'t mean you\'re invisible to Google — it means you\'re missing from the new answer layer.', 'Treat it as a forward-looking signal: improving it now positions you for the next two years of search, not the last two.'] },
+    ],
+  },
+  {
+    slug: '90-day-seo-roadmap',
+    icon: Target,
+    tag: 'Playbook',
+    title: 'A 90-day SEO roadmap for small teams',
+    excerpt: 'The exact milestone plan we run inside every client project.',
+    readTime: '10 min read',
+    author: 'FastAudit Team',
+    date: 'Aug 2026',
+    sections: [
+      { heading: 'Days 1–30: Foundations', body: ['The first month is about removing blockers, not chasing keywords. Run a full audit, fix every high-severity technical issue, and make sure your site is crawlable and fast on mobile. This is unglamorous work but it unlocks everything that follows.', 'In parallel, map your target queries: the handful of buying or intent-rich phrases you want to win. Don\'t pick fifty — pick three to five and commit.'] },
+      { heading: 'Days 31–60: Content & on-page', body: ['With foundations solid, turn to content. Audit each target page against the query it should win: does it answer the intent better than whatever currently ranks? If not, rewrite it. Add the quotable passages and structured data that help both classic search and AI answer engines.', 'This is also when internal linking matters: make sure your important pages are linked from your strongest pages, with descriptive anchor text.'] },
+      { heading: 'Days 61–90: Authority & momentum', body: ['The final stretch is about earning trust signals: reviews, citations and the kind of mentions that make you a recognised entity. For local businesses, this is GMB optimisation and review velocity. For SaaS, it\'s being referenced in the places your buyers already read.', 'By day 90 you should have a measurable lift in rankings and, increasingly, AI citations. Then you loop: re-audit, re-prioritise, and start the next 90 days.'] },
+    ],
+  },
+];
+
+export const findResource = (slug) => resourceItems.find((i) => i.slug === slug);
 
 export const findItem = (category, slug) => {
   const list = category === 'platform' ? platformItems : solutionsItems;

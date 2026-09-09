@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,9 @@ import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 
 export default function FeatureDetail() {
-  const { category, slug } = useParams();
+  const { slug } = useParams();
+  const location = useLocation();
+  const category = location.pathname.startsWith('/platform') ? 'platform' : 'solutions';
   const navigate = useNavigate();
   const item = findItem(category, slug);
 

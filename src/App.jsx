@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Landing from './pages/Landing';
 import FeatureDetail from './pages/FeatureDetail';
+import ResourceDetail from './pages/ResourceDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/platform/:slug" element={<FeatureDetail />} />
       <Route path="/solutions/:slug" element={<FeatureDetail />} />
+      <Route path="/resources/:slug" element={<ResourceDetail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
