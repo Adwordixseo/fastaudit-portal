@@ -8,6 +8,7 @@ export default async function(req) {
 
     const body = await req.json();
     const url = String(body?.url || '').trim();
+    const location = String(body?.location || '').trim();
     const keywords = Array.isArray(body?.keywords) ? body.keywords.map((k) => String(k).trim()).filter(Boolean) : [];
 
     if (!url) return Response.json({ error: 'A website URL is required' }, { status: 400 });
@@ -18,10 +19,13 @@ export default async function(req) {
     try { hostname = new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace(/^www\./, ''); }
     catch { return Response.json({ error: 'Invalid URL' }, { status: 400 }); }
 
+    const locationClause = location ? ` Focus the search on the location "${location}" — use its local Google edition (e.g. google.co.in for India, google.co.uk for the UK) and bias results toward that region/city. Report the location you searched in for each keyword.` : ' Search the global Google results.';
+
     const prompt = `You are an SEO rank-tracking tool. For the website "${hostname}", find its organic ranking position in Google search results for each of these keywords:
 ${JSON.stringify(keywords)}
+${locationClause}
 
-For each keyword, search the web and determine where ${hostname} (or any page on this domain) appears in the top 100 organic results. Return the position (1-100), or 0 if the site does not rank in the top 100. Include the exact ranking URL if found, and a brief page title. Be accurate — only report a position if you actually find the domain in the results.`;
+For each keyword, search the web and determine where ${hostname} (or any page on this domain) appears in the top 100 organic results. Return the position (1-100), or 0 if the site does not rank in the top 100. Include the exact ranking URL if found, a brief page title, and the location the ranking was checked in. Be accurate — only report a position if you actually find the domain in the results.`;
 
     const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
@@ -39,7 +43,8 @@ For each keyword, search the web and determine where ${hostname} (or any page on
                 position: { type: 'number' },
                 found: { type: 'boolean' },
                 found_url: { type: 'string' },
-                page_title: { type: 'string' }
+                page_title: { type: 'string' },
+                location: { type: 'string' }
               }
             }
           }
@@ -47,7 +52,7 @@ For each keyword, search the web and determine where ${hostname} (or any page on
       }
     });
 
-    return Response.json({ results: result.results || [], hostname });
+    return Response.json({ results: result.results || [], hostname, location });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

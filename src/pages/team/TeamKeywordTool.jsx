@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Loader2, Globe, TrendingUp, ExternalLink, Upload, Save, FolderKanban } from 'lucide-react';
+import { Search, Loader2, Globe, TrendingUp, ExternalLink, Upload, Save, FolderKanban, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function TeamKeywordTool() {
   const [url, setUrl] = useState('');
+  const [location, setLocation] = useState('');
   const [keywordsText, setKeywordsText] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [results, setResults] = useState(null);
@@ -28,7 +29,7 @@ export default function TeamKeywordTool() {
     if (keywords.length > 20) { toast.error('Maximum 20 keywords at a time'); return; }
     setRunning(true); setResults(null);
     try {
-      const res = await base44.functions.invoke('bulkKeywordRanking', { url: url.trim(), keywords });
+      const res = await base44.functions.invoke('bulkKeywordRanking', { url: url.trim(), location: location.trim(), keywords });
       setResults(res.data);
       toast.success(`Checked ${res.data.results.length} keywords`);
     } catch (err) { toast.error(err.message || 'Ranking check failed'); }
@@ -40,7 +41,7 @@ export default function TeamKeywordTool() {
 
   const exportCsv = () => {
     if (!results) return;
-    const rows = ['keyword,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
+    const rows = ['keyword,location,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.location || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'keyword-rankings.csv'; link.click();
   };
@@ -49,7 +50,7 @@ export default function TeamKeywordTool() {
     if (!saveProjectId) { toast.error('Select a project to save to'); return; }
     setSaving(true);
     try {
-      const rows = ['keyword,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
+      const rows = ['keyword,location,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.location || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
       const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
       const file = new File([blob], `keyword-rankings-${results.hostname}-${new Date().toISOString().slice(0, 10)}.csv`, { type: 'text/csv' });
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
@@ -89,6 +90,13 @@ export default function TeamKeywordTool() {
               <SelectTrigger className="mt-1.5"><SelectValue placeholder="Choose a project website" /></SelectTrigger>
               <SelectContent>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select>
           </div>
+          <div>
+            <Label>Location (optional)</Label>
+            <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-slate-200 px-3">
+              <MapPin className="h-4 w-4 text-slate-400" />
+              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. India, United States, London" className="w-full bg-transparent py-2 text-sm outline-none" />
+            </div>
+          </div>
         </div>
         <div className="mt-4">
           <Label>Keywords (one per line, max 20)</Label>
@@ -116,7 +124,10 @@ export default function TeamKeywordTool() {
           </div>
           <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-900">Results for {results.hostname}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-semibold text-slate-900">Results for {results.hostname}</h2>
+                {results.location && <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700"><MapPin className="h-3 w-3" />{results.location}</span>}
+              </div>
               <div className="flex items-center gap-2">
                 <Select value={saveProjectId} onValueChange={setSaveProjectId}><SelectTrigger className="w-48 rounded-full"><SelectValue placeholder="Save to project..." /></SelectTrigger>
                   <SelectContent>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select>
@@ -128,7 +139,10 @@ export default function TeamKeywordTool() {
                 <div key={i} className="flex items-center gap-4 px-6 py-3.5">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium text-slate-900">{r.keyword}</div>
-                    {r.page_title && <div className="truncate text-xs text-slate-400">{r.page_title}</div>}
+                    <div className="mt-0.5 flex items-center gap-2">
+                      {r.location && <span className="inline-flex items-center gap-1 truncate text-xs text-slate-500"><MapPin className="h-3 w-3 shrink-0" />{r.location}</span>}
+                      {r.page_title && <span className="truncate text-xs text-slate-400">{r.page_title}</span>}
+                    </div>
                   </div>
                   {r.found ? (
                     <div className="flex items-center gap-3">
