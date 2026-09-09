@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const empty = { name: '', website: '', client_id: '', status: 'active', progress: 0, description: '' };
+const empty = { name: '', website: '', client_id: '', status: 'todo', progress: 0, description: '' };
 
 export default function ProjectDialog({ open, onOpenChange, project, users, onSave }) {
   const [form, setForm] = useState(empty);
@@ -29,7 +29,7 @@ export default function ProjectDialog({ open, onOpenChange, project, users, onSa
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label>Status</Label>
               <Select value={form.status} onValueChange={set('status')}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="on_hold">On hold</SelectItem><SelectItem value="completed">Completed</SelectItem></SelectContent></Select></div>
+                <SelectContent><SelectItem value="todo">To Do</SelectItem><SelectItem value="in_progress">In Progress</SelectItem><SelectItem value="completed">Completed</SelectItem></SelectContent></Select></div>
             <div><Label>Progress (%)</Label><Input type="number" min={0} max={100} value={form.progress} onChange={(e) => set('progress')(e.target.value)} className="mt-1.5" /></div>
           </div>
           <div><Label>Description</Label><Textarea rows={3} value={form.description} onChange={(e) => set('description')(e.target.value)} className="mt-1.5" /></div>

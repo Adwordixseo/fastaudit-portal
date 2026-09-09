@@ -34,12 +34,12 @@ export default function Dashboard() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         <ExportButtons data={audits} filename="audit-history" title="Audit History" headers={[{ key: 'url', label: 'URL' }, { key: 'overall_score', label: 'Score' }, { key: 'created_date', label: 'Date' }]} />
       </div>
-      <WelcomeBanner user={user} auditCount={audits.length} projectCount={projects.filter((p) => p.status === 'active').length} />
+      <WelcomeBanner user={user} auditCount={audits.length} projectCount={projects.filter((p) => p.status === 'in_progress').length} />
 
       {!subLoading && !hasActive && <UpsellBanner />}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={FolderKanban} label="Ongoing projects" value={projects.filter((p) => p.status === 'active').length} hint={`${projects.length} total`} />
+        <StatCard icon={FolderKanban} label="Ongoing projects" value={projects.filter((p) => p.status === 'in_progress').length} hint={`${projects.length} total`} />
         <StatCard icon={Package} label="Active package" value={activeSubscription ? activeSubscription.package_name : 'None'} hint={activeSubscription ? `Renews ${fmtDate(activeSubscription.end_date)}` : 'Choose a package to unlock reports'} tone="violet" />
         <StatCard icon={Search} label="Audits run" value={audits.length} hint="Latest 5 shown below" tone="emerald" />
         <StatCard icon={Clock} label="Pending approvals" value={pending.length} hint="Deliverables awaiting your review" tone="amber" />

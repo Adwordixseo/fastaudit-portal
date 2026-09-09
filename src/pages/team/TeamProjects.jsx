@@ -94,7 +94,7 @@ export default function TeamProjects() {
                 <div>
                   <Label className="text-xs text-slate-500">Status</Label>
                   <Select value={selected.status} onValueChange={saveStatus}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                    <SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="on_hold">On hold</SelectItem><SelectItem value="completed">Completed</SelectItem></SelectContent></Select>
+                    <SelectContent><SelectItem value="todo">To Do</SelectItem><SelectItem value="in_progress">In Progress</SelectItem><SelectItem value="completed">Completed</SelectItem></SelectContent></Select>
                 </div>
               </div>
             </div>

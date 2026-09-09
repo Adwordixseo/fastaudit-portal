@@ -23,7 +23,7 @@ export default function AdminOverview() {
       <PageHeader eyebrow="Admin" title="Overview" description="A live snapshot of clients, projects, revenue and support." />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard icon={Users} label="Active users" value={users.filter((u) => u.account_status !== 'inactive').length} hint={`${users.length} registered`} />
-        <StatCard icon={FolderKanban} label="Projects in progress" value={projects.filter((p) => p.status === 'active').length} hint={`${projects.length} total`} tone="violet" />
+        <StatCard icon={FolderKanban} label="Projects in progress" value={projects.filter((p) => p.status === 'in_progress').length} hint={`${projects.length} total`} tone="violet" />
         <StatCard icon={CreditCard} label="Pending orders" value={subs.filter((s) => s.status === 'pending').length} hint={`${subs.filter((s) => s.status === 'active').length} active`} tone="amber" />
         <StatCard icon={MessageSquare} label="Open tickets" value={tickets.filter((t) => t.status !== 'resolved').length} tone="rose" />
         <StatCard icon={FileText} label="Approval ratio" value={docs.length ? Math.round((approved / docs.length) * 100) + '%' : '—'} hint={`${approved}/${docs.length} approved`} tone="emerald" />

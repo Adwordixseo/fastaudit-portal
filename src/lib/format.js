@@ -12,6 +12,7 @@ export const cyclePrice = (pkg, cycle) =>
 
 export const statusTone = {
   active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  todo: 'bg-slate-100 text-slate-600 border-slate-200',
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
   expired: 'bg-slate-100 text-slate-600 border-slate-200',
   on_hold: 'bg-amber-50 text-amber-700 border-amber-200',

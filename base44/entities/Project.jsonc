@@ -17,11 +17,11 @@
     "status": {
       "type": "string",
       "enum": [
-        "active",
-        "on_hold",
+        "todo",
+        "in_progress",
         "completed"
       ],
-      "default": "active"
+      "default": "todo"
     },
     "progress": {
       "type": "number",
