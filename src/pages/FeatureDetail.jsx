@@ -57,6 +57,20 @@ export default function FeatureDetail() {
         </div>
       </section>
 
+      {/* Stats */}
+      {item.stats && (
+        <section className="border-y border-slate-100 bg-slate-50">
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-px px-5 py-12 lg:grid-cols-4 lg:px-8">
+            {item.stats.map((s) => (
+              <div key={s.label} className="px-4 text-center">
+                <div className="font-heading text-3xl font-extrabold text-indigo-600">{s.value}</div>
+                <div className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-500">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Features */}
       <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
         <h2 className="text-2xl font-bold text-slate-900">What you get</h2>
@@ -73,6 +87,39 @@ export default function FeatureDetail() {
           ))}
         </div>
       </section>
+
+      {/* How it works */}
+      {item.steps && (
+        <section className="bg-slate-50">
+          <div className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
+            <h2 className="text-2xl font-bold text-slate-900">How it works</h2>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {item.steps.map((s, i) => (
+                <motion.div key={s.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-indigo-600 text-sm font-bold text-white">{i + 1}</span>
+                  <h3 className="mt-4 text-base font-semibold text-slate-900">{s.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{s.text}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ */}
+      {item.faq && (
+        <section className="mx-auto max-w-3xl px-5 py-20 lg:px-8">
+          <h2 className="text-2xl font-bold text-slate-900">Frequently asked questions</h2>
+          <div className="mt-8 divide-y divide-slate-100 rounded-2xl border border-slate-200">
+            {item.faq.map((f) => (
+              <div key={f.q} className="p-6">
+                <h3 className="text-base font-semibold text-slate-900">{f.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Prev / next */}
       <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">
