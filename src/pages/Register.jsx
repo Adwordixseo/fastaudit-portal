@@ -67,6 +67,11 @@ export default function Register() {
         } catch (_e) {
           // Profile extras are best-effort; don't block login on them.
         }
+        try {
+          await base44.functions.invoke('sendWelcomeEmail', { email, fullName });
+        } catch (_e) {
+          // Welcome email is best-effort; don't block login on it.
+        }
       }
       window.location.href = safeReturnTo();
     } catch (err) {
