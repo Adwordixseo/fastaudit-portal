@@ -21,6 +21,7 @@ export default function TeamDashboard() {
   const [assignOpen, setAssignOpen] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
+  const [dueFilter, setDueFilter] = useState('all');
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
   const { data: tasks = [] } = useQuery({ queryKey: ['team-tasks'], queryFn: () => base44.entities.TeamTask.list('-updated_date') });
@@ -28,7 +29,19 @@ export default function TeamDashboard() {
   const inProgress = projects.filter((p) => p.status === 'in_progress');
   const filtered = projects.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.client_email?.toLowerCase().includes(search.toLowerCase()));
   const assignees = useMemo(() => { const map = new Map(); tasks.forEach((t) => { if (t.assigned_to_email) map.set(t.assigned_to_email, t.assigned_to_name || t.assigned_to_email); }); return [...map.entries()]; }, [tasks]);
-  const filteredTasks = tasks.filter((t) => (priorityFilter === 'all' || t.priority === priorityFilter) && (assigneeFilter === 'all' || t.assigned_to_email === assigneeFilter));
+  const dueMatch = (t) => {
+    if (dueFilter === 'all') return true;
+    if (dueFilter === 'none') return !t.deadline;
+    if (!t.deadline) return false;
+    const d = new Date(t.deadline); d.setHours(0, 0, 0, 0);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const diff = (d - today) / 86400000;
+    if (dueFilter === 'overdue') return diff < 0;
+    if (dueFilter === 'this_week') return diff >= 0 && diff <= 7;
+    if (dueFilter === 'next_week') return diff > 7 && diff <= 14;
+    return true;
+  };
+  const filteredTasks = tasks.filter((t) => (priorityFilter === 'all' || t.priority === priorityFilter) && (assigneeFilter === 'all' || t.assigned_to_email === assigneeFilter) && dueMatch(t));
   const pendingApprovals = docs.filter((d) => d.status === 'awaiting_approval').length;
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-projects'] }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
@@ -82,7 +95,17 @@ export default function TeamDashboard() {
                 {assignees.map(([email, name]) => <SelectItem key={email} value={email}>{name}</SelectItem>)}
               </SelectContent>
             </Select>
-            {(priorityFilter !== 'all' || assigneeFilter !== 'all') && <Button variant="ghost" size="sm" className="rounded-full" onClick={() => { setPriorityFilter('all'); setAssigneeFilter('all'); }}>Clear</Button>}
+            <Select value={dueFilter} onValueChange={setDueFilter}>
+              <SelectTrigger className="w-44 rounded-full"><SelectValue placeholder="Due date" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All due dates</SelectItem>
+                <SelectItem value="overdue">Overdue</SelectItem>
+                <SelectItem value="this_week">Due this week</SelectItem>
+                <SelectItem value="next_week">Due next week</SelectItem>
+                <SelectItem value="none">No deadline</SelectItem>
+              </SelectContent>
+            </Select>
+            {(priorityFilter !== 'all' || assigneeFilter !== 'all' || dueFilter !== 'all') && <Button variant="ghost" size="sm" className="rounded-full" onClick={() => { setPriorityFilter('all'); setAssigneeFilter('all'); setDueFilter('all'); }}>Clear</Button>}
           </div>
         )}
         {tasks.length === 0 ? (
