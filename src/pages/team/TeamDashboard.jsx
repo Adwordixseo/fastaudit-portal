@@ -8,6 +8,7 @@ import StatCard from '@/components/portal/StatCard';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
 import ProjectKanban from '@/components/team/ProjectKanban';
 import TeamTaskKanban from '@/components/team/TeamTaskKanban';
+import TeamActivityFeed from '@/components/team/TeamActivityFeed';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 
@@ -59,6 +60,8 @@ export default function TeamDashboard() {
           <TeamTaskKanban tasks={tasks} onMove={saveTaskStatus} />
         )}
       </section>
+
+      <TeamActivityFeed projects={projects} tasks={tasks} docs={docs} />
 
       <TeamUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} projects={projects} onSaved={refresh} />
     </div>
