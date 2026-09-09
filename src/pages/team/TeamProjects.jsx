@@ -121,6 +121,7 @@ export default function TeamProjects() {
                       <p className="text-xs text-slate-400">{fileTypeFromName(d.file_url || d.title)} · {fmtDate(d.created_date)}</p>
                       {d.status === 'approved' && approval && <p className="mt-0.5 text-xs font-medium text-emerald-600">✓ Approved by client{approval.by ? ` · ${approval.by}` : ''}{approval.date ? ` · ${fmtDate(approval.date)}` : ''}</p>}
                       {d.status === 'changes_requested' && <p className="mt-0.5 text-xs font-medium text-rose-600">Changes requested by client</p>}
+                      {d.status === 'shared' && <p className="mt-0.5 text-xs text-sky-600">Shared with client — no approval needed</p>}
                       {d.status === 'draft' && <p className="mt-0.5 text-xs text-slate-400">Internal draft — not shared with client</p>}
                     </div>
                     <StatusBadge status={d.status} />

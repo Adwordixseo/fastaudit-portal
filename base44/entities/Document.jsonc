@@ -37,6 +37,7 @@
       "enum": [
         "draft",
         "awaiting_approval",
+        "shared",
         "approved",
         "changes_requested"
       ],

@@ -22,7 +22,7 @@ export default function DocumentCard({ doc, projectName, onView, onApprove, onRe
         <Button size="sm" variant="outline" className="rounded-full" onClick={() => onView(doc)}><Eye className="mr-1.5 h-3.5 w-3.5" /> Preview</Button>
         <Button asChild size="sm" variant="outline" className="rounded-full"><a href={doc.file_url} download target="_blank" rel="noreferrer"><Download className="mr-1.5 h-3.5 w-3.5" /> Download</a></Button>
         {doc.review_link && <Button asChild size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50"><a href={doc.review_link} target="_blank" rel="noreferrer"><ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Open review link</a></Button>}
-        {onApprove && doc.status !== 'approved' && <Button size="sm" className="rounded-full bg-emerald-600 hover:bg-emerald-700" onClick={() => onApprove(doc)}><Check className="mr-1.5 h-3.5 w-3.5" /> Approve</Button>}
+        {onApprove && doc.status !== 'approved' && doc.status !== 'shared' && <Button size="sm" className="rounded-full bg-emerald-600 hover:bg-emerald-700" onClick={() => onApprove(doc)}><Check className="mr-1.5 h-3.5 w-3.5" /> Approve</Button>}
         {onRequestChange && doc.status === 'awaiting_approval' && <Button size="sm" variant="outline" className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50" onClick={() => onRequestChange(doc)}><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Request changes</Button>}
       </div>
       {doc.history?.length > 0 && (
