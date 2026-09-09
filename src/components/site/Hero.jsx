@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, ShieldCheck, Sparkles, Star, TrendingUp, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import KeywordRankingTicker from '@/components/site/KeywordRankingTicker';
 
 const stats = [
   { n: '92%', t: 'of clients see ranking gains in 90 days', icon: TrendingUp },
@@ -202,6 +203,11 @@ export default function Hero() {
               <div className="mt-1 text-sm text-slate-400">{t}</div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Live keyword ranking board */}
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="mx-auto mt-10 max-w-4xl">
+          <KeywordRankingTicker />
         </motion.div>
       </div>
     </section>
