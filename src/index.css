@@ -106,4 +106,22 @@
     background-size: 48px 48px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
   }
+  .shimmer-text {
+    background-size: 200% auto;
+    animation: shimmer 5s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+  .scan-line {
+    background: linear-gradient(90deg, transparent, rgba(129,140,248,0.6), transparent);
+    animation: scan 4.5s ease-in-out infinite;
+  }
+  @keyframes scan {
+    0% { top: 8%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 92%; opacity: 0; }
+  }
 }

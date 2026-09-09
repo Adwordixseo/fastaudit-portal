@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, ShieldCheck, Sparkles, Star, TrendingUp, Zap } from 'lucide-react';
@@ -11,10 +11,18 @@ const stats = [
   { n: '24h', t: 'average support ticket response', icon: Zap },
 ];
 
+const scanSteps = ['Crawling pages…', 'Scoring performance…', 'Checking AI-readiness…', 'Analyzing keywords…'];
+
 export default function Hero() {
   const [url, setUrl] = useState('');
+  const [scanIdx, setScanIdx] = useState(0);
   const navigate = useNavigate();
   const go = (e) => { e.preventDefault(); navigate(`/app/audit${url ? `?url=${encodeURIComponent(url)}` : ''}`); };
+
+  useEffect(() => {
+    const id = setInterval(() => setScanIdx((i) => (i + 1) % scanSteps.length), 2200);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-[#070B1A] text-white">
@@ -48,7 +56,7 @@ export default function Hero() {
               Free instant audit · AI-search ready · No credit card
             </span>
             <h1 className="mt-7 text-5xl font-extrabold leading-[1.02] sm:text-6xl lg:text-7xl">
-              Find out why your website <span className="gradient-text">isn't ranking.</span>
+              Find out why your website <span className="gradient-text shimmer-text">isn't ranking.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 lg:mx-0">
               Run a free SEO & AI-readiness audit in under a minute. Then let our team fix it — with monthly reports, milestone tracking and approvals all in one client portal.
@@ -63,6 +71,17 @@ export default function Hero() {
               </Button>
             </form>
             <p className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400 lg:justify-start"><ShieldCheck className="h-3.5 w-3.5" /> Free scan · Full PDF report unlocked with any package</p>
+
+            {/* Live scanning status */}
+            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-indigo-200/80 lg:justify-start">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-indigo-400" />
+              </span>
+              <motion.span key={scanIdx} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="font-medium">
+                {scanSteps[scanIdx]}
+              </motion.span>
+            </div>
 
             {/* Trust row */}
             <div className="mt-8 flex items-center justify-center gap-6 lg:justify-start">
@@ -90,8 +109,11 @@ export default function Hero() {
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="glow-card relative rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
+              className="glow-card relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
             >
+              {/* Scan line */}
+              <div className="scan-line pointer-events-none absolute left-0 h-px w-full" />
+
               {/* Mock audit header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -109,6 +131,13 @@ export default function Hero() {
               {/* Score ring */}
               <div className="my-6 flex items-center justify-center">
                 <div className="relative flex h-40 w-40 items-center justify-center">
+                  {/* Rotating conic glow */}
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+                    className="absolute h-44 w-44 rounded-full opacity-40 blur-2xl"
+                    style={{ background: 'conic-gradient(from 0deg, #6366f1, #d946ef, #22d3ee, #6366f1)' }}
+                  />
                   <svg className="h-40 w-40 -rotate-90" viewBox="0 0 160 160">
                     <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
                     <motion.circle
