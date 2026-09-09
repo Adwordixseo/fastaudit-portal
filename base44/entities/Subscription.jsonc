@@ -45,6 +45,10 @@
     },
     "project_id": {
       "type": "string"
+    },
+    "stripe_session_id": {
+      "type": "string",
+      "description": "Stripe Checkout session id, used to idempotently activate subscriptions from webhook events"
     }
   },
   "required": [
