@@ -11,12 +11,40 @@ export default function InviteUserDialog({ open, onOpenChange, defaultRole = 'us
   const [email, setEmail] = useState('');
   const [role, setRole] = useState(defaultRole);
   const [saving, setSaving] = useState(false);
+
   const invite = async (e) => {
-    e.preventDefault(); setSaving(true);
-    try { await base44.users.inviteUser(email.trim(), role); toast.success(`Invitation sent to ${email}`); setEmail(''); setRole(defaultRole); onOpenChange(false); }
-    catch (err) { toast.error(err.message || 'Could not send invite'); }
+    e.preventDefault();
+    setSaving(true);
+    const targetEmail = email.trim();
+    // The platform invite API only accepts "user" or "admin".
+    // Team members are invited as "user" and flagged via is_team_member.
+    const inviteRole = role === 'team' ? 'user' : role;
+    try {
+      await base44.users.inviteUser(targetEmail, inviteRole);
+      let teamGranted = false;
+      if (role === 'team') {
+        try {
+          const matches = await base44.entities.User.filter({ email: targetEmail });
+          const u = matches[0];
+          if (u) { await base44.entities.User.update(u.id, { is_team_member: true }); teamGranted = true; }
+        } catch {
+          /* user record may appear after they accept; admin can set the flag later */
+        }
+      }
+      toast.success(
+        role === 'team'
+          ? (teamGranted ? `Invitation sent to ${targetEmail} with team access` : `Invitation sent to ${targetEmail}. Grant team access from the Users page once they join.`)
+          : `Invitation sent to ${targetEmail}`
+      );
+      setEmail('');
+      setRole(defaultRole);
+      onOpenChange(false);
+    } catch (err) {
+      toast.error(err.message || 'Could not send invite');
+    }
     setSaving(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm rounded-3xl">

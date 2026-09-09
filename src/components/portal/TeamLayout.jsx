@@ -11,9 +11,9 @@ const nav = [
 ];
 
 export default function TeamLayout() {
-  const { user, isLoading, isAdmin } = useUser();
+  const { user, isLoading, isAdmin, isTeam } = useUser();
   if (isLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'team' && !isAdmin) return <Navigate to="/app" replace />;
+  if (!isTeam && !isAdmin) return <Navigate to="/app" replace />;
   return <PortalLayout nav={nav} label="Team panel" footerLink={isAdmin ? { to: '/admin', label: 'Admin panel', icon: ShieldCheck } : null} />;
 }

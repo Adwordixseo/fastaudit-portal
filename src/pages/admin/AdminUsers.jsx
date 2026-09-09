@@ -22,6 +22,7 @@ export default function AdminUsers() {
   const rows = users.filter((u) => filter === 'all' || (filter === 'active' ? planOf(u) : !planOf(u)));
 
   const toggle = async (u) => { await base44.entities.User.update(u.id, { account_status: u.account_status === 'inactive' ? 'active' : 'inactive' }); qc.invalidateQueries({ queryKey: ['admin-users'] }); };
+  const toggleTeam = async (u) => { await base44.entities.User.update(u.id, { is_team_member: !u.is_team_member }); qc.invalidateQueries({ queryKey: ['admin-users'] }); };
 
   return (
     <div>
@@ -42,9 +43,9 @@ export default function AdminUsers() {
                 <TableCell className="text-sm text-slate-600">{u.company || '—'}{u.location ? <div className="text-xs text-slate-400">{u.location}</div> : null}</TableCell>
                 <TableCell className="text-sm text-slate-600">{u.website || '—'}</TableCell>
                 <TableCell>{plan ? <StatusBadge status="active" /> : <StatusBadge status="expired" />}<div className="mt-1 text-xs text-slate-500">{plan?.package_name || 'No plan'}</div></TableCell>
-                <TableCell><StatusBadge status={u.account_status || 'active'} />{u.role === 'admin' && <div className="mt-1 text-xs text-indigo-600">Admin</div>}</TableCell>
+                <TableCell><StatusBadge status={u.account_status || 'active'} />{u.role === 'admin' && <div className="mt-1 text-xs text-indigo-600">Admin</div>}{u.is_team_member && <div className="mt-1 text-xs text-violet-600">Team</div>}</TableCell>
                 <TableCell className="text-sm text-slate-500">{fmtDate(u.created_date)}</TableCell>
-                <TableCell className="text-right">{u.role !== 'admin' && <Button size="sm" variant="outline" className="rounded-full" onClick={() => toggle(u)}>{u.account_status === 'inactive' ? 'Activate' : 'Deactivate'}</Button>}</TableCell>
+                <TableCell className="text-right"><div className="flex justify-end gap-2">{u.role !== 'admin' && <Button size="sm" variant={u.is_team_member ? 'secondary' : 'outline'} className="rounded-full" onClick={() => toggleTeam(u)}>{u.is_team_member ? 'Revoke team' : 'Grant team'}</Button>}{u.role !== 'admin' && <Button size="sm" variant="outline" className="rounded-full" onClick={() => toggle(u)}>{u.account_status === 'inactive' ? 'Activate' : 'Deactivate'}</Button>}</div></TableCell>
               </TableRow>); })}
           </TableBody>
         </Table>

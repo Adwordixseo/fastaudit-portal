@@ -25,6 +25,11 @@
         "inactive"
       ],
       "default": "active"
+    },
+    "is_team_member": {
+      "type": "boolean",
+      "default": false,
+      "description": "Grants access to the team panel (distinct from platform role)"
     }
   }
 }
