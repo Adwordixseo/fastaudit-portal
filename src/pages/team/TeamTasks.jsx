@@ -23,7 +23,7 @@ export default function TeamTasks() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Team" title="Tasks" description="View and filter tasks assigned across the team by name or email."
-        action={<Button onClick={() => setAssignOpen(true)} disabled={projects.length === 0} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> Assign task</Button>} />
+        action={<Button onClick={() => setAssignOpen(true)} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> Assign task</Button>} />
 
       <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2">
         <Search className="h-4 w-4 text-slate-400" />
