@@ -14,6 +14,10 @@
     "location": {
       "type": "string"
     },
+    "gmb_url": {
+      "type": "string",
+      "description": "Google My Business listing URL, if available"
+    },
     "account_status": {
       "type": "string",
       "enum": [

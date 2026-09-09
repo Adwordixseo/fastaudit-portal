@@ -10,6 +10,7 @@ import MilestonePanel from '@/components/admin/MilestonePanel';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import ExportButtons from '@/components/portal/ExportButtons';
 
 export default function AdminProjects() {
   const qc = useQueryClient();
@@ -28,7 +29,7 @@ export default function AdminProjects() {
 
   return (
     <div>
-      <PageHeader eyebrow="Admin" title="Projects" description="Track every client project, its status and milestones." action={<Button onClick={() => setDialog({ open: true, project: null })} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> New project</Button>} />
+      <PageHeader eyebrow="Admin" title="Projects" description="Track every client project, its status and milestones." action={<div className="flex items-center gap-2"><ExportButtons data={projects} filename="admin-projects" title="All Projects" headers={[{ key: 'name', label: 'Project' }, { key: 'client_email', label: 'Client' }, { key: 'website', label: 'Website' }, { key: 'status', label: 'Status' }, { key: 'progress', label: 'Progress %' }]} /><Button onClick={() => setDialog({ open: true, project: null })} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> New project</Button></div>} />
       <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
         <div className="space-y-3">
           {projects.length === 0 && <p className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">No projects yet. Create one and assign it to a client.</p>}

@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import StatusBadge from '@/components/ui/StatusBadge';
 import InviteUserDialog from '@/components/admin/InviteUserDialog';
+import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -27,6 +28,7 @@ export default function AdminUsers() {
       <PageHeader eyebrow="Admin" title="Users" description="All registered clients, their plan status and account state."
         action={<div className="flex gap-2">
           <Select value={filter} onValueChange={setFilter}><SelectTrigger className="w-40 rounded-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All users</SelectItem><SelectItem value="active">Active plan</SelectItem><SelectItem value="expired">No active plan</SelectItem></SelectContent></Select>
+          <ExportButtons data={rows} filename="users" title="Users" headers={[{ key: 'full_name', label: 'Name' }, { key: 'email', label: 'Email' }, { key: 'phone', label: 'Phone' }, { key: 'company', label: 'Company' }, { key: 'website', label: 'Website' }, { key: 'location', label: 'Location' }, { key: 'created_date', label: 'Joined' }]} />
           <Button onClick={() => { setInviteRole('user'); setInviteOpen(true); }} className="rounded-full"><UserPlus className="mr-2 h-4 w-4" /> Add user</Button>
           <Button onClick={() => { setInviteRole('team'); setInviteOpen(true); }} variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50"><UserPlus className="mr-2 h-4 w-4" /> Invite team member</Button>
         </div>} />

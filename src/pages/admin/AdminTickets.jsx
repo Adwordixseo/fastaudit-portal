@@ -5,6 +5,7 @@ import { useUser } from '@/hooks/useUser';
 import PageHeader from '@/components/portal/PageHeader';
 import TicketThread from '@/components/tickets/TicketThread';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ExportButtons from '@/components/portal/ExportButtons';
 
 export default function AdminTickets() {
   const { user } = useUser();
@@ -23,7 +24,7 @@ export default function AdminTickets() {
   return (
     <div>
       <PageHeader eyebrow="Admin" title="Support tickets" description="Reply to client requests and keep every ticket moving."
-        action={<Select value={status} onValueChange={setStatus}><SelectTrigger className="w-44 rounded-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All tickets</SelectItem><SelectItem value="open">Open</SelectItem><SelectItem value="in_progress">In progress</SelectItem><SelectItem value="resolved">Resolved</SelectItem></SelectContent></Select>} />
+        action={<div className="flex items-center gap-2"><Select value={status} onValueChange={setStatus}><SelectTrigger className="w-44 rounded-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All tickets</SelectItem><SelectItem value="open">Open</SelectItem><SelectItem value="in_progress">In progress</SelectItem><SelectItem value="resolved">Resolved</SelectItem></SelectContent></Select><ExportButtons data={rows} filename="tickets" title="Support Tickets" headers={[{ key: 'subject', label: 'Subject' }, { key: 'client_email', label: 'Client' }, { key: 'category', label: 'Category' }, { key: 'priority', label: 'Priority' }, { key: 'status', label: 'Status' }, { key: 'created_date', label: 'Date' }]} /></div>} />
       <div className="space-y-3">
         {rows.length === 0 && <p className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">No tickets here.</p>}
         {rows.map((t) => (

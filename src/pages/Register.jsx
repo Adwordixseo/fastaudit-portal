@@ -20,6 +20,7 @@ export default function Register() {
   const [company, setCompany] = useState("");
   const [website, setWebsite] = useState("");
   const [location, setLocation] = useState("");
+  const [gmbUrl, setGmbUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -30,6 +31,10 @@ export default function Register() {
     setError("");
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      return;
+    }
+    if (!fullName || !phone || !website || !location) {
+      setError("Please fill in your name, phone, website and location to continue");
       return;
     }
     setLoading(true);
@@ -57,6 +62,7 @@ export default function Register() {
             company: company || undefined,
             website: website || undefined,
             location: location || undefined,
+            gmb_url: gmbUrl || undefined,
           });
         } catch (_e) {
           // Profile extras are best-effort; don't block login on them.
@@ -190,6 +196,7 @@ export default function Register() {
             type="text"
             autoComplete="name"
             autoFocus
+            required
             placeholder="Jane Doe"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
@@ -218,6 +225,7 @@ export default function Register() {
             id="phone"
             type="tel"
             autoComplete="tel"
+            required
             placeholder="+1 555 123 4567"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -243,6 +251,7 @@ export default function Register() {
               id="location"
               type="text"
               autoComplete="address-level2"
+              required
               placeholder="City, Country"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
@@ -256,9 +265,21 @@ export default function Register() {
             id="website"
             type="url"
             autoComplete="url"
+            required
             placeholder="https://yourwebsite.com"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
+            className="h-12"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="gmb">Google My Business URL <span className="text-muted-foreground font-normal">(if available)</span></Label>
+          <Input
+            id="gmb"
+            type="url"
+            placeholder="https://maps.google.com/your-business"
+            value={gmbUrl}
+            onChange={(e) => setGmbUrl(e.target.value)}
             className="h-12"
           />
         </div>

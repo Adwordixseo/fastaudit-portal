@@ -8,6 +8,7 @@ import StatCard from '@/components/portal/StatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { fmtDate, money, cycleMonths } from '@/lib/format';
+import ExportButtons from '@/components/portal/ExportButtons';
 
 const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
 
@@ -54,7 +55,7 @@ export default function AdminFinancials() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow="Admin" title="Financial overview" description="Track active subscriptions, monthly recurring revenue and total collected from packages." />
+      <PageHeader eyebrow="Admin" title="Financial overview" description="Track active subscriptions, monthly recurring revenue and total collected from packages." action={<ExportButtons data={subs} filename="transactions" title="Transactions" headers={[{ key: 'client_email', label: 'Client' }, { key: 'package_name', label: 'Package' }, { key: 'billing_cycle', label: 'Billing' }, { key: 'amount', label: 'Amount' }, { key: 'created_date', label: 'Date' }, { key: 'status', label: 'Status' }]} />} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Wallet} label="Total collected" value={money(Math.round(stats.collected))} hint={`${stats.activeCount} active subscriptions`} tone="emerald" />

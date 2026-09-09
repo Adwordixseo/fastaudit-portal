@@ -8,6 +8,7 @@ import StatusBadge from '@/components/ui/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { fmtDate, money, cycleMonths } from '@/lib/format';
+import ExportButtons from '@/components/portal/ExportButtons';
 
 export default function AdminSubscriptions() {
   const qc = useQueryClient();
@@ -23,7 +24,7 @@ export default function AdminSubscriptions() {
 
   return (
     <div>
-      <PageHeader eyebrow="Admin" title="Subscriptions & payments" description="Confirm payments to activate packages, or mark them expired." />
+      <PageHeader eyebrow="Admin" title="Subscriptions & payments" description="Confirm payments to activate packages, or mark them expired." action={<ExportButtons data={subs} filename="subscriptions" title="Subscriptions" headers={[{ key: 'client_email', label: 'Client' }, { key: 'package_name', label: 'Package' }, { key: 'billing_cycle', label: 'Billing' }, { key: 'amount', label: 'Amount' }, { key: 'start_date', label: 'Start' }, { key: 'end_date', label: 'End' }, { key: 'status', label: 'Status' }]} />} />
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
         <Table>
           <TableHeader><TableRow><TableHead>Client</TableHead><TableHead>Package</TableHead><TableHead>Billing</TableHead><TableHead>Amount</TableHead><TableHead>Period</TableHead><TableHead>Status</TableHead><TableHead /></TableRow></TableHeader>

@@ -7,6 +7,7 @@ import EmptyState from '@/components/portal/EmptyState';
 import StatCard from '@/components/portal/StatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
+import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { fmtDate } from '@/lib/format';
@@ -27,7 +28,7 @@ export default function TeamDashboard() {
   return (
     <div className="space-y-8">
       <PageHeader eyebrow="Team" title="Dashboard" description="Manage active projects, upload deliverables and attach review links for client approval."
-        action={<Button onClick={() => setUploadOpen(true)} className="rounded-full"><Upload className="mr-2 h-4 w-4" /> Share deliverable</Button>} />
+        action={<div className="flex items-center gap-2"><ExportButtons data={projects} filename="team-projects" title="Team Projects" headers={[{ key: 'name', label: 'Project' }, { key: 'client_email', label: 'Client' }, { key: 'website', label: 'Website' }, { key: 'status', label: 'Status' }, { key: 'progress', label: 'Progress %' }]} /><Button onClick={() => setUploadOpen(true)} className="rounded-full"><Upload className="mr-2 h-4 w-4" /> Share deliverable</Button></div>} />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard icon={FolderKanban} label="Active projects" value={active.length} hint={`${projects.length} total`} />

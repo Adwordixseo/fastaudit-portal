@@ -12,6 +12,7 @@ import ProjectCalendar from '@/components/projects/ProjectCalendar';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import ExportButtons from '@/components/portal/ExportButtons';
 import { fmtDate, fmtMonth } from '@/lib/format';
 
 export default function ProjectsPage() {
@@ -36,10 +37,11 @@ export default function ProjectsPage() {
     <div className="space-y-8">
       <PageHeader eyebrow="Projects" title="Your projects" description="Each project has its own progress, milestones and deliverables."
         action={
+          <div className="flex items-center gap-2"><ExportButtons data={projects} filename="projects" title="My Projects" headers={[{ key: 'name', label: 'Project' }, { key: 'website', label: 'Website' }, { key: 'status', label: 'Status' }, { key: 'progress', label: 'Progress %' }, { key: 'created_date', label: 'Started' }]} />
           <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
             <button onClick={() => setView('list')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><List className="h-4 w-4" /> List</button>
             <button onClick={() => setView('calendar')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'calendar' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><CalendarDays className="h-4 w-4" /> Calendar</button>
-          </div>
+          </div></div>
         } />
       {view === 'calendar' ? (
         <ProjectCalendar milestones={milestones} documents={docs} projects={projects} />
