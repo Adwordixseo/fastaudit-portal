@@ -10,6 +10,7 @@ import ProjectKanban from '@/components/team/ProjectKanban';
 import TeamTaskKanban from '@/components/team/TeamTaskKanban';
 import TeamActivityFeed from '@/components/team/TeamActivityFeed';
 import WeeklyTaskCompletionChart from '@/components/team/WeeklyTaskCompletionChart';
+import ProjectProgressReport from '@/components/team/ProjectProgressReport';
 import TeamTaskAssignDialog from '@/components/team/TeamTaskAssignDialog';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,8 @@ export default function TeamDashboard() {
       </div>
 
       <WeeklyTaskCompletionChart tasks={tasks} />
+
+      <ProjectProgressReport projects={projects} />
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5">
         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2">
