@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, FileSpreadsheet, File, Eye, Download, Check, MessageSquare, History } from 'lucide-react';
+import { FileText, FileSpreadsheet, File, Eye, Download, Check, MessageSquare, History, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { fmtDate, fmtDateTime, fmtMonth, humanize } from '@/lib/format';
@@ -21,6 +21,7 @@ export default function DocumentCard({ doc, projectName, onView, onApprove, onRe
       <div className="mt-4 flex flex-wrap gap-2">
         <Button size="sm" variant="outline" className="rounded-full" onClick={() => onView(doc)}><Eye className="mr-1.5 h-3.5 w-3.5" /> Preview</Button>
         <Button asChild size="sm" variant="outline" className="rounded-full"><a href={doc.file_url} download target="_blank" rel="noreferrer"><Download className="mr-1.5 h-3.5 w-3.5" /> Download</a></Button>
+        {doc.review_link && <Button asChild size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50"><a href={doc.review_link} target="_blank" rel="noreferrer"><ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Open review link</a></Button>}
         {onApprove && doc.status !== 'approved' && <Button size="sm" className="rounded-full bg-emerald-600 hover:bg-emerald-700" onClick={() => onApprove(doc)}><Check className="mr-1.5 h-3.5 w-3.5" /> Approve</Button>}
         {onRequestChange && doc.status === 'awaiting_approval' && <Button size="sm" variant="outline" className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50" onClick={() => onRequestChange(doc)}><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Request changes</Button>}
       </div>

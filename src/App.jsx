@@ -29,6 +29,9 @@ import AdminDocuments from './pages/admin/AdminDocuments';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminFinancials from './pages/admin/AdminFinancials';
 import AdminTickets from './pages/admin/AdminTickets';
+import TeamLayout from '@/components/portal/TeamLayout';
+import TeamDashboard from './pages/team/TeamDashboard';
+import TeamKeywordTool from './pages/team/TeamKeywordTool';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -80,6 +83,10 @@ const AuthenticatedApp = () => {
           <Route path="/admin/financials" element={<AdminFinancials />} />
           <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
           <Route path="/admin/tickets" element={<AdminTickets />} />
+        </Route>
+        <Route element={<TeamLayout />}>
+          <Route path="/team" element={<TeamDashboard />} />
+          <Route path="/team/keywords" element={<TeamKeywordTool />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

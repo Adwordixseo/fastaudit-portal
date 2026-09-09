@@ -24,6 +24,10 @@
       ],
       "default": "pdf"
     },
+    "review_link": {
+      "type": "string",
+      "description": "Optional external link (Google Doc, Sheet, etc.) for client review"
+    },
     "report_month": {
       "type": "string",
       "description": "YYYY-MM"

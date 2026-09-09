@@ -11,5 +11,5 @@ export function useUser() {
     retry: false,
     staleTime: 60_000,
   });
-  return { user: q.data || null, isLoading: q.isLoading, isAdmin: q.data?.role === 'admin' };
+  return { user: q.data || null, isLoading: q.isLoading, isAdmin: q.data?.role === 'admin', isTeam: q.data?.role === 'team' };
 }
