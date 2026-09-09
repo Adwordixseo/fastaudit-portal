@@ -1,5 +1,32 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
+function base64UrlEncode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function buildRawMime(from, to, subject, html) {
+  const boundary = '----=_Part_' + Math.random().toString(36).slice(2);
+  const mime = [
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    `MIME-Version: 1.0`,
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    ``,
+    `--${boundary}`,
+    `Content-Type: text/html; charset=UTF-8`,
+    `Content-Transfer-Encoding: base64`,
+    ``,
+    base64UrlEncode(html),
+    `--${boundary}--`,
+    ``,
+  ].join('\r\n');
+  return base64UrlEncode(mime);
+}
+
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -44,11 +71,22 @@ export default async function(req) {
   </table>
 </body></html>`;
 
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: clientEmail,
-      subject: `New document ready for review: ${documentTitle}`,
-      html
+    const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
+    const raw = buildRawMime('FastAudit Portal <fastaudit@gmail.com>', clientEmail, `New document ready for review: ${documentTitle}`, html);
+
+    const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ raw }),
     });
+
+    if (!res.ok) {
+      const err = await res.text();
+      return Response.json({ error: `Gmail API error: ${err}` }, { status: 502 });
+    }
 
     return Response.json({ ok: true });
   } catch (error) {
