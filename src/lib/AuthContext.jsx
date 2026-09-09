@@ -85,11 +85,12 @@ export const AuthProvider = ({ children }) => {
       let finalUser = currentUser;
       // Backfill the team flag from the persisted designation (covers Google login and
       // invites where the User record didn't exist yet to set is_team_member at invite time).
-      if (currentUser && !currentUser.is_team_member) {
+      if (currentUser && !currentUser.is_team_member && currentUser.role !== 'admin') {
         try {
           const ta = await base44.entities.TeamAccess.filter({ email: currentUser.email });
           if (ta.length) {
-            await base44.entities.User.update(currentUser.id, { is_team_member: true });
+            // Persist via the self-update path — non-admins can't use entities.User.update.
+            try { await base44.auth.updateMe({ is_team_member: true }); } catch { /* best-effort cache */ }
             finalUser = { ...currentUser, is_team_member: true };
           }
         } catch { /* ignore — not a team member */ }
