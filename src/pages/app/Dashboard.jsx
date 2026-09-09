@@ -9,6 +9,7 @@ import PageHeader from '@/components/portal/PageHeader';
 import StatCard from '@/components/portal/StatCard';
 import UpsellBanner from '@/components/dashboard/UpsellBanner';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
+import ScoreTrendChart from '@/components/dashboard/ScoreTrendChart';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/portal/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,8 @@ export default function Dashboard() {
         <StatCard icon={Search} label="Audits run" value={audits.length} hint="Latest 5 shown below" tone="emerald" />
         <StatCard icon={Clock} label="Pending approvals" value={pending.length} hint="Deliverables awaiting your review" tone="amber" />
       </div>
+
+      <ScoreTrendChart />
 
       <section>
         <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold text-slate-900">Your projects</h2><Link to="/app/projects" className="text-sm font-medium text-indigo-600">View all</Link></div>
