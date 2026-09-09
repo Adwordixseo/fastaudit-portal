@@ -7,6 +7,7 @@ import EmptyState from '@/components/portal/EmptyState';
 import StatusBadge from '@/components/ui/StatusBadge';
 import MilestonePanel from '@/components/admin/MilestonePanel';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
+import TeamTaskPanel from '@/components/team/TeamTaskPanel';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,6 +100,7 @@ export default function TeamProjects() {
             </div>
 
             <MilestonePanel project={selected} />
+            <TeamTaskPanel project={selected} />
 
             <div className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="flex items-center justify-between">
