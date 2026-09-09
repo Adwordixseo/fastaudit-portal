@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/site/Logo';
 import { useUser } from '@/hooks/useUser';
+import NavDropdown from '@/components/site/NavDropdown';
+import { platformItems, solutionsItems } from '@/lib/siteNav';
 
 const nav = [
-  { label: 'Platform', href: '/#platform' },
-  { label: 'Solutions', href: '/#solutions' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'Free Audit', to: '/app/audit' },
   { label: 'Resources', href: '/#resources' },
   { label: 'FAQ', href: '/#faq' },
 ];
+
+function MobileGroup({ label, items, basePath, onNav }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="border-b border-slate-100 pb-2">
+      <button onClick={() => setExpanded((e) => !e)} className="flex w-full items-center justify-between py-1.5 text-base font-medium text-slate-800">
+        {label}
+        <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+      {expanded && (
+        <div className="mt-1 flex flex-col gap-1 pl-3">
+          {items.map((it) => (
+            <Link key={it.slug} to={`${basePath}/${it.slug}`} onClick={onNav} className="py-1.5 text-sm text-slate-600">{it.title}</Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -24,6 +43,8 @@ export default function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Logo />
         <nav className="hidden items-center gap-8 lg:flex">
+          <NavDropdown label="Platform" items={platformItems} basePath="/platform" />
+          <NavDropdown label="Solutions" items={solutionsItems} basePath="/solutions" />
           {nav.map((n) => n.to ? <Link key={n.label} to={n.to} className={linkCls}>{n.label}</Link> : <a key={n.label} href={n.href} className={linkCls}>{n.label}</a>)}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
@@ -43,6 +64,8 @@ export default function SiteHeader() {
       {open && (
         <div className="border-t border-slate-100 bg-white px-5 py-4 lg:hidden">
           <div className="flex flex-col gap-3">
+            <MobileGroup label="Platform" items={platformItems} basePath="/platform" onNav={() => setOpen(false)} />
+            <MobileGroup label="Solutions" items={solutionsItems} basePath="/solutions" onNav={() => setOpen(false)} />
             {nav.map((n) => n.to
               ? <Link key={n.label} to={n.to} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-slate-800">{n.label}</Link>
               : <a key={n.label} href={n.href} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-slate-800">{n.label}</a>)}
