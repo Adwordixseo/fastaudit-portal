@@ -24,7 +24,19 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = returnTo;
+      // Route to the role-appropriate dashboard unless an explicit deep link was requested.
+      let dest = returnTo;
+      if (returnTo === "/") {
+        try {
+          const me = await base44.auth.me();
+          if (me?.is_team_member) dest = "/team";
+          else if (me?.role === "admin") dest = "/admin";
+          else dest = "/app";
+        } catch {
+          dest = "/app";
+        }
+      }
+      window.location.href = dest;
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {

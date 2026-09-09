@@ -35,7 +35,7 @@ function MobileGroup({ label, items, basePath, onNav }) {
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const { user, isAdmin } = useUser();
+  const { user, isAdmin, isTeam } = useUser();
   const linkCls = 'text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors';
 
   return (
@@ -49,7 +49,7 @@ export default function SiteHeader() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
-            <Button asChild className="rounded-full px-5"><Link to={isAdmin ? '/admin' : '/app'}>Go to dashboard <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
+            <Button asChild className="rounded-full px-5"><Link to={isAdmin ? '/admin' : isTeam ? '/team' : '/app'}>Go to dashboard <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
           ) : (
             <>
               <Button asChild variant="ghost" className="rounded-full"><Link to="/login">Login</Link></Button>
@@ -70,7 +70,7 @@ export default function SiteHeader() {
               ? <Link key={n.label} to={n.to} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-slate-800">{n.label}</Link>
               : <a key={n.label} href={n.href} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-slate-800">{n.label}</a>)}
             <div className="mt-2 flex gap-3">
-              {user ? <Button asChild className="flex-1 rounded-full"><Link to={isAdmin ? '/admin' : '/app'}>Dashboard</Link></Button> : (
+              {user ? <Button asChild className="flex-1 rounded-full"><Link to={isAdmin ? '/admin' : isTeam ? '/team' : '/app'}>Dashboard</Link></Button> : (
                 <>
                   <Button asChild variant="outline" className="flex-1 rounded-full"><Link to="/login">Login</Link></Button>
                   <Button asChild className="flex-1 rounded-full"><Link to="/register">Get started</Link></Button>
