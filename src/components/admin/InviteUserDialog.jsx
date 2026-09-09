@@ -23,12 +23,14 @@ export default function InviteUserDialog({ open, onOpenChange, defaultRole = 'us
       await base44.users.inviteUser(targetEmail, inviteRole);
       let teamGranted = false;
       if (role === 'team') {
+        // Persist the team designation at invite time (the User record may not exist yet).
+        try { await base44.entities.TeamAccess.create({ email: targetEmail, invited_by: 'team' }); } catch { /* may already exist */ }
         try {
           const matches = await base44.entities.User.filter({ email: targetEmail });
           const u = matches[0];
           if (u) { await base44.entities.User.update(u.id, { is_team_member: true }); teamGranted = true; }
         } catch {
-          /* user record may appear after they accept; admin can set the flag later */
+          /* user record may appear after they accept; flag is backfilled on next login via TeamAccess */
         }
       }
       toast.success(

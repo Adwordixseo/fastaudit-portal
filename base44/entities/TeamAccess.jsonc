@@ -1,0 +1,16 @@
+{
+  "name": "TeamAccess",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email designated for team panel access at invite time"
+    },
+    "invited_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

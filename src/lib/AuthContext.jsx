@@ -82,7 +82,19 @@ export const AuthProvider = ({ children }) => {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
       const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      let finalUser = currentUser;
+      // Backfill the team flag from the persisted designation (covers Google login and
+      // invites where the User record didn't exist yet to set is_team_member at invite time).
+      if (currentUser && !currentUser.is_team_member) {
+        try {
+          const ta = await base44.entities.TeamAccess.filter({ email: currentUser.email });
+          if (ta.length) {
+            await base44.entities.User.update(currentUser.id, { is_team_member: true });
+            finalUser = { ...currentUser, is_team_member: true };
+          }
+        } catch { /* ignore — not a team member */ }
+      }
+      setUser(finalUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       setAuthChecked(true);

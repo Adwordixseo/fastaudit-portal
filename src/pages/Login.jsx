@@ -29,9 +29,13 @@ export default function Login() {
       if (returnTo === "/") {
         try {
           const me = await base44.auth.me();
-          if (me?.is_team_member) dest = "/team";
-          else if (me?.role === "admin") dest = "/admin";
-          else dest = "/app";
+          let isTeam = me?.is_team_member === true;
+          // Backfill the team flag from the persisted designation if it wasn't set at invite time.
+          if (!isTeam) {
+            const ta = await base44.entities.TeamAccess.filter({ email: me.email });
+            if (ta.length) { await base44.entities.User.update(me.id, { is_team_member: true }); isTeam = true; }
+          }
+          dest = isTeam ? "/team" : me?.role === "admin" ? "/admin" : "/app";
         } catch {
           dest = "/app";
         }
