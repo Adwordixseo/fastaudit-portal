@@ -27,6 +27,7 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminPackages from './pages/admin/AdminPackages';
 import AdminDocuments from './pages/admin/AdminDocuments';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
+import AdminFinancials from './pages/admin/AdminFinancials';
 import AdminTickets from './pages/admin/AdminTickets';
 
 const AuthenticatedApp = () => {
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/projects" element={<AdminProjects />} />
           <Route path="/admin/packages" element={<AdminPackages />} />
           <Route path="/admin/documents" element={<AdminDocuments />} />
+          <Route path="/admin/financials" element={<AdminFinancials />} />
           <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
           <Route path="/admin/tickets" element={<AdminTickets />} />
         </Route>
