@@ -15,9 +15,12 @@ const nav = [
   { to: '/admin/tickets', label: 'Tickets', icon: MessageSquare },
 ];
 
+const AUTHORIZED_ADMIN_EMAIL = 'info@adwordix.com';
+
 export default function AdminLayout() {
-  const { isAdmin, isLoading } = useUser();
+  const { user, isAdmin, isLoading } = useUser();
   if (isLoading) return null;
-  if (!isAdmin) return <Navigate to="/app" replace />;
+  const isAuthorizedAdmin = isAdmin && user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL;
+  if (!isAuthorizedAdmin) return <Navigate to="/app" replace />;
   return <PortalLayout nav={nav} label="Admin panel" footerLink={{ to: '/app', label: 'Client view', icon: LayoutDashboard }} />;
 }
