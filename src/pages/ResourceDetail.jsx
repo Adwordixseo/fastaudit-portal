@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { findResource, resourceItems } from '@/lib/siteNav';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
+import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 
 export default function ResourceDetail() {
   const { slug } = useParams();
@@ -74,6 +75,8 @@ export default function ResourceDetail() {
           <Button asChild className="mt-6 rounded-full bg-white px-6 text-indigo-700 hover:bg-indigo-50"><Link to="/app/audit">Run a free audit <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
         </div>
       </article>
+
+      <ContentSectionsRenderer />
 
       {/* Prev / next */}
       <section className="mx-auto max-w-3xl px-5 pb-20 lg:px-8">

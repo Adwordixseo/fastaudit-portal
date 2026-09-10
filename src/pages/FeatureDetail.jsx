@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { findItem, platformItems, solutionsItems } from '@/lib/siteNav';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
+import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 
 export default function FeatureDetail() {
   const { slug } = useParams();
@@ -122,6 +123,8 @@ export default function FeatureDetail() {
           </div>
         </section>
       )}
+
+      <ContentSectionsRenderer />
 
       {/* Prev / next */}
       <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">

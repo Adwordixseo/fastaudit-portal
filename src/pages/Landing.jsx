@@ -11,6 +11,7 @@ import PricingSection from '@/components/site/PricingSection';
 import ResourcesSection from '@/components/site/ResourcesSection';
 import FaqSection from '@/components/site/FaqSection';
 import CtaBanner from '@/components/site/CtaBanner';
+import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 
 export default function Landing() {
   const { user, isLoadingAuth } = useAuth();
@@ -26,6 +27,7 @@ export default function Landing() {
         <PricingSection />
         <ResourcesSection />
         <FaqSection />
+        <ContentSectionsRenderer />
         <CtaBanner />
       </main>
       <SiteFooter />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { BarChart3, Users, FolderKanban, Package, Upload, CreditCard, MessageSquare, LayoutDashboard, Wallet, Search } from 'lucide-react';
+import { BarChart3, Users, FolderKanban, Package, Upload, CreditCard, MessageSquare, LayoutDashboard, Wallet, Search, FileText } from 'lucide-react';
 import PortalLayout from '@/components/portal/PortalLayout';
 import { useUser } from '@/hooks/useUser';
 
@@ -14,6 +14,7 @@ const nav = [
   { to: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
   { to: '/admin/tickets', label: 'Tickets', icon: MessageSquare },
   { to: '/admin/seo', label: 'SEO settings', icon: Search },
+  { to: '/admin/content', label: 'Content sections', icon: FileText },
 ];
 
 const AUTHORIZED_ADMIN_EMAIL = 'info@adwordix.com';

@@ -38,6 +38,7 @@ import TeamProjects from './pages/team/TeamProjects';
 import TeamKeywordTool from './pages/team/TeamKeywordTool';
 import TeamTasks from './pages/team/TeamTasks';
 import AdminSeo from './pages/admin/AdminSeo';
+import AdminContent from './pages/admin/AdminContent';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -93,6 +94,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
           <Route path="/admin/tickets" element={<AdminTickets />} />
           <Route path="/admin/seo" element={<AdminSeo />} />
+          <Route path="/admin/content" element={<AdminContent />} />
         </Route>
         <Route element={<TeamLayout />}>
           <Route path="/team" element={<TeamDashboard />} />
