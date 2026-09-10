@@ -12,6 +12,7 @@ import TeamActivityFeed from '@/components/team/TeamActivityFeed';
 import WeeklyTaskCompletionChart from '@/components/team/WeeklyTaskCompletionChart';
 import ProjectProgressReport from '@/components/team/ProjectProgressReport';
 import PendingApprovalsPanel from '@/components/team/PendingApprovalsPanel';
+import KeywordPerformancePanel from '@/components/team/KeywordPerformancePanel';
 import TeamTaskAssignDialog from '@/components/team/TeamTaskAssignDialog';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,8 @@ export default function TeamDashboard() {
       <WeeklyTaskCompletionChart tasks={tasks} />
 
       <ProjectProgressReport projects={projects} />
+
+      <KeywordPerformancePanel projects={projects} />
 
       <PendingApprovalsPanel docs={docs} projects={projects} />
 

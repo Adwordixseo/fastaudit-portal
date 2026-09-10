@@ -1,0 +1,47 @@
+{
+  "name": "KeywordRanking",
+  "type": "object",
+  "properties": {
+    "keyword": {
+      "type": "string"
+    },
+    "hostname": {
+      "type": "string",
+      "description": "Website hostname the ranking was checked for"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": "string"
+    },
+    "position": {
+      "type": "number",
+      "description": "Organic ranking position (1-100), 0 if not found"
+    },
+    "found": {
+      "type": "boolean",
+      "default": false
+    },
+    "found_url": {
+      "type": "string"
+    },
+    "page_title": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "description": "Full location label the ranking was checked in"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "keyword",
+    "hostname"
+  ]
+}

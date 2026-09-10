@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function TeamKeywordTool() {
   const [url, setUrl] = useState('');
-  const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
   const [keywordsText, setKeywordsText] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [results, setResults] = useState(null);
@@ -41,7 +42,7 @@ export default function TeamKeywordTool() {
 
   const exportCsv = () => {
     if (!results) return;
-    const rows = ['keyword,location,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.location || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
+    const rows = ['keyword,city,country,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.city || ''}","${r.country || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'keyword-rankings.csv'; link.click();
   };
@@ -50,11 +51,24 @@ export default function TeamKeywordTool() {
     if (!saveProjectId) { toast.error('Select a project to save to'); return; }
     setSaving(true);
     try {
-      const rows = ['keyword,location,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.location || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
+      const project = projects.find((p) => p.id === saveProjectId);
+      await base44.entities.KeywordRanking.bulkCreate(results.results.map((r) => ({
+        keyword: r.keyword,
+        hostname: results.hostname,
+        project_id: saveProjectId,
+        project_name: project?.name || '',
+        position: r.position,
+        found: r.found,
+        found_url: r.found_url || '',
+        page_title: r.page_title || '',
+        location: r.location || [r.city, r.country].filter(Boolean).join(', '),
+        city: r.city || city || '',
+        country: r.country || country || '',
+      })));
+      const rows = ['keyword,city,country,position,found,found_url,page_title', ...results.results.map((r) => `"${r.keyword}","${r.city || ''}","${r.country || ''}",${r.position},${r.found},"${r.found_url || ''}","${(r.page_title || '').replace(/"/g, '""')}"`)];
       const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
       const file = new File([blob], `keyword-rankings-${results.hostname}-${new Date().toISOString().slice(0, 10)}.csv`, { type: 'text/csv' });
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const project = projects.find((p) => p.id === saveProjectId);
       await base44.entities.Document.create({
         project_id: saveProjectId,
         client_id: project?.client_id || '',
@@ -91,10 +105,17 @@ export default function TeamKeywordTool() {
               <SelectContent>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select>
           </div>
           <div>
-            <Label>Location (optional)</Label>
+            <Label>City (optional)</Label>
             <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-slate-200 px-3">
               <MapPin className="h-4 w-4 text-slate-400" />
-              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. India, United States, London" className="w-full bg-transparent py-2 text-sm outline-none" />
+              <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai, London" className="w-full bg-transparent py-2 text-sm outline-none" />
+            </div>
+          </div>
+          <div>
+            <Label>Country (optional)</Label>
+            <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-slate-200 px-3">
+              <Globe className="h-4 w-4 text-slate-400" />
+              <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. India, United States" className="w-full bg-transparent py-2 text-sm outline-none" />
             </div>
           </div>
         </div>
@@ -127,6 +148,8 @@ export default function TeamKeywordTool() {
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-semibold text-slate-900">Results for {results.hostname}</h2>
                 {results.location && <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700"><MapPin className="h-3 w-3" />{results.location}</span>}
+                {results.city && <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">City: {results.city}</span>}
+                {results.country && <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">Country: {results.country}</span>}
               </div>
               <div className="flex items-center gap-2">
                 <Select value={saveProjectId} onValueChange={setSaveProjectId}><SelectTrigger className="w-48 rounded-full"><SelectValue placeholder="Save to project..." /></SelectTrigger>
@@ -139,8 +162,9 @@ export default function TeamKeywordTool() {
                 <div key={i} className="flex items-center gap-4 px-6 py-3.5">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium text-slate-900">{r.keyword}</div>
-                    <div className="mt-0.5 flex items-center gap-2">
-                      {r.location && <span className="inline-flex items-center gap-1 truncate text-xs text-slate-500"><MapPin className="h-3 w-3 shrink-0" />{r.location}</span>}
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                      {r.city && <span className="inline-flex items-center gap-1 truncate text-xs text-slate-500"><MapPin className="h-3 w-3 shrink-0" />{r.city}</span>}
+                      {r.country && <span className="truncate text-xs text-slate-500">{r.country}</span>}
                       {r.page_title && <span className="truncate text-xs text-slate-400">{r.page_title}</span>}
                     </div>
                   </div>
