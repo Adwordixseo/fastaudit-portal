@@ -10,7 +10,7 @@ export function generateAuditPdf(audit) {
   doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.setFont(undefined, 'bold');
   doc.text('Website Audit Report', M, 18);
   doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(180, 190, 220);
-  doc.text(`${audit.url}   ·   Generated ${fmtDate(audit.created_date)}   ·   RankPilot`, M, 28);
+  doc.text(`${audit.url}   ·   Generated ${fmtDate(audit.created_date)}   ·   Adwordix`, M, 28);
   y = 56;
 
   doc.setTextColor(15, 23, 42); doc.setFontSize(44); doc.setFont(undefined, 'bold');

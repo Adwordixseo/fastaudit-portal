@@ -91,7 +91,7 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
             <h4 className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Search engine meta</h4>
             <div>
               <Label>Meta title</Label>
-              <Input value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="RankPilot — Free SEO Audit Tool" className="mt-1.5" />
+              <Input value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="Adwordix — Free SEO Audit Tool" className="mt-1.5" />
               <p className="mt-1 text-xs text-slate-400">{form.title.length}/60 characters</p>
             </div>
             <div>

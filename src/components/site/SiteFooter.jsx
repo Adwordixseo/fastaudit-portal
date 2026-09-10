@@ -34,7 +34,7 @@ export default function SiteFooter() {
           ))}
         </div>
         <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center">
-          <span>© {new Date().getFullYear()} RankPilot. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Adwordix. All rights reserved.</span>
           <span>Built for agencies that deliver measurable growth.</span>
         </div>
       </div>
