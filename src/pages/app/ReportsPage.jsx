@@ -30,6 +30,19 @@ export default function ReportsPage() {
     await base44.entities.Document.update(doc.id, { status, history: [...(doc.history || []), { action: status, by: user.email, note, date: new Date().toISOString() }] });
     qc.invalidateQueries({ queryKey: ['documents'] });
     toast.success(status === 'approved' ? 'Deliverable approved' : 'Change request sent to our team');
+    if (status === 'approved' || status === 'changes_requested') {
+      try {
+        await base44.functions.invoke('notifyTeamDocumentDecision', {
+          decision: status,
+          documentTitle: doc.title,
+          projectName: projectName(doc.project_id),
+          projectId: doc.project_id,
+          clientName: user.full_name,
+          clientEmail: user.email,
+          note,
+        });
+      } catch { /* alert is best-effort; don't block the client */ }
+    }
   };
 
   return (
