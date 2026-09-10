@@ -1,9 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowRight, FileText } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { resourceItems } from '@/lib/siteNav';
 
 export default function ResourcesSection() {
+  const { data: dbResources = [] } = useQuery({
+    queryKey: ['resources-active'],
+    queryFn: () => base44.entities.Resource.filter({ is_active: true }, 'sort_order', 50),
+  });
+
+  const dynamicCards = dbResources.map((r) => ({
+    slug: r.slug,
+    icon: FileText,
+    tag: r.tag || 'Article',
+    title: r.title,
+    excerpt: r.excerpt || '',
+  }));
+
+  const allCards = [...resourceItems, ...dynamicCards];
+
   return (
     <section id="resources" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -14,7 +31,7 @@ export default function ResourcesSection() {
         <Link to="/app/audit" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">Start with a free audit <ArrowRight className="h-4 w-4" /></Link>
       </div>
       <div className="mt-12 grid gap-5 md:grid-cols-3">
-        {resourceItems.map((it) => {
+        {allCards.map((it) => {
           const Icon = it.icon;
           return (
             <Link key={it.slug} to={`/resources/${it.slug}`} className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-7 transition hover:border-indigo-200 hover:shadow-lg">

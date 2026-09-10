@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
 import { Loader2 } from 'lucide-react';
+import RichTextEditor from '@/components/admin/RichTextEditor';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,20 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
 
-const quillModules = {
-  toolbar: [
-    [{ header: [2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link', 'blockquote'],
-    ['clean'],
-  ],
-};
-
-const quillFormats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'blockquote'];
-
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
-  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', link_url: '', link_label: '', sort_order: 0, background: 'white', is_active: true });
+  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -35,6 +23,9 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
         section_name: section?.section_name || '',
         heading: section?.heading || '',
         body: section?.body || '',
+        image_url: section?.image_url || '',
+        image_alt: section?.image_alt || '',
+        image_position: section?.image_position || 'top',
         link_url: section?.link_url || '',
         link_label: section?.link_label || '',
         sort_order: section?.sort_order || 0,
@@ -88,15 +79,37 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
           <div>
             <Label>Body content</Label>
             <p className="mb-1.5 text-xs text-slate-400">Use the link button to add internal links to other pages (e.g. /app/audit).</p>
-            <ReactQuill
-              theme="snow"
+            <RichTextEditor
               value={form.body}
               onChange={(v) => set('body', v)}
-              modules={quillModules}
-              formats={quillFormats}
               placeholder="Write your content here..."
-              style={{ minHeight: 180 }}
+              minHeight={180}
             />
+          </div>
+
+          <ImageUpload
+            label="Section image"
+            value={form.image_url}
+            onChange={(v) => set('image_url', v)}
+            help="Optional image for this section."
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Image alt text</Label>
+              <Input value={form.image_alt} onChange={(e) => set('image_alt', e.target.value)} placeholder="Describe the image" className="mt-1.5" />
+            </div>
+            <div>
+              <Label>Image position</Label>
+              <Select value={form.image_position} onValueChange={(v) => set('image_position', v)}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="top">Top (full width)</SelectItem>
+                  <SelectItem value="left">Left of text</SelectItem>
+                  <SelectItem value="right">Right of text</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

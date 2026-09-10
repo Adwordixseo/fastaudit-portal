@@ -17,6 +17,24 @@
       "type": "string",
       "description": "Rich text HTML content"
     },
+    "image_url": {
+      "type": "string",
+      "description": "Optional section image"
+    },
+    "image_alt": {
+      "type": "string",
+      "description": "Alt text for the section image"
+    },
+    "image_position": {
+      "type": "string",
+      "enum": [
+        "top",
+        "left",
+        "right"
+      ],
+      "default": "top",
+      "description": "Where the image sits relative to the text"
+    },
     "link_url": {
       "type": "string",
       "description": "Internal link URL for CTA button"

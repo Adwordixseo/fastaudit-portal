@@ -1,7 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Clock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clock, FileText } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { findResource, resourceItems } from '@/lib/siteNav';
 import SiteHeader from '@/components/site/SiteHeader';
@@ -11,7 +13,18 @@ import ContentSectionsRenderer from '@/components/content/ContentSectionsRendere
 export default function ResourceDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const item = findResource(slug);
+
+  const { data: dbResource } = useQuery({
+    queryKey: ['resource', slug],
+    queryFn: async () => {
+      const list = await base44.entities.Resource.filter({ slug, is_active: true });
+      return list[0];
+    },
+    enabled: !!slug,
+  });
+
+  const hardcoded = findResource(slug);
+  const item = dbResource || hardcoded;
 
   if (!item) {
     return (
@@ -30,7 +43,8 @@ export default function ResourceDetail() {
   const idx = resourceItems.findIndex((i) => i.slug === slug);
   const prev = idx > 0 ? resourceItems[idx - 1] : null;
   const next = idx < resourceItems.length - 1 ? resourceItems[idx + 1] : null;
-  const Icon = item.icon;
+  const isDynamic = !!dbResource;
+  const Icon = hardcoded?.icon || FileText;
 
   return (
     <div className="min-h-screen bg-white">
@@ -45,7 +59,7 @@ export default function ResourceDetail() {
             </Link>
             <div className="mt-6 flex items-center gap-3">
               <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{item.tag}</span>
-              <span className="inline-flex items-center gap-1 text-xs text-slate-400"><Clock className="h-3.5 w-3.5" /> {item.readTime}</span>
+              {item.readTime && <span className="inline-flex items-center gap-1 text-xs text-slate-400"><Clock className="h-3.5 w-3.5" /> {item.readTime}</span>}
             </div>
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">{item.title}</h1>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">{item.excerpt}</p>
@@ -56,16 +70,25 @@ export default function ResourceDetail() {
 
       {/* Body */}
       <article className="mx-auto max-w-3xl px-5 py-16 lg:px-8">
-        <div className="space-y-12">
-          {item.sections.map((s, i) => (
-            <motion.section key={s.heading} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
-              <h2 className="text-2xl font-bold text-slate-900">{s.heading}</h2>
-              <div className="mt-4 space-y-4">
-                {s.body.map((p, j) => <p key={j} className="text-base leading-relaxed text-slate-600">{p}</p>)}
-              </div>
-            </motion.section>
-          ))}
-        </div>
+        {isDynamic ? (
+          <>
+            {dbResource.image_url && (
+              <img src={dbResource.image_url} alt="" className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+            )}
+            <div className="rich-text space-y-4" dangerouslySetInnerHTML={{ __html: dbResource.body }} />
+          </>
+        ) : (
+          <div className="space-y-12">
+            {item.sections.map((s, i) => (
+              <motion.section key={s.heading} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
+                <h2 className="text-2xl font-bold text-slate-900">{s.heading}</h2>
+                <div className="mt-4 space-y-4">
+                  {s.body.map((p, j) => <p key={j} className="text-base leading-relaxed text-slate-600">{p}</p>)}
+                </div>
+              </motion.section>
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <div className="mt-16 rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-center text-white">
