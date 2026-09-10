@@ -40,6 +40,7 @@ import TeamTasks from './pages/team/TeamTasks';
 import AdminSeo from './pages/admin/AdminSeo';
 import AdminContent from './pages/admin/AdminContent';
 import AdminResources from './pages/admin/AdminResources';
+import PostLoginRedirect from './pages/PostLoginRedirect';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route path="/welcome" element={<PostLoginRedirect />} />
         <Route element={<ClientLayout />}>
           <Route path="/app" element={<Dashboard />} />
           <Route path="/app/audit" element={<AuditPage />} />

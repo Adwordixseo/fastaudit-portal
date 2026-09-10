@@ -24,29 +24,8 @@ export default function Login() {
     setLoading(true);
     try {
     await base44.auth.loginViaEmailPassword(email, password);
-    // Route to the role-appropriate dashboard unless an explicit deep link was requested.
-    let dest = returnTo;
-    if (returnTo === "/") {
-      try {
-        const me = await base44.auth.me();
-        let isTeam = me?.is_team_member === true || me?.role === "team";
-        // Backfill the team flag from the persisted designation if it wasn't set at invite time.
-        if (!isTeam && me?.role !== "admin") {
-          try {
-            const ta = await base44.entities.TeamAccess.filter({ email: me.email });
-            if (ta.length) {
-              isTeam = true;
-              // Persist on the current user via the self-update path (non-admins can't use entities.User.update).
-              try { await base44.auth.updateMe({ is_team_member: true }); } catch { /* best-effort cache */ }
-            }
-          } catch { /* TeamAccess lookup failed — fall through to default routing */ }
-        }
-        dest = isTeam ? "/team" : me?.role === "admin" ? "/admin" : "/app";
-      } catch {
-        dest = "/app";
-      }
-    }
-    window.location.href = dest;
+    // Deep links go straight to the requested page; default goes to the role router.
+    window.location.href = returnTo !== "/" ? returnTo : "/welcome";
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {

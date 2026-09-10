@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import SiteHeader from '@/components/site/SiteHeader';
-import { useAuth } from '@/lib/AuthContext';
+import { useUser } from '@/hooks/useUser';
 import SiteFooter from '@/components/site/SiteFooter';
 import Hero from '@/components/site/Hero';
 import PlatformSection from '@/components/site/PlatformSection';
@@ -14,8 +14,8 @@ import CtaBanner from '@/components/site/CtaBanner';
 import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 
 export default function Landing() {
-  const { user, isLoadingAuth } = useAuth();
-  if (!isLoadingAuth && user?.is_team_member) return <Navigate to="/team" replace />;
+  const { isLoading, isTeam } = useUser();
+  if (!isLoading && isTeam) return <Navigate to="/team" replace />;
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />
