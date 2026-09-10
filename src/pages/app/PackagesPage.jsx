@@ -25,12 +25,12 @@ export default function PackagesPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow="Packages" title="Choose your growth package" description="Every package unlocks full PDF audit reports, a project dashboard and monthly deliverables."
+      <PageHeader eyebrow="Packages" title="Choose your growth package" description="Each package covers one website. Need more websites? Purchase a package for each one."
         action={<BillingToggle value={cycle} onChange={setCycle} />} />
       <div className="grid gap-6 lg:grid-cols-3">
         {packages.map((p) => (
           <PackageCard key={p.id} pkg={p} cycle={cycle} onSelect={setSelected}
-            ctaLabel={activeSubscription?.package_id === p.id ? 'Current plan · Extend' : activeSubscription ? 'Switch to this plan' : 'Choose package'} />
+            ctaLabel={activeSubscription ? 'Add website · Buy package' : 'Choose package'} />
         ))}
       </div>
       <MySubscriptions subscriptions={subscriptions} onRenew={renew} />

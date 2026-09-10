@@ -10,6 +10,7 @@ import WelcomeBanner from '@/components/dashboard/WelcomeBanner';
 import UpsellBanner from '@/components/dashboard/UpsellBanner';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
 import ScoreTrendChart from '@/components/dashboard/ScoreTrendChart';
+import WebsiteSlots from '@/components/dashboard/WebsiteSlots';
 import ExportButtons from '@/components/portal/ExportButtons';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/portal/EmptyState';
@@ -20,7 +21,7 @@ import { fmtDate, scoreColor } from '@/lib/format';
 export default function Dashboard() {
   const { user } = useUser();
   const navigate = useNavigate();
-  const { activeSubscription, hasActive, isLoading: subLoading } = useSubscription();
+  const { activeSubscriptions, activeCount, hasActive, isLoading: subLoading } = useSubscription();
   const uid = user?.id;
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id })))).flat(), enabled: projects.length > 0 });
@@ -39,22 +40,15 @@ export default function Dashboard() {
       {!subLoading && !hasActive && <UpsellBanner />}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={FolderKanban} label="Ongoing projects" value={projects.filter((p) => p.status === 'in_progress').length} hint={`${projects.length} total`} />
-        <StatCard icon={Package} label="Active package" value={activeSubscription ? activeSubscription.package_name : 'None'} hint={activeSubscription ? `Renews ${fmtDate(activeSubscription.end_date)}` : 'Choose a package to unlock reports'} tone="violet" />
+        <StatCard icon={FolderKanban} label="Websites" value={projects.length} hint={activeCount ? `${projects.length} of ${activeCount} slot${activeCount !== 1 ? 's' : ''} used` : 'No slots'} />
+        <StatCard icon={Package} label="Active packages" value={activeCount || 0} hint={activeCount ? `${activeCount} website slot${activeCount !== 1 ? 's' : ''}` : 'Choose a package to start'} tone="violet" />
         <StatCard icon={Search} label="Audits run" value={audits.length} hint="Latest 5 shown below" tone="emerald" />
         <StatCard icon={Clock} label="Pending approvals" value={pending.length} hint="Deliverables awaiting your review" tone="amber" />
       </div>
 
       <ScoreTrendChart />
 
-      <section>
-        <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold text-slate-900">Your projects</h2><Link to="/app/projects" className="text-sm font-medium text-indigo-600">View all</Link></div>
-        {projects.length === 0 ? (
-          <EmptyState icon={FolderKanban} title="No projects yet" text="Once you choose a package our team sets up your project and you'll see progress here." action={<Button asChild variant="outline" className="rounded-full"><Link to="/app/packages">Browse packages</Link></Button>} />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{projects.slice(0, 3).map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => navigate(`/app/projects?id=${p.id}`)} />)}</div>
-        )}
-      </section>
+      <WebsiteSlots activeSubscriptions={activeSubscriptions} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-3xl border border-slate-200 bg-white p-6">

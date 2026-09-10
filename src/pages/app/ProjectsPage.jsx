@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { FolderKanban, Globe, ArrowRight, List, CalendarDays } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FolderKanban, Globe, ArrowRight, List, CalendarDays, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
+import { useSubscription } from '@/hooks/useSubscription';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
+import AddWebsiteDialog from '@/components/dashboard/AddWebsiteDialog';
 import MilestoneList from '@/components/projects/MilestoneList';
 import ProjectCalendar from '@/components/projects/ProjectCalendar';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -20,14 +22,19 @@ export default function ProjectsPage() {
   const uid = user?.id;
   const [selectedId, setSelectedId] = useState(new URLSearchParams(window.location.search).get('id'));
   const [view, setView] = useState('list');
+  const [addSlot, setAddSlot] = useState(null);
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id }, 'due_date')))).flat(), enabled: projects.length > 0 });
   const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
+  const qc = useQueryClient();
+  const { activeSubscriptions } = useSubscription();
+  const availableSlots = activeSubscriptions.filter((s) => !projects.find((p) => p.id === s.project_id));
+  const refresh = () => { qc.invalidateQueries({ queryKey: ['projects', uid] }); qc.invalidateQueries({ queryKey: ['subscriptions'] }); };
   const project = projects.find((p) => p.id === selectedId) || projects[0];
 
-  if (projects.length === 0) return (
+  if (projects.length === 0 && availableSlots.length === 0) return (
     <div><PageHeader eyebrow="Projects" title="Your projects" />
-      <EmptyState icon={FolderKanban} title="No projects yet" text="Choose a package and our team will set up your first project dashboard." action={<Button asChild className="rounded-full"><Link to="/app/packages">Browse packages</Link></Button>} /></div>
+      <EmptyState icon={FolderKanban} title="No projects yet" text="Choose a package and add your first website to get started." action={<Button asChild className="rounded-full"><Link to="/app/packages">Browse packages</Link></Button>} /></div>
   );
 
   const pm = milestones.filter((m) => m.project_id === project?.id);
@@ -47,7 +54,15 @@ export default function ProjectsPage() {
         <ProjectCalendar milestones={milestones} documents={docs} projects={projects} />
       ) : (
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <div className="space-y-3">{projects.map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => setSelectedId(p.id)} />)}</div>
+        <div className="space-y-3">
+                {projects.map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => setSelectedId(p.id)} />)}
+                {availableSlots.map((s) => (
+                  <button key={s.id} onClick={() => setAddSlot(s)} className="flex w-full items-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 text-left transition hover:border-indigo-300 hover:bg-indigo-50/40">
+                    <div className="grid h-10 w-10 place-items-center rounded-full bg-indigo-50 text-indigo-600"><Plus className="h-5 w-5" /></div>
+                    <div><p className="text-sm font-semibold text-slate-700">Add website</p><p className="text-xs text-slate-400">{s.package_name} slot available</p></div>
+                  </button>
+                ))}
+              </div>
         {project && (
           <div className="space-y-6">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
@@ -74,6 +89,7 @@ export default function ProjectsPage() {
         )}
       </div>
       )}
+      <AddWebsiteDialog open={!!addSlot} onOpenChange={(o) => !o && setAddSlot(null)} subscription={addSlot} onDone={refresh} />
     </div>
   );
 }

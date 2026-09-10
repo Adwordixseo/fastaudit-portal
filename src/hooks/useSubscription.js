@@ -10,6 +10,6 @@ export function useSubscription() {
     enabled: !!user,
   });
   const subs = q.data || [];
-  const active = subs.find((s) => s.status === 'active');
-  return { subscriptions: subs, activeSubscription: active, hasActive: !!active, isLoading: q.isLoading };
+  const activeSubs = subs.filter((s) => s.status === 'active');
+  return { subscriptions: subs, activeSubscription: activeSubs[0], activeSubscriptions: activeSubs, activeCount: activeSubs.length, hasActive: activeSubs.length > 0, isLoading: q.isLoading };
 }
