@@ -18,6 +18,7 @@ export default function AddWebsiteDialog({ open, onOpenChange, subscription, onD
 
   const submit = async () => {
     if (!website.trim()) { toast.error('Please enter a website URL'); return; }
+    if (subscription.project_id) { toast.error('This package slot already has a website assigned.'); return; }
     setSaving(true);
     try {
       let url = website.trim();

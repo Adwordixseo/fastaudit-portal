@@ -28,11 +28,13 @@ export default function ProjectsPage() {
   const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
   const qc = useQueryClient();
   const { activeSubscriptions } = useSubscription();
-  const availableSlots = activeSubscriptions.filter((s) => !projects.find((p) => p.id === s.project_id));
+  const linkedProjectIds = activeSubscriptions.map((s) => s.project_id).filter(Boolean);
+  const activeProjects = projects.filter((p) => linkedProjectIds.includes(p.id));
+  const availableSlots = activeSubscriptions.filter((s) => !activeProjects.find((p) => p.id === s.project_id));
   const refresh = () => { qc.invalidateQueries({ queryKey: ['projects', uid] }); qc.invalidateQueries({ queryKey: ['subscriptions'] }); };
-  const project = projects.find((p) => p.id === selectedId) || projects[0];
+  const project = activeProjects.find((p) => p.id === selectedId) || activeProjects[0];
 
-  if (projects.length === 0 && availableSlots.length === 0) return (
+  if (activeProjects.length === 0 && availableSlots.length === 0) return (
     <div><PageHeader eyebrow="Projects" title="Your projects" />
       <EmptyState icon={FolderKanban} title="No projects yet" text="Choose a package and add your first website to get started." action={<Button asChild className="rounded-full"><Link to="/app/packages">Browse packages</Link></Button>} /></div>
   );
@@ -44,18 +46,25 @@ export default function ProjectsPage() {
     <div className="space-y-8">
       <PageHeader eyebrow="Projects" title="Your projects" description="Each project has its own progress, milestones and deliverables."
         action={
-          <div className="flex items-center gap-2"><ExportButtons data={projects} filename="projects" title="My Projects" headers={[{ key: 'name', label: 'Project' }, { key: 'website', label: 'Website' }, { key: 'status', label: 'Status' }, { key: 'progress', label: 'Progress %' }, { key: 'created_date', label: 'Started' }]} />
+          <div className="flex items-center gap-2"><ExportButtons data={activeProjects} filename="projects" title="My Projects" headers={[{ key: 'name', label: 'Project' }, { key: 'website', label: 'Website' }, { key: 'status', label: 'Status' }, { key: 'progress', label: 'Progress %' }, { key: 'created_date', label: 'Started' }]} />
           <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
             <button onClick={() => setView('list')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><List className="h-4 w-4" /> List</button>
             <button onClick={() => setView('calendar')} className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${view === 'calendar' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}><CalendarDays className="h-4 w-4" /> Calendar</button>
           </div></div>
         } />
+      {activeSubscriptions.length > 0 && (
+        <div className="flex items-center gap-2 rounded-2xl border border-indigo-100 bg-indigo-50/40 px-4 py-2.5 text-sm">
+          <span className="font-semibold text-indigo-700">{activeProjects.length} of {activeSubscriptions.length}</span>
+          <span className="text-slate-600">website slot{activeSubscriptions.length !== 1 ? 's' : ''} in use</span>
+          {availableSlots.length > 0 && <span className="text-slate-500">· {availableSlots.length} available to add</span>}
+        </div>
+      )}
       {view === 'calendar' ? (
-        <ProjectCalendar milestones={milestones} documents={docs} projects={projects} />
+        <ProjectCalendar milestones={milestones} documents={docs} projects={activeProjects} />
       ) : (
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div className="space-y-3">
-                {projects.map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => setSelectedId(p.id)} />)}
+                {activeProjects.map((p) => <ProjectProgressCard key={p.id} project={p} milestones={milestones.filter((m) => m.project_id === p.id)} onClick={() => setSelectedId(p.id)} />)}
                 {availableSlots.map((s) => (
                   <button key={s.id} onClick={() => setAddSlot(s)} className="flex w-full items-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 text-left transition hover:border-indigo-300 hover:bg-indigo-50/40">
                     <div className="grid h-10 w-10 place-items-center rounded-full bg-indigo-50 text-indigo-600"><Plus className="h-5 w-5" /></div>
