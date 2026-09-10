@@ -1,0 +1,70 @@
+{
+  "name": "SeoSetting",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "URL path or pattern, e.g. / or /platform/:slug"
+    },
+    "page_name": {
+      "type": "string",
+      "description": "Human-readable label for this page"
+    },
+    "title": {
+      "type": "string",
+      "description": "Meta title (browser tab + search result title)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Meta description shown in search results"
+    },
+    "meta_keywords": {
+      "type": "string"
+    },
+    "robots": {
+      "type": "string",
+      "default": "index, follow"
+    },
+    "og_title": {
+      "type": "string"
+    },
+    "og_description": {
+      "type": "string"
+    },
+    "og_image": {
+      "type": "string"
+    },
+    "twitter_title": {
+      "type": "string"
+    },
+    "twitter_description": {
+      "type": "string"
+    },
+    "twitter_image": {
+      "type": "string"
+    },
+    "canonical_url": {
+      "type": "string"
+    },
+    "schema_json": {
+      "type": "string",
+      "description": "JSON-LD structured data as a JSON string"
+    },
+    "h1": {
+      "type": "string",
+      "description": "Override H1 heading displayed on the page"
+    },
+    "hero_subheading": {
+      "type": "string",
+      "description": "Override hero subheading text displayed on the page"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "path",
+    "page_name"
+  ]
+}

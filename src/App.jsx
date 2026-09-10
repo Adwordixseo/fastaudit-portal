@@ -7,6 +7,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import SeoHead from '@/components/seo/SeoHead';
 // Add page imports here
 import Landing from './pages/Landing';
 import FeatureDetail from './pages/FeatureDetail';
@@ -36,6 +37,7 @@ import TeamDashboard from './pages/team/TeamDashboard';
 import TeamProjects from './pages/team/TeamProjects';
 import TeamKeywordTool from './pages/team/TeamKeywordTool';
 import TeamTasks from './pages/team/TeamTasks';
+import AdminSeo from './pages/admin/AdminSeo';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -90,6 +92,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/financials" element={<AdminFinancials />} />
           <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
           <Route path="/admin/tickets" element={<AdminTickets />} />
+          <Route path="/admin/seo" element={<AdminSeo />} />
         </Route>
         <Route element={<TeamLayout />}>
           <Route path="/team" element={<TeamDashboard />} />
@@ -111,6 +114,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
+          <SeoHead />
           <AuthenticatedApp />
         </Router>
         <Toaster />
