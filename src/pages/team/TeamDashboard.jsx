@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FolderKanban, Upload, Search, ListTodo, Plus } from 'lucide-react';
+import { FolderKanban, Upload, Search, ListTodo, Plus, Settings, FileText, HelpCircle, BookOpen, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
@@ -17,6 +17,7 @@ import TeamTaskAssignDialog from '@/components/team/TeamTaskAssignDialog';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Link } from 'react-router-dom';
 
 export default function TeamDashboard() {
   const qc = useQueryClient();
@@ -61,6 +62,24 @@ export default function TeamDashboard() {
         <StatCard icon={FolderKanban} label="In progress" value={inProgress.length} hint={`${projects.length} total`} />
         <StatCard icon={Upload} label="Pending approvals" value={pendingApprovals} hint="Awaiting client review" tone="amber" />
         <StatCard icon={Search} label="Deliverables shared" value={docs.length} hint="All time" tone="violet" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { to: '/team/seo', label: 'SEO settings', desc: 'Meta tags, schema & overrides', icon: Settings },
+          { to: '/team/content', label: 'Content sections', desc: 'Edit, replace or hide page sections', icon: FileText },
+          { to: '/team/faqs', label: 'FAQs', desc: 'Manage page FAQ content', icon: HelpCircle },
+          { to: '/team/resources', label: 'Resources', desc: 'Create & manage resource articles', icon: BookOpen },
+        ].map((c) => (
+          <Link key={c.to} to={c.to} className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"><c.icon className="h-5 w-5" /></span>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold text-slate-900">{c.label}</div>
+              <div className="truncate text-xs text-slate-500">{c.desc}</div>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-indigo-500" />
+          </Link>
+        ))}
       </div>
 
       <WeeklyTaskCompletionChart tasks={tasks} />
