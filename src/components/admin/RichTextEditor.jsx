@@ -1,10 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { base44 } from '@/api/base44Client';
 
-export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180 }) {
+export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady }) {
   const quillRef = useRef(null);
+
+  useEffect(() => {
+    if (quillRef.current?.getEditor && onEditorReady) {
+      onEditorReady(quillRef.current.getEditor());
+    }
+    return () => onEditorReady?.(null);
+  }, [onEditorReady]);
 
   const imageHandler = () => {
     const input = document.createElement('input');

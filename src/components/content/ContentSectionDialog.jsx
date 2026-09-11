@@ -17,6 +17,7 @@ const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/a
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
   const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', extra_links: [], replace_section: '', hide_default: false, sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
+  const [quillEditor, setQuillEditor] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -116,12 +117,13 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
             <RichTextEditor
               value={form.body}
               onChange={(v) => set('body', v)}
+              onEditorReady={setQuillEditor}
               placeholder="Write your content here..."
               minHeight={180}
             />
           </div>
 
-          <InternalLinkInserter body={form.body} onChange={(v) => set('body', v)} />
+          <InternalLinkInserter editor={quillEditor} />
 
           <ImageUpload
             label="Section image"
