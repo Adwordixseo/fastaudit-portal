@@ -1,18 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2, HelpCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, HelpCircle, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import FaqDialog from '@/components/admin/FaqDialog';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/ui/StatusBadge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const KNOWN_PAGES = [
+  { path: '/', label: 'Home (/)' },
+  { path: '/platform/:slug', label: 'Platform pages (/platform/:slug)' },
+  { path: '/solutions/:slug', label: 'Solutions pages (/solutions/:slug)' },
+  { path: '/resources/:slug', label: 'Resource articles (/resources/:slug)' },
+];
 
 export default function AdminFaqs() {
   const qc = useQueryClient();
   const [dialog, setDialog] = useState({ open: false, faq: null });
+  const [pageFilter, setPageFilter] = useState('all');
   const { data: faqs = [] } = useQuery({ queryKey: ['admin-faqs'], queryFn: () => base44.entities.FaqItem.list('sort_order') });
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-faqs'] }); qc.invalidateQueries({ queryKey: ['faq-items'] }); };
+
+  const pageOptions = useMemo(() => {
+    const knownPaths = new Set(KNOWN_PAGES.map((p) => p.path));
+    const extra = faqs
+      .map((f) => f.page_path)
+      .filter((p) => p && !knownPaths.has(p))
+      .filter((p, i, arr) => arr.indexOf(p) === i)
+      .map((p) => ({ path: p, label: p }));
+    return [...KNOWN_PAGES, ...extra];
+  }, [faqs]);
+
+  const filtered = pageFilter === 'all' ? faqs : faqs.filter((f) => f.page_path === pageFilter);
 
   const save = async (form) => {
     if (dialog.faq) await base44.entities.FaqItem.update(dialog.faq.id, form);
@@ -37,16 +58,32 @@ export default function AdminFaqs() {
         action={<Button onClick={() => setDialog({ open: true, faq: null })} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> New FAQ</Button>}
       />
 
-      {faqs.length === 0 ? (
+      {faqs.length > 0 && (
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600"><Filter className="h-4 w-4" /> Filter by page</div>
+          <Select value={pageFilter} onValueChange={setPageFilter}>
+            <SelectTrigger className="w-[280px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All pages ({faqs.length})</SelectItem>
+              {pageOptions.map((p) => {
+                const count = faqs.filter((f) => f.page_path === p.path).length;
+                return <SelectItem key={p.path} value={p.path}>{p.label} ({count})</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {filtered.length === 0 ? (
         <div className="flex flex-col items-center rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-6 py-14 text-center">
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-600"><HelpCircle className="h-5 w-5" /></div>
-          <h3 className="mt-4 text-base font-semibold text-slate-900">No FAQs yet</h3>
-          <p className="mt-1 max-w-sm text-sm text-slate-500">Add FAQ entries to any public page. Pages without CMS FAQs will show their default content.</p>
-          <Button onClick={() => setDialog({ open: true, faq: null })} className="mt-4 rounded-full"><Plus className="mr-2 h-4 w-4" /> Add your first FAQ</Button>
+          <h3 className="mt-4 text-base font-semibold text-slate-900">{faqs.length === 0 ? 'No FAQs yet' : 'No FAQs for this page'}</h3>
+          <p className="mt-1 max-w-sm text-sm text-slate-500">{faqs.length === 0 ? 'Add FAQ entries to any public page. Pages without CMS FAQs will show their default content.' : 'Try a different page filter or add a new FAQ for this page.'}</p>
+          <Button onClick={() => setDialog({ open: true, faq: null })} className="mt-4 rounded-full"><Plus className="mr-2 h-4 w-4" /> {faqs.length === 0 ? 'Add your first FAQ' : 'New FAQ'}</Button>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {faqs.map((f) => (
+          {filtered.map((f) => (
             <div key={f.id} className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
