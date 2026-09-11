@@ -9,6 +9,7 @@ import { findResource, resourceItems } from '@/lib/siteNav';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
+import FaqSection from '@/components/site/FaqSection';
 
 export default function ResourceDetail() {
   const { slug } = useParams();
@@ -99,6 +100,7 @@ export default function ResourceDetail() {
         </div>
       </article>
 
+      <FaqSection pagePath={location.pathname} />
       <ContentSectionsRenderer />
 
       {/* Prev / next */}

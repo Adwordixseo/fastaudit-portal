@@ -26,7 +26,7 @@ export default function Landing() {
         <SolutionsSection />
         <PricingSection />
         <ResourcesSection />
-        <FaqSection />
+        <FaqSection pagePath="/" />
         <ContentSectionsRenderer />
         <CtaBanner />
       </main>

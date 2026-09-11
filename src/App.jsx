@@ -40,6 +40,7 @@ import TeamTasks from './pages/team/TeamTasks';
 import AdminSeo from './pages/admin/AdminSeo';
 import AdminContent from './pages/admin/AdminContent';
 import AdminResources from './pages/admin/AdminResources';
+import AdminFaqs from './pages/admin/AdminFaqs';
 import PostLoginRedirect from './pages/PostLoginRedirect';
 
 const AuthenticatedApp = () => {
@@ -99,6 +100,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/seo" element={<AdminSeo />} />
           <Route path="/admin/content" element={<AdminContent />} />
           <Route path="/admin/resources" element={<AdminResources />} />
+          <Route path="/admin/faqs" element={<AdminFaqs />} />
         </Route>
         <Route element={<TeamLayout />}>
           <Route path="/team" element={<TeamDashboard />} />

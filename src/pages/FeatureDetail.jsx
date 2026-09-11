@@ -7,6 +7,7 @@ import { findItem, platformItems, solutionsItems } from '@/lib/siteNav';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
+import FaqSection from '@/components/site/FaqSection';
 
 export default function FeatureDetail() {
   const { slug } = useParams();
@@ -110,19 +111,7 @@ export default function FeatureDetail() {
       )}
 
       {/* FAQ */}
-      {item.faq && (
-        <section className="mx-auto max-w-3xl px-5 py-20 lg:px-8">
-          <h2 className="text-2xl font-bold text-slate-900">Frequently asked questions</h2>
-          <div className="mt-8 divide-y divide-slate-100 rounded-2xl border border-slate-200">
-            {item.faq.map((f) => (
-              <div key={f.q} className="p-6">
-                <h3 className="text-base font-semibold text-slate-900">{f.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">{f.a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <FaqSection pagePath={location.pathname} fallbackFaqs={item.faq} />
 
       <ContentSectionsRenderer />
 
