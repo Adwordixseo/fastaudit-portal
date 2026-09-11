@@ -42,6 +42,8 @@ import AdminContent from './pages/admin/AdminContent';
 import AdminResources from './pages/admin/AdminResources';
 import AdminFaqs from './pages/admin/AdminFaqs';
 import PostLoginRedirect from './pages/PostLoginRedirect';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -74,6 +76,8 @@ const AuthenticatedApp = () => {
       <Route path="/platform/:slug" element={<FeatureDetail />} />
       <Route path="/solutions/:slug" element={<FeatureDetail />} />
       <Route path="/resources/:slug" element={<ResourceDetail />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
