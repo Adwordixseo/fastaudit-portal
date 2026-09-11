@@ -107,6 +107,10 @@ const AuthenticatedApp = () => {
           <Route path="/team/projects" element={<TeamProjects />} />
           <Route path="/team/keywords" element={<TeamKeywordTool />} />
           <Route path="/team/tasks" element={<TeamTasks />} />
+          <Route path="/team/seo" element={<AdminSeo />} />
+          <Route path="/team/content" element={<AdminContent />} />
+          <Route path="/team/faqs" element={<AdminFaqs />} />
+          <Route path="/team/resources" element={<AdminResources />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
