@@ -28,6 +28,34 @@
     "author": {
       "type": "string"
     },
+    "author_name": {
+      "type": "string",
+      "description": "Full name of the author shown in the author box"
+    },
+    "author_position": {
+      "type": "string",
+      "description": "Author role or job title, e.g. 'Head of SEO'"
+    },
+    "author_description": {
+      "type": "string",
+      "description": "Short bio for the author box"
+    },
+    "author_image_url": {
+      "type": "string",
+      "description": "Author avatar/photo shown in the author box"
+    },
+    "author_twitter": {
+      "type": "string",
+      "description": "Twitter/X profile URL"
+    },
+    "author_linkedin": {
+      "type": "string",
+      "description": "LinkedIn profile URL"
+    },
+    "author_website": {
+      "type": "string",
+      "description": "Author personal website URL"
+    },
     "read_time": {
       "type": "string",
       "description": "e.g. '6 min read'"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -10,6 +10,8 @@ import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 import FaqSection from '@/components/site/FaqSection';
+import TableOfContents, { extractHeadings } from '@/components/resources/TableOfContents';
+import AuthorBox from '@/components/resources/AuthorBox';
 
 export default function ResourceDetail() {
   const { slug } = useParams();
@@ -26,6 +28,12 @@ export default function ResourceDetail() {
 
   const hardcoded = findResource(slug);
   const item = dbResource || hardcoded;
+  const isDynamic = !!dbResource;
+
+  const { headings: tocHeadings, html: processedBody } = useMemo(
+    () => (isDynamic && dbResource?.body ? extractHeadings(dbResource.body) : { headings: [], html: '' }),
+    [isDynamic, dbResource?.body]
+  );
 
   if (!item) {
     return (
@@ -44,7 +52,6 @@ export default function ResourceDetail() {
   const idx = resourceItems.findIndex((i) => i.slug === slug);
   const prev = idx > 0 ? resourceItems[idx - 1] : null;
   const next = idx < resourceItems.length - 1 ? resourceItems[idx + 1] : null;
-  const isDynamic = !!dbResource;
   const Icon = hardcoded?.icon || FileText;
 
   return (
@@ -70,35 +77,55 @@ export default function ResourceDetail() {
       </section>
 
       {/* Body */}
-      <article className="mx-auto max-w-3xl px-5 py-16 lg:px-8">
-        {isDynamic ? (
-          <>
-            {dbResource.image_url && (
-              <img src={dbResource.image_url} alt="" className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+      <div className="mx-auto max-w-5xl px-5 py-16 lg:px-8">
+        <div className={`grid gap-10 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[200px_1fr]' : ''}`}>
+          {isDynamic && tocHeadings.length > 0 && (
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                <TableOfContents headings={tocHeadings} />
+              </div>
+            </aside>
+          )}
+          <article className="max-w-3xl">
+            {isDynamic ? (
+              <>
+                {dbResource.image_url && (
+                  <img src={dbResource.image_url} alt="" className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+                )}
+                <div className="rich-text space-y-4" dangerouslySetInnerHTML={{ __html: processedBody }} />
+                <AuthorBox
+                  name={dbResource.author_name || dbResource.author}
+                  position={dbResource.author_position}
+                  description={dbResource.author_description}
+                  image_url={dbResource.author_image_url}
+                  twitter={dbResource.author_twitter}
+                  linkedin={dbResource.author_linkedin}
+                  website={dbResource.author_website}
+                />
+              </>
+            ) : (
+              <div className="space-y-12">
+                {item.sections.map((s, i) => (
+                  <motion.section key={s.heading} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
+                    <h2 className="text-2xl font-bold text-slate-900">{s.heading}</h2>
+                    <div className="mt-4 space-y-4">
+                      {s.body.map((p, j) => <p key={j} className="text-base leading-relaxed text-slate-600">{p}</p>)}
+                    </div>
+                  </motion.section>
+                ))}
+              </div>
             )}
-            <div className="rich-text space-y-4" dangerouslySetInnerHTML={{ __html: dbResource.body }} />
-          </>
-        ) : (
-          <div className="space-y-12">
-            {item.sections.map((s, i) => (
-              <motion.section key={s.heading} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
-                <h2 className="text-2xl font-bold text-slate-900">{s.heading}</h2>
-                <div className="mt-4 space-y-4">
-                  {s.body.map((p, j) => <p key={j} className="text-base leading-relaxed text-slate-600">{p}</p>)}
-                </div>
-              </motion.section>
-            ))}
-          </div>
-        )}
 
-        {/* CTA */}
-        <div className="mt-16 rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-center text-white">
-          <span className="grid mx-auto h-12 w-12 place-items-center rounded-2xl bg-white/15"><Icon className="h-6 w-6" /></span>
-          <h3 className="mt-4 text-xl font-bold">Put this into practice</h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-indigo-100">Run a free audit on your site and see exactly where to start.</p>
-          <Button asChild className="mt-6 rounded-full bg-white px-6 text-indigo-700 hover:bg-indigo-50"><Link to="/app/audit">Run a free audit <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
+            {/* CTA */}
+            <div className="mt-16 rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-center text-white">
+              <span className="grid mx-auto h-12 w-12 place-items-center rounded-2xl bg-white/15"><Icon className="h-6 w-6" /></span>
+              <h3 className="mt-4 text-xl font-bold">Put this into practice</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-indigo-100">Run a free audit on your site and see exactly where to start.</p>
+              <Button asChild className="mt-6 rounded-full bg-white px-6 text-indigo-700 hover:bg-indigo-50"><Link to="/app/audit">Run a free audit <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
+            </div>
+          </article>
         </div>
-      </article>
+      </div>
 
       <FaqSection pagePath={location.pathname} />
       <ContentSectionsRenderer />

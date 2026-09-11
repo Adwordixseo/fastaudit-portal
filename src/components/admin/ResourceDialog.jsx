@@ -14,7 +14,7 @@ function slugify(str) {
 }
 
 export default function ResourceDialog({ open, onOpenChange, resource, onSave }) {
-  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', author: '', read_time: '', date: '', sort_order: 0, is_active: true });
+  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -27,6 +27,13 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
         body: resource?.body || '',
         image_url: resource?.image_url || '',
         author: resource?.author || '',
+        author_name: resource?.author_name || '',
+        author_position: resource?.author_position || '',
+        author_description: resource?.author_description || '',
+        author_image_url: resource?.author_image_url || '',
+        author_twitter: resource?.author_twitter || '',
+        author_linkedin: resource?.author_linkedin || '',
+        author_website: resource?.author_website || '',
         read_time: resource?.read_time || '',
         date: resource?.date || '',
         sort_order: resource?.sort_order || 0,
@@ -101,7 +108,7 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label>Author</Label>
+              <Label>Author (hero line)</Label>
               <Input value={form.author} onChange={(e) => set('author', e.target.value)} placeholder="Adwordix Team" className="mt-1.5" />
             </div>
             <div>
@@ -111,6 +118,52 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
             <div>
               <Label>Date</Label>
               <Input value={form.date} onChange={(e) => set('date', e.target.value)} placeholder="Sep 2026" className="mt-1.5" />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 p-4">
+            <p className="mb-3 text-sm font-semibold text-slate-700">Author box details</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Author name</Label>
+                <Input value={form.author_name} onChange={(e) => set('author_name', e.target.value)} placeholder="Jane Doe" className="mt-1.5" />
+              </div>
+              <div>
+                <Label>Author position</Label>
+                <Input value={form.author_position} onChange={(e) => set('author_position', e.target.value)} placeholder="Head of SEO" className="mt-1.5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <Label>Author bio</Label>
+              <textarea
+                value={form.author_description}
+                onChange={(e) => set('author_description', e.target.value)}
+                placeholder="Short bio shown in the author box"
+                rows={2}
+                className="mt-1.5 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+            </div>
+            <div className="mt-3">
+              <ImageUpload
+                label="Author photo"
+                value={form.author_image_url}
+                onChange={(v) => set('author_image_url', v)}
+                help="Round avatar shown in the author box."
+              />
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              <div>
+                <Label>Twitter / X URL</Label>
+                <Input value={form.author_twitter} onChange={(e) => set('author_twitter', e.target.value)} placeholder="https://x.com/…" className="mt-1.5" />
+              </div>
+              <div>
+                <Label>LinkedIn URL</Label>
+                <Input value={form.author_linkedin} onChange={(e) => set('author_linkedin', e.target.value)} placeholder="https://linkedin.com/in/…" className="mt-1.5" />
+              </div>
+              <div>
+                <Label>Website URL</Label>
+                <Input value={form.author_website} onChange={(e) => set('author_website', e.target.value)} placeholder="https://…" className="mt-1.5" />
+              </div>
             </div>
           </div>
 
