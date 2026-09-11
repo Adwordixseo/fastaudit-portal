@@ -9,10 +9,10 @@ const nav = [
   { to: '/team/projects', label: 'Projects', icon: FolderKanban },
   { to: '/team/keywords', label: 'Keyword Tracker', icon: Search },
   { to: '/team/tasks', label: 'Tasks', icon: ListTodo },
-  { to: '/team/seo', label: 'SEO settings', icon: Settings },
-  { to: '/team/content', label: 'Content sections', icon: FileText },
-  { to: '/team/faqs', label: 'FAQs', icon: HelpCircle },
-  { to: '/team/resources', label: 'Resources', icon: BookOpen },
+  { to: '/team/seo', label: 'SEO settings', icon: Settings, group: 'Content & SEO' },
+  { to: '/team/content', label: 'Content sections', icon: FileText, group: 'Content & SEO' },
+  { to: '/team/faqs', label: 'FAQs', icon: HelpCircle, group: 'Content & SEO' },
+  { to: '/team/resources', label: 'Resources', icon: BookOpen, group: 'Content & SEO' },
 ];
 
 export default function TeamLayout() {

@@ -124,6 +124,10 @@
   .rich-text a:hover { color: #4338ca; }
   .rich-text strong { font-weight: 600; color: #0f172a; }
   .rich-text blockquote { border-left: 3px solid #c7d2fe; padding-left: 1rem; margin: 1rem 0; color: #475569; font-style: italic; }
+  .portal-sidebar-scroll::-webkit-scrollbar { width: 4px; }
+  .portal-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+  .portal-sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+  .portal-sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
   .scan-line {
     background: linear-gradient(90deg, transparent, rgba(129,140,248,0.6), transparent);
     animation: scan 4.5s ease-in-out infinite;

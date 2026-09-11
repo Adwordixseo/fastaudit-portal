@@ -12,20 +12,26 @@ export default function PortalLayout({ nav, label, footerLink }) {
   const [open, setOpen] = useState(false);
 
   const Nav = () => (
-    <nav className="flex-1 space-y-1 px-3">
-      {nav.map((n) => (
-        <NavLink key={n.to} to={n.to} end={n.end} onClick={() => setOpen(false)}
-          className={({ isActive }) => cn('flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors', isActive ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white')}>
-          <n.icon className="h-4 w-4" /> {n.label}
-        </NavLink>
-      ))}
+    <nav className="space-y-1 px-3">
+      {nav.map((n, i) => {
+        const showGroup = n.group && n.group !== nav[i - 1]?.group;
+        return (
+          <React.Fragment key={n.to}>
+            {showGroup && <div className="mt-4 mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">{n.group}</div>}
+            <NavLink to={n.to} end={n.end} onClick={() => setOpen(false)}
+              className={({ isActive }) => cn('flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors', isActive ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white')}>
+              <n.icon className="h-4 w-4" /> {n.label}
+            </NavLink>
+          </React.Fragment>
+        );
+      })}
     </nav>
   );
 
   const Side = () => (
     <div className="flex h-full flex-col bg-[#0B1020] py-6 text-white">
       <div className="px-6"><PortalLogo /><span className="mt-2 inline-block rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">{label}</span></div>
-      <div className="mt-8 flex-1 overflow-y-auto"><Nav /></div>
+      <div className="mt-6 flex-1 overflow-y-auto portal-sidebar-scroll"><Nav /></div>
       <div className="mx-3 mt-4 space-y-2 border-t border-white/10 pt-4">
         {footerLink && <Link to={footerLink.to} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-400 hover:text-white"><footerLink.icon className="h-4 w-4" /> {footerLink.label}</Link>}
         <Link to="/" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Back to website</Link>
