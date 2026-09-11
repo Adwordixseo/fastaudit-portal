@@ -43,7 +43,7 @@ export default function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Logo />
         <nav className="hidden items-center gap-8 md:flex">
-          <NavDropdown label="Platform" items={platformItems} basePath="/platform" />
+          <NavDropdown label="Features" items={platformItems} basePath="/platform" />
           <NavDropdown label="Solutions" items={solutionsItems} basePath="/solutions" />
           {nav.map((n) => n.to ? <Link key={n.label} to={n.to} className={linkCls}>{n.label}</Link> : <a key={n.label} href={n.href} className={linkCls}>{n.label}</a>)}
         </nav>
@@ -64,7 +64,7 @@ export default function SiteHeader() {
       {open && (
         <div className="border-t border-slate-100 bg-white px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
-            <MobileGroup label="Platform" items={platformItems} basePath="/platform" onNav={() => setOpen(false)} />
+            <MobileGroup label="Features" items={platformItems} basePath="/platform" onNav={() => setOpen(false)} />
             <MobileGroup label="Solutions" items={solutionsItems} basePath="/solutions" onNav={() => setOpen(false)} />
             {nav.map((n) => n.to
               ? <Link key={n.label} to={n.to} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-slate-800">{n.label}</Link>

@@ -15,7 +15,7 @@ export default function PlatformSection() {
   return (
     <section id="platform" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="max-w-2xl">
-        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">The platform</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">The features</span>
         <h2 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">Everything your SEO project needs, in one portal.</h2>
       </div>
       <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
