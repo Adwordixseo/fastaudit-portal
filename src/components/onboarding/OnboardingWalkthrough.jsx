@@ -26,7 +26,8 @@ export default function OnboardingWalkthrough({ user }) {
     if (typeof window === 'undefined') return false;
     const dismissed = localStorage.getItem(STORAGE_KEY) === '1';
     if (dismissed) return false;
-    const missing = !user.gmb_url || !user.company || !user.phone || !user.location || !user.website;
+    // Only required fields gate the form — GMB is optional
+    const missing = !user.company || !user.phone || !user.location || !user.website;
     return missing;
   }, [user]);
 
