@@ -15,7 +15,7 @@ import InternalLinkInserter from '@/components/admin/InternalLinkInserter';
 const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
 
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
-  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', extra_links: [], sort_order: 0, background: 'white', is_active: true });
+  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', extra_links: [], replace_section: '', hide_default: false, sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -31,6 +31,8 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
         link_url: section?.link_url || '',
         link_label: section?.link_label || '',
         extra_links: Array.isArray(section?.extra_links) ? section.extra_links.map((l) => ({ url: l.url || '', label: l.label || '' })) : [],
+        replace_section: section?.replace_section || '',
+        hide_default: section?.hide_default || false,
         sort_order: section?.sort_order || 0,
         background: section?.background || 'white',
         is_active: section?.is_active !== false,
@@ -75,6 +77,31 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
             <div>
               <Label>Section name</Label>
               <Input value={form.section_name} onChange={(e) => set('section_name', e.target.value)} placeholder="Why SEO matters" className="mt-1.5" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Replace existing section</Label>
+              <Select value={form.replace_section} onValueChange={(v) => set('replace_section', v)}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="None — add as new section" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>None — add as new section</SelectItem>
+                  <SelectItem value="hero">Hero</SelectItem>
+                  <SelectItem value="platform">Platform features</SelectItem>
+                  <SelectItem value="how_it_works">How it works</SelectItem>
+                  <SelectItem value="solutions">Solutions</SelectItem>
+                  <SelectItem value="pricing">Pricing</SelectItem>
+                  <SelectItem value="resources">Resources</SelectItem>
+                  <SelectItem value="cta">CTA banner</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-end pb-2">
+              <div className={`flex items-center gap-2 ${!form.replace_section ? 'opacity-50 pointer-events-none' : ''}`}>
+                <Switch checked={form.hide_default} onCheckedChange={(v) => set('hide_default', v)} id="cs-hide" disabled={!form.replace_section} />
+                <Label htmlFor="cs-hide" className="text-sm text-slate-600">Hide default entirely</Label>
+              </div>
             </div>
           </div>
 
