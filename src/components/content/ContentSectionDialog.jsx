@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
+import InternalLinkInserter from '@/components/admin/InternalLinkInserter';
 
 const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
 
@@ -92,6 +93,8 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
               minHeight={180}
             />
           </div>
+
+          <InternalLinkInserter body={form.body} onChange={(v) => set('body', v)} />
 
           <ImageUpload
             label="Section image"
