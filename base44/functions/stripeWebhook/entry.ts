@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
+import { sendGmail } from '../../shared/gmailMime.js';
 
 const CYCLE_MONTHS = { monthly: 1, quarterly: 3, yearly: 12 };
 const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -52,6 +53,40 @@ export default async function(req) {
             billing_cycle: cycle, amount, status: 'active',
             start_date: fmt(start), end_date: fmt(end), stripe_session_id: sessionId
           });
+          if (clientEmail) {
+            try {
+              const fmtMoney = (n) => '$' + (n / 100).toFixed(2);
+              const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#f8fafc;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <tr><td style="background:#16a34a;padding:28px 40px;">
+          <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:bold;">Payment Confirmed</h1>
+        </td></tr>
+        <tr><td style="padding:32px 40px;">
+          <p style="margin:0 0 16px;color:#1e293b;font-size:16px;">Thank you for your purchase!</p>
+          <p style="margin:0 0 16px;color:#475569;font-size:14px;line-height:1.6;">Your subscription is now active. Here's a summary of your order:</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border:1px solid #e2e8f0;border-radius:8px;">
+            <tr><td style="padding:12px 16px;color:#64748b;font-size:13px;border-bottom:1px solid #e2e8f0;">Package</td><td style="padding:12px 16px;color:#1e293b;font-size:14px;font-weight:bold;border-bottom:1px solid #e2e8f0;text-align:right;">${packageName || '—'}</td></tr>
+            <tr><td style="padding:12px 16px;color:#64748b;font-size:13px;border-bottom:1px solid #e2e8f0;">Billing cycle</td><td style="padding:12px 16px;color:#1e293b;font-size:14px;font-weight:bold;border-bottom:1px solid #e2e8f0;text-align:right;text-transform:capitalize;">${cycle}</td></tr>
+            <tr><td style="padding:12px 16px;color:#64748b;font-size:13px;border-bottom:1px solid #e2e8f0;">Amount</td><td style="padding:12px 16px;color:#1e293b;font-size:14px;font-weight:bold;border-bottom:1px solid #e2e8f0;text-align:right;">${fmtMoney(amount)}</td></tr>
+            <tr><td style="padding:12px 16px;color:#64748b;font-size:13px;">Active from</td><td style="padding:12px 16px;color:#1e293b;font-size:14px;font-weight:bold;text-align:right;">${fmt(start)} → ${fmt(end)}</td></tr>
+          </table>
+          <p style="margin:0 0 16px;color:#475569;font-size:14px;line-height:1.6;">You can view your subscription details and manage your projects from the dashboard.</p>
+          <a href="https://apricot-audit-growth-flow.base44.app/app" style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#ffffff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:bold;">Go to your dashboard</a>
+        </td></tr>
+        <tr><td style="padding:20px 40px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+          <p style="margin:0;color:#94a3b8;font-size:12px;text-align:center;">FastAudit Portal · This is an automated confirmation message.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+              await sendGmail(base44, clientEmail, 'Payment Confirmed — ' + (packageName || 'Your Package'), html);
+            } catch (emailErr) {
+              console.error('Purchase confirmation email failed', emailErr);
+            }
+          }
         }
       }
     }
