@@ -37,11 +37,28 @@
     },
     "link_url": {
       "type": "string",
-      "description": "Internal link URL for CTA button"
+      "description": "Primary internal link URL for CTA button"
     },
     "link_label": {
       "type": "string",
-      "description": "CTA button label"
+      "description": "Primary CTA button label"
+    },
+    "extra_links": {
+      "type": "array",
+      "description": "Additional internal links to display alongside the primary CTA",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Internal link URL"
+          },
+          "label": {
+            "type": "string",
+            "description": "Link label"
+          }
+        }
+      }
     },
     "sort_order": {
       "type": "number",

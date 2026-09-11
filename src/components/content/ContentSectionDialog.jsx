@@ -9,11 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Trash2 } from 'lucide-react';
 
 const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
 
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
-  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', sort_order: 0, background: 'white', is_active: true });
+  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', extra_links: [], sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -28,12 +29,17 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
         image_position: section?.image_position || 'top',
         link_url: section?.link_url || '',
         link_label: section?.link_label || '',
+        extra_links: Array.isArray(section?.extra_links) ? section.extra_links.map((l) => ({ url: l.url || '', label: l.label || '' })) : [],
         sort_order: section?.sort_order || 0,
         background: section?.background || 'white',
         is_active: section?.is_active !== false,
       });
     }
   }, [open, section]);
+
+  const addLink = () => setForm((f) => ({ ...f, extra_links: [...f.extra_links, { url: '', label: '' }] }));
+  const updateLink = (i, key, val) => setForm((f) => ({ ...f, extra_links: f.extra_links.map((l, idx) => (idx === i ? { ...l, [key]: val } : l)) }));
+  const removeLink = (i) => setForm((f) => ({ ...f, extra_links: f.extra_links.filter((_, idx) => idx !== i) }));
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -114,13 +120,33 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Internal link URL</Label>
+              <Label>Primary link URL</Label>
               <Input value={form.link_url} onChange={(e) => set('link_url', e.target.value)} placeholder="/app/audit" className="mt-1.5 font-mono text-sm" list="content-paths" />
             </div>
             <div>
-              <Label>Link label</Label>
+              <Label>Primary link label</Label>
               <Input value={form.link_label} onChange={(e) => set('link_label', e.target.value)} placeholder="Run a free audit" className="mt-1.5" />
             </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-700">Additional internal links</p>
+              <Button type="button" variant="outline" size="sm" onClick={addLink}><Plus className="h-3.5 w-3.5" /> Add link</Button>
+            </div>
+            {form.extra_links.length === 0 ? (
+              <p className="mt-2 text-xs text-slate-400">Add more links to display alongside the primary CTA button.</p>
+            ) : (
+              <div className="mt-3 space-y-2">
+                {form.extra_links.map((link, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input value={link.label} onChange={(e) => updateLink(i, 'label', e.target.value)} placeholder="Link label" className="flex-1" />
+                    <Input value={link.url} onChange={(e) => updateLink(i, 'url', e.target.value)} placeholder="/app/projects" className="flex-[1.2] font-mono text-sm" list="content-paths" />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(i)} className="shrink-0 text-red-600 hover:text-red-700"><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-3">

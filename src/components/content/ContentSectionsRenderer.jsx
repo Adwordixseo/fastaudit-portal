@@ -70,17 +70,29 @@ export default function ContentSectionsRenderer() {
                     onClick={handleBodyClick}
                   />
                 )}
-                {s.link_url && s.link_label && (
-                  <div className="mt-6">
-                    <Link
-                      to={s.link_url}
-                      className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-                    >
-                      {s.link_label}
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
+                {(s.link_url && s.link_label) || (s.extra_links && s.extra_links.length > 0) ? (
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    {s.link_url && s.link_label && (
+                      <Link
+                        to={s.link_url}
+                        className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                      >
+                        {s.link_label}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    )}
+                    {s.extra_links?.filter((l) => l.url && l.label).map((l, i) => (
+                      <Link
+                        key={i}
+                        to={l.url}
+                        className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-indigo-300 hover:text-indigo-600"
+                      >
+                        {l.label}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    ))}
                   </div>
-                )}
+                ) : null}
               </div>
               {s.image_url && s.image_position === 'right' && (
                 <Image src={s.image_url} alt={s.image_alt || ''} fittingType="fill" className="block w-full aspect-[4/3] rounded-2xl overflow-hidden" />
