@@ -3,7 +3,7 @@ import { NavLink, Outlet, Link } from 'react-router-dom';
 import { LogOut, Menu, X, ArrowLeft } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { base44 } from '@/api/base44Client';
-import Logo from '@/components/site/Logo';
+import PortalLogo from '@/components/portal/PortalLogo';
 import { useUser } from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,7 @@ export default function PortalLayout({ nav, label, footerLink }) {
 
   const Side = () => (
     <div className="flex h-full flex-col bg-[#0B1020] py-6 text-white">
-      <div className="px-6"><Logo dark /><span className="mt-2 inline-block rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">{label}</span></div>
+      <div className="px-6"><PortalLogo /><span className="mt-2 inline-block rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300">{label}</span></div>
       <div className="mt-8 flex-1 overflow-y-auto"><Nav /></div>
       <div className="mx-3 mt-4 space-y-2 border-t border-white/10 pt-4">
         {footerLink && <Link to={footerLink.to} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-400 hover:text-white"><footerLink.icon className="h-4 w-4" /> {footerLink.label}</Link>}
@@ -42,7 +42,7 @@ export default function PortalLayout({ nav, label, footerLink }) {
     <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[264px_1fr]">
       <aside className="hidden lg:block lg:sticky lg:top-0 lg:h-screen"><Side /></aside>
       <div className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 lg:hidden">
-        <Logo />
+        <PortalLogo />
         <button onClick={() => setOpen(true)} className="rounded-lg p-2 text-slate-700"><Menu className="h-5 w-5" /></button>
       </div>
       {open && (
