@@ -7,7 +7,7 @@ import PageHeader from '@/components/portal/PageHeader';
 import FaqDialog from '@/components/admin/FaqDialog';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/ui/StatusBadge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 
 const KNOWN_PAGES = [
   { path: '/', label: 'Home (/)' },
@@ -61,16 +61,17 @@ export default function AdminFaqs() {
       {faqs.length > 0 && (
         <div className="mb-6 flex items-center gap-3">
           <div className="flex items-center gap-2 text-sm font-medium text-slate-600"><Filter className="h-4 w-4" /> Filter by page</div>
-          <Select value={pageFilter} onValueChange={setPageFilter}>
-            <SelectTrigger className="w-[280px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All pages ({faqs.length})</SelectItem>
-              {pageOptions.map((p) => {
-                const count = faqs.filter((f) => f.page_path === p.path).length;
-                return <SelectItem key={p.path} value={p.path}>{p.label} ({count})</SelectItem>;
-              })}
-            </SelectContent>
-          </Select>
+          <select
+            value={pageFilter}
+            onChange={(e) => setPageFilter(e.target.value)}
+            className="h-9 w-[280px] rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          >
+            <option value="all">All pages ({faqs.length})</option>
+            {pageOptions.map((p) => {
+              const count = faqs.filter((f) => f.page_path === p.path).length;
+              return <option key={p.path} value={p.path}>{p.label} ({count})</option>;
+            })}
+          </select>
         </div>
       )}
 
