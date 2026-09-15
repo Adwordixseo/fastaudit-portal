@@ -3,9 +3,28 @@ import { Download, Lock, AlertTriangle, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ScoreRing from '@/components/audit/ScoreRing';
 import StatusBadge from '@/components/ui/StatusBadge';
+import CheckSection from '@/components/audit/CheckSection';
+import KeywordTable from '@/components/audit/KeywordTable';
+import TechnologyList from '@/components/audit/TechnologyList';
 import { fmtDateTime } from '@/lib/format';
 
+const SECTION_LABELS = {
+  on_page_seo: 'On-Page SEO Results',
+  technical: 'Technical SEO Results',
+  content: 'Content Results',
+  performance: 'Performance Results',
+  ai_readiness: 'AI Readiness (GEO) Results',
+  social: 'Social Results',
+  local_seo: 'Local SEO Results'
+};
+const SECTION_ORDER = ['on_page_seo', 'content', 'technical', 'performance', 'ai_readiness', 'social', 'local_seo'];
+
 export default function AuditResult({ audit, canDownload, onDownload }) {
+  const groupedChecks = (audit.checks || []).reduce((acc, c) => {
+    (acc[c.section] = acc[c.section] || []).push(c);
+    return acc;
+  }, {});
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
@@ -49,6 +68,14 @@ export default function AuditResult({ audit, canDownload, onDownload }) {
           </ol>
         </div>
       </div>
+
+      <KeywordTable keywords={audit.keywords} />
+
+      {SECTION_ORDER.map((section) => (
+        <CheckSection key={section} title={SECTION_LABELS[section]} checks={groupedChecks[section]} />
+      ))}
+
+      <TechnologyList technology={audit.technology} />
     </div>
   );
 }

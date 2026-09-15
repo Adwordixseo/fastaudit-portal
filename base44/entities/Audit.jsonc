@@ -64,6 +64,78 @@
       "items": {
         "type": "string"
       }
+    },
+    "word_count": {
+      "type": "number"
+    },
+    "checks": {
+      "type": "array",
+      "description": "Deterministic pass/fail/warning checks computed from the live page, grouped by section",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "enum": [
+              "on_page_seo",
+              "technical",
+              "content",
+              "performance",
+              "ai_readiness",
+              "social",
+              "local_seo"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "warning",
+              "fail",
+              "info"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "description": "Top keywords found in page content and where they appear",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          },
+          "in_title": {
+            "type": "boolean"
+          },
+          "in_meta": {
+            "type": "boolean"
+          },
+          "in_headings": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "technology": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
