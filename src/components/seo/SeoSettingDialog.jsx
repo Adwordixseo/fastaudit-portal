@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,25 @@ const ROUTE_HINTS = ['/', '/platform/:slug', '/solutions/:slug', '/resources/:sl
 
 export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }) {
   const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', faq_schema_enabled: false, schema_json: '', h1: '', hero_subheading: '', is_active: true });
+  const [schemas, setSchemas] = useState(['']);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
+      let parsedSchemas = [''];
+      if (setting?.schema_json) {
+        try {
+          const parsed = JSON.parse(setting.schema_json);
+          if (Array.isArray(parsed)) {
+            parsedSchemas = parsed.length > 0 ? parsed.map((s) => JSON.stringify(s, null, 2)) : [''];
+          } else {
+            parsedSchemas = [JSON.stringify(parsed, null, 2)];
+          }
+        } catch {
+          parsedSchemas = [setting.schema_json];
+        }
+      }
+      setSchemas(parsedSchemas);
       setForm({
         path: setting?.path || '',
         page_name: setting?.page_name || '',
@@ -43,14 +58,28 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  const updateSchema = (i, val) => setSchemas((prev) => prev.map((s, idx) => (idx === i ? val : s)));
+  const addSchema = () => setSchemas((prev) => [...prev, '']);
+  const removeSchema = (i) => setSchemas((prev) => prev.filter((_, idx) => idx !== i));
+
   const submit = async () => {
     if (!form.path.trim() || !form.page_name.trim()) { toast.error('Path and page name are required'); return; }
-    if (form.schema_json.trim()) {
-      try { JSON.parse(form.schema_json); } catch { toast.error('Schema JSON is not valid JSON'); return; }
+    // Validate and combine all schema textareas into a single schema_json string
+    const validSchemas = [];
+    for (const s of schemas) {
+      const trimmed = s.trim();
+      if (!trimmed) continue;
+      try {
+        validSchemas.push(JSON.parse(trimmed));
+      } catch {
+        toast.error(`Schema #${schemas.indexOf(s) + 1} is not valid JSON`);
+        return;
+      }
     }
+    const combined = validSchemas.length === 0 ? '' : validSchemas.length === 1 ? JSON.stringify(validSchemas[0]) : JSON.stringify(validSchemas);
     setSaving(true);
     try {
-      await onSave(form);
+      await onSave({ ...form, schema_json: combined });
       onOpenChange(false);
     } catch (e) {
       toast.error(e.message || 'Could not save');
@@ -160,9 +189,28 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
               <p className="mt-1 text-xs text-slate-400">Emitted as a &lt;link rel="sitemap"&gt; tag in this page's head.</p>
             </div>
             <div>
-              <Label>JSON-LD schema</Label>
-              <Textarea value={form.schema_json} onChange={(e) => set('schema_json', e.target.value)} placeholder='{"@context":"https://schema.org","@type":"WebPage","name":"..."}' className="mt-1.5 font-mono text-xs" rows={5} />
-              <p className="mt-1 text-xs text-slate-400">Paste valid JSON-LD. Can be a single object or an array.</p>
+              <div className="flex items-center justify-between">
+                <Label>JSON-LD schemas</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addSchema} className="h-7 gap-1 text-xs">
+                  <Plus className="h-3.5 w-3.5" /> Add schema
+                </Button>
+              </div>
+              <p className="mt-1 text-xs text-slate-400">Add one or more JSON-LD schemas for this page. Each block is rendered as a separate &lt;script type="application/ld+json"&gt; tag.</p>
+              <div className="mt-2 space-y-3">
+                {schemas.map((schema, i) => (
+                  <div key={i} className="rounded-lg border border-slate-200 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-xs font-medium text-slate-500">Schema {i + 1}</span>
+                      {schemas.length > 1 && (
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeSchema(i)} className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-50">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea value={schema} onChange={(e) => updateSchema(i, e.target.value)} placeholder='{"@context":"https://schema.org","@type":"Service","name":"..."}' className="font-mono text-xs" rows={6} />
+                  </div>
+                ))}
+              </div>
             </div>
             <p className="text-xs text-slate-400">FAQPage schema is auto-generated when this page has active FaqItem records — no toggle needed.</p>
           </section>
