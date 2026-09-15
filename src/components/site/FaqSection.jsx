@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -41,6 +41,31 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
   const faqs = matched.length > 0
     ? matched.map((f) => [f.question, f.answer])
     : (fallbackFaqs || DEFAULT_FAQS).map((f) => (Array.isArray(f) ? f : [f.q, f.a]));
+
+  // Auto-inject FAQPage JSON-LD schema from the FAQs actually displayed on this page
+  const faqKey = JSON.stringify(faqs);
+  useEffect(() => {
+    document.head.querySelectorAll('script[data-faq-schema]').forEach((el) => el.remove());
+    if (!faqs.length) return;
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map(([q, a]) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-faq-schema', 'true');
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+    return () => {
+      document.head.querySelectorAll('script[data-faq-schema]').forEach((el) => el.remove());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faqKey]);
 
   if (faqs.length === 0) return null;
 

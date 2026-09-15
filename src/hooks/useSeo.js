@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -23,25 +23,7 @@ export function useSeo() {
     queryKey: ['seo-settings'],
     queryFn: () => base44.entities.SeoSetting.filter({ is_active: true }),
   });
-  const { data: faqItems = [] } = useQuery({
-    queryKey: ['faq-items'],
-    queryFn: () => base44.entities.FaqItem.filter({ is_active: true }),
-  });
-
   const matched = matchPath(location.pathname, settings);
-
-  const matchedFaqs = useMemo(() => {
-    return faqItems
-      .filter((item) => {
-        if (item.page_path === location.pathname) return true;
-        if (item.page_path && item.page_path.includes(':')) {
-          const pattern = item.page_path.replace(/:[^/]+/g, '[^/]+');
-          return new RegExp(`^${pattern}$`).test(location.pathname);
-        }
-        return false;
-      })
-      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  }, [faqItems, location.pathname]);
 
   useEffect(() => {
     if (!matched) return;
@@ -104,17 +86,6 @@ export function useSeo() {
         // invalid JSON — skip
       }
     }
-    if (matchedFaqs.length > 0) {
-      schemas.push({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: matchedFaqs.map((f) => ({
-          '@type': 'Question',
-          name: f.question,
-          acceptedAnswer: { '@type': 'Answer', text: f.answer },
-        })),
-      });
-    }
     schemas.forEach((schema) => {
       const script = document.createElement('script');
       script.type = 'application/ld+json';
@@ -122,7 +93,7 @@ export function useSeo() {
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
     });
-  }, [matched?.id, location.pathname, matchedFaqs]);
+  }, [matched?.id, location.pathname]);
 
   return matched;
 }
