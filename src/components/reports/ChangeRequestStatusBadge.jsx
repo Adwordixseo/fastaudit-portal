@@ -13,6 +13,14 @@ const labels = {
   resolved: 'Resolved',
 };
 
+// Derive the change-request status from the document, falling back to history
+// so a team reply always reads as "resolved" even if the field is stale.
+export function deriveChangeRequestStatus(doc) {
+  const history = doc.history || [];
+  if (history.some((h) => h.action === 'team_replied')) return 'resolved';
+  return doc.change_request_status || 'pending';
+}
+
 export default function ChangeRequestStatusBadge({ status, className }) {
   const s = status || 'pending';
   return (

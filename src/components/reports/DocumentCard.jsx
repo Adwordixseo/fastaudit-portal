@@ -2,7 +2,7 @@ import React from 'react';
 import { FileText, FileSpreadsheet, File, Eye, Download, Check, MessageSquare, History, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/ui/StatusBadge';
-import ChangeRequestStatusBadge from '@/components/reports/ChangeRequestStatusBadge';
+import ChangeRequestStatusBadge, { deriveChangeRequestStatus } from '@/components/reports/ChangeRequestStatusBadge';
 import { fmtDate, fmtDateTime, fmtMonth, humanize } from '@/lib/format';
 
 const icons = { pdf: FileText, document: FileText, spreadsheet: FileSpreadsheet, other: File };
@@ -15,7 +15,7 @@ export default function DocumentCard({ doc, projectName, onView, onApprove, onRe
       <div className="flex items-start gap-4">
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-600"><Icon className="h-5 w-5" /></span>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold text-slate-900">{doc.title}</h3><StatusBadge status={doc.status} />{doc.status === 'changes_requested' && <ChangeRequestStatusBadge status={doc.change_request_status} />}</div>
+          <div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold text-slate-900">{doc.title}</h3><StatusBadge status={doc.status} />{doc.status === 'changes_requested' && <ChangeRequestStatusBadge status={deriveChangeRequestStatus(doc)} />}</div>
           <p className="mt-1 text-xs text-slate-500">{projectName} · {fmtMonth(doc.report_month)} · Uploaded {fmtDate(doc.created_date)} · <span className="capitalize">{doc.file_type}</span></p>
           {doc.admin_comment && <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">"{doc.admin_comment}"</p>}
           {teamReply && <div className="mt-2 rounded-xl bg-indigo-50 px-3 py-2 text-sm text-slate-700"><span className="font-semibold text-indigo-700">Team reply:</span> "{teamReply.note}"<span className="mt-0.5 block text-xs text-slate-400">— {teamReply.by} · {fmtDateTime(teamReply.date)}</span></div>}
