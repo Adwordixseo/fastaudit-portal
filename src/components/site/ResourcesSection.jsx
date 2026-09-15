@@ -8,7 +8,7 @@ import { resourceItems } from '@/lib/siteNav';
 export default function ResourcesSection() {
   const { data: dbResources = [] } = useQuery({
     queryKey: ['resources-active'],
-    queryFn: () => base44.entities.Resource.filter({ is_active: true }, 'sort_order', 50),
+    queryFn: () => base44.entities.Resource.filter({ is_active: true }, '-created_date', 50),
   });
 
   const dynamicCards = dbResources.map((r) => ({
@@ -17,6 +17,7 @@ export default function ResourcesSection() {
     tag: r.tag || 'Article',
     title: r.title,
     excerpt: r.excerpt || '',
+    image_url: r.image_url,
   }));
 
   const allCards = [...resourceItems, ...dynamicCards];
@@ -34,14 +35,17 @@ export default function ResourcesSection() {
         {allCards.map((it) => {
           const Icon = it.icon;
           return (
-            <Link key={it.slug} to={`/resources/${it.slug}`} className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-7 transition hover:border-indigo-200 hover:shadow-lg">
-              <div className="flex items-center justify-between">
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{it.tag}</span>
-                <Icon className="h-5 w-5 text-slate-400" />
+            <Link key={it.slug} to={`/resources/${it.slug}`} className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:border-indigo-200 hover:shadow-lg">
+              {it.image_url && <img src={it.image_url} alt="" className="aspect-[16/9] w-full object-cover" />}
+              <div className="flex flex-1 flex-col p-7">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{it.tag}</span>
+                  <Icon className="h-5 w-5 text-slate-400" />
+                </div>
+                <h3 className="mt-5 text-lg font-semibold text-slate-900">{it.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{it.excerpt}</p>
+                <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition-colors group-hover:text-indigo-700">Read article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></span>
               </div>
-              <h3 className="mt-5 text-lg font-semibold text-slate-900">{it.title}</h3>
-              <p className="mt-2 text-sm text-slate-500">{it.excerpt}</p>
-              <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition-colors group-hover:text-indigo-700">Read article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></span>
             </Link>
           );
         })}

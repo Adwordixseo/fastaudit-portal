@@ -57,7 +57,7 @@ export default function TableOfContents({ headings }) {
   if (!headings || headings.length === 0) return null;
 
   return (
-    <nav className="text-sm">
+    <nav className="text-sm pr-2">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">On this page</p>
       <ul className="space-y-0.5 border-l border-slate-200">
         {headings.map((h) => (
@@ -68,7 +68,7 @@ export default function TableOfContents({ headings }) {
                 e.preventDefault();
                 document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className={`-ml-px block border-l-2 py-1 transition-colors ${
+              className={`-ml-px block break-words border-l-2 py-1 pr-2 transition-colors ${
                 h.level === 'h3' ? 'pl-7' : 'pl-3'
               } ${
                 activeId === h.id

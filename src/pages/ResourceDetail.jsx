@@ -78,15 +78,15 @@ export default function ResourceDetail() {
 
       {/* Body */}
       <div className="mx-auto max-w-5xl px-5 py-16 lg:px-8">
-        <div className={`grid gap-10 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[200px_1fr]' : ''}`}>
+        <div className={`grid gap-12 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[220px_1fr]' : ''}`}>
           {isDynamic && tocHeadings.length > 0 && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24">
+            <aside className="hidden lg:block min-w-0">
+              <div className="sticky top-24 overflow-hidden">
                 <TableOfContents headings={tocHeadings} />
               </div>
             </aside>
           )}
-          <article className="max-w-3xl">
+          <article className="max-w-3xl min-w-0">
             {isDynamic ? (
               <>
                 {dbResource.image_url && (
