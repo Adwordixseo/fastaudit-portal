@@ -1,10 +1,11 @@
 import React from 'react';
-import { Clock, FileText, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Clock, FileText, MessageSquare, CheckCircle2, Reply } from 'lucide-react';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/portal/EmptyState';
-import { fmtDate, fileTypeFromName } from '@/lib/format';
+import { Button } from '@/components/ui/button';
+import { fmtDate, fmtDateTime, fileTypeFromName } from '@/lib/format';
 
-export default function PendingApprovalsPanel({ docs = [], projects = [] }) {
+export default function PendingApprovalsPanel({ docs = [], projects = [], onReply }) {
   const projectName = (id) => projects.find((p) => p.id === id)?.name || 'Project';
   const pending = docs
     .filter((d) => d.status === 'awaiting_approval' || d.status === 'changes_requested')
@@ -26,14 +27,17 @@ export default function PendingApprovalsPanel({ docs = [], projects = [] }) {
           {pending.map((d) => {
             const approval = (d.history || []).find((h) => h.action === 'approved');
             const change = (d.history || []).find((h) => h.action === 'changes_requested');
+            const teamReply = (d.history || []).filter((h) => h.action === 'team_replied').pop();
             return (
               <div key={d.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-slate-800">{d.title}</p>
                   <p className="text-xs text-slate-500">{projectName(d.project_id)} · {fileTypeFromName(d.file_url || d.title)} · {fmtDate(d.created_date)}</p>
                   {d.status === 'changes_requested' && change && <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-rose-600"><MessageSquare className="h-3 w-3" /> Changes requested{change.by ? ` by ${change.by}` : ''}{change.note ? `: "${change.note}"` : ''}</p>}
+                  {teamReply && <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-indigo-600"><Reply className="h-3 w-3" /> Team replied{teamReply.by ? ` · ${teamReply.by}` : ''}{teamReply.date ? ` · ${fmtDateTime(teamReply.date)}` : ''}: &ldquo;{teamReply.note}&rdquo;</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
+                  {onReply && d.status === 'changes_requested' && <Button size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50" onClick={() => onReply(d)}><Reply className="mr-1.5 h-3.5 w-3.5" /> Reply</Button>}
                   <FileText className="h-4 w-4 text-slate-300" />
                   <StatusBadge status={d.status} />
                 </div>

@@ -12,6 +12,9 @@ import TeamActivityFeed from '@/components/team/TeamActivityFeed';
 import WeeklyTaskCompletionChart from '@/components/team/WeeklyTaskCompletionChart';
 import ProjectProgressReport from '@/components/team/ProjectProgressReport';
 import PendingApprovalsPanel from '@/components/team/PendingApprovalsPanel';
+import ReplyToClientDialog from '@/components/reports/ReplyToClientDialog';
+import { useUser } from '@/hooks/useUser';
+import { toast } from 'sonner';
 import KeywordPerformancePanel from '@/components/team/KeywordPerformancePanel';
 import TeamTaskAssignDialog from '@/components/team/TeamTaskAssignDialog';
 import ExportButtons from '@/components/portal/ExportButtons';
@@ -22,6 +25,8 @@ import { Link } from 'react-router-dom';
 export default function TeamDashboard() {
   const qc = useQueryClient();
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [replying, setReplying] = useState(null);
+  const { user } = useUser();
   const [search, setSearch] = useState('');
   const [assignOpen, setAssignOpen] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState('all');
@@ -52,6 +57,12 @@ export default function TeamDashboard() {
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-projects'] }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
   const saveStatus = async (id, val) => { await base44.entities.Project.update(id, { status: val }); refresh(); };
   const saveTaskStatus = async (id, status) => { await base44.entities.TeamTask.update(id, { status }); qc.invalidateQueries({ queryKey: ['team-tasks'] }); };
+  const reply = async (doc, note) => {
+    const project = projects.find((p) => p.id === doc.project_id);
+    await base44.entities.Document.update(doc.id, { history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
+    try { await base44.functions.invoke('replyToClientNotification', { clientEmail: project?.client_email, clientName: project?.client_email, documentTitle: doc.title, projectName: project?.name, reply: note }); } catch { /* best-effort */ }
+    qc.invalidateQueries({ queryKey: ['admin-docs'] }); toast.success('Reply sent to client'); setReplying(null);
+  };
 
   return (
     <div className="space-y-8">
@@ -88,7 +99,7 @@ export default function TeamDashboard() {
 
       <KeywordPerformancePanel projects={projects} />
 
-      <PendingApprovalsPanel docs={docs} projects={projects} />
+      <PendingApprovalsPanel docs={docs} projects={projects} onReply={setReplying} />
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5">
         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2">
@@ -152,6 +163,7 @@ export default function TeamDashboard() {
 
       <TeamTaskAssignDialog open={assignOpen} onOpenChange={setAssignOpen} projects={projects} onSaved={() => qc.invalidateQueries({ queryKey: ['team-tasks'] })} />
       <TeamUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} projects={projects} onSaved={refresh} />
+      <ReplyToClientDialog open={!!replying} onOpenChange={(o) => !o && setReplying(null)} clientNote={(replying?.history || []).find((h) => h.action === 'changes_requested')?.note} onSubmit={(note) => reply(replying, note)} />
     </div>
   );
 }
