@@ -43,6 +43,16 @@
       ],
       "default": "awaiting_approval"
     },
+    "change_request_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_review",
+        "resolved"
+      ],
+      "default": "pending",
+      "description": "Lifecycle status of the client's change request: pending (just requested), in_review (team working on it), resolved (team replied)"
+    },
     "admin_comment": {
       "type": "string"
     },

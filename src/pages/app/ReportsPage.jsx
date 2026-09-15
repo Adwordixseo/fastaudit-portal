@@ -27,7 +27,9 @@ export default function ReportsPage() {
   const filtered = docs.filter((d) => (projectFilter === 'all' || d.project_id === projectFilter) && (!monthFilter || d.report_month === monthFilter) && d.status !== 'draft');
 
   const decide = async (doc, status, note = '') => {
-    await base44.entities.Document.update(doc.id, { status, history: [...(doc.history || []), { action: status, by: user.email, note, date: new Date().toISOString() }] });
+    const updates = { status, history: [...(doc.history || []), { action: status, by: user.email, note, date: new Date().toISOString() }] };
+    if (status === 'changes_requested') updates.change_request_status = 'pending';
+    await base44.entities.Document.update(doc.id, updates);
     qc.invalidateQueries({ queryKey: ['documents'] });
     toast.success(status === 'approved' ? 'Deliverable approved' : 'Change request sent to our team');
     if (status === 'approved' || status === 'changes_requested') {

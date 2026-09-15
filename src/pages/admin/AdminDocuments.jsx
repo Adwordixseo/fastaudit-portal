@@ -26,7 +26,7 @@ export default function AdminDocuments() {
   const remove = async (d) => { if (!confirm(`Delete "${d.title}"?`)) return; await base44.entities.Document.delete(d.id); refresh(); };
   const reply = async (doc, note) => {
     const project = projects.find((p) => p.id === doc.project_id);
-    await base44.entities.Document.update(doc.id, { history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Admin', note, date: new Date().toISOString() }] });
+    await base44.entities.Document.update(doc.id, { change_request_status: 'resolved', history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Admin', note, date: new Date().toISOString() }] });
     try { await base44.functions.invoke('replyToClientNotification', { clientEmail: project?.client_email, clientName: project?.client_email, documentTitle: doc.title, projectName: project?.name, reply: note }); } catch { /* best-effort */ }
     refresh(); toast.success('Reply sent to client'); setReplying(null);
   };

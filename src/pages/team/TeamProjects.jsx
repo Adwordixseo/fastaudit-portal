@@ -8,6 +8,7 @@ import StatusBadge from '@/components/ui/StatusBadge';
 import MilestonePanel from '@/components/admin/MilestonePanel';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
 import ReplyToClientDialog from '@/components/reports/ReplyToClientDialog';
+import ChangeRequestStatusBadge from '@/components/reports/ChangeRequestStatusBadge';
 import { toast } from 'sonner';
 import { useUser } from '@/hooks/useUser';
 import TeamTaskPanel from '@/components/team/TeamTaskPanel';
@@ -40,10 +41,11 @@ export default function TeamProjects() {
   const saveStatus = async (val) => { if (!selected) return; await base44.entities.Project.update(selected.id, { status: val }); refresh(); };
   const reply = async (doc, note) => {
     const project = projects.find((p) => p.id === doc.project_id);
-    await base44.entities.Document.update(doc.id, { history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
+    await base44.entities.Document.update(doc.id, { change_request_status: 'resolved', history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
     try { await base44.functions.invoke('replyToClientNotification', { clientEmail: project?.client_email, clientName: project?.client_email, documentTitle: doc.title, projectName: project?.name, reply: note }); } catch { /* best-effort */ }
     refresh(); toast.success('Reply sent to client'); setReplying(null);
   };
+  const startReview = async (doc) => { await base44.entities.Document.update(doc.id, { change_request_status: 'in_review' }); refresh(); };
 
   return (
     <div className="space-y-6">
@@ -135,10 +137,12 @@ export default function TeamProjects() {
                       <p className="text-xs text-slate-400">{fileTypeFromName(d.file_url || d.title)} · {fmtDate(d.created_date)}</p>
                       {d.status === 'approved' && approval && <p className="mt-0.5 text-xs font-medium text-emerald-600">✓ Approved by client{approval.by ? ` · ${approval.by}` : ''}{approval.date ? ` · ${fmtDate(approval.date)}` : ''}</p>}
                       {d.status === 'changes_requested' && <p className="mt-0.5 text-xs font-medium text-rose-600">Changes requested by client{changeReq?.by ? ` · ${changeReq.by}` : ''}{changeReq?.note ? `: "${changeReq.note}"` : ''}</p>}
+                      {d.status === 'changes_requested' && <div className="mt-0.5"><ChangeRequestStatusBadge status={d.change_request_status || 'pending'} /></div>}
                       {d.status === 'shared' && <p className="mt-0.5 text-xs text-sky-600">Shared with client — no approval needed</p>}
                       {d.status === 'draft' && <p className="mt-0.5 text-xs text-slate-400">Internal draft — not shared with client</p>}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
+                      {d.status === 'changes_requested' && (!d.change_request_status || d.change_request_status === 'pending') && <Button size="sm" variant="outline" className="rounded-full border-blue-200 text-blue-600 hover:bg-blue-50" onClick={() => startReview(d)}>Start review</Button>}
                       {d.status === 'changes_requested' && <Button size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50" onClick={() => setReplying(d)}><Reply className="mr-1.5 h-3.5 w-3.5" /> Reply</Button>}
                       <StatusBadge status={d.status} />
                     </div>

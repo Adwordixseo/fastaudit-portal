@@ -59,10 +59,11 @@ export default function TeamDashboard() {
   const saveTaskStatus = async (id, status) => { await base44.entities.TeamTask.update(id, { status }); qc.invalidateQueries({ queryKey: ['team-tasks'] }); };
   const reply = async (doc, note) => {
     const project = projects.find((p) => p.id === doc.project_id);
-    await base44.entities.Document.update(doc.id, { history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
+    await base44.entities.Document.update(doc.id, { change_request_status: 'resolved', history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
     try { await base44.functions.invoke('replyToClientNotification', { clientEmail: project?.client_email, clientName: project?.client_email, documentTitle: doc.title, projectName: project?.name, reply: note }); } catch { /* best-effort */ }
     qc.invalidateQueries({ queryKey: ['admin-docs'] }); toast.success('Reply sent to client'); setReplying(null);
   };
+  const startReview = async (doc) => { await base44.entities.Document.update(doc.id, { change_request_status: 'in_review' }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
 
   return (
     <div className="space-y-8">
@@ -99,7 +100,7 @@ export default function TeamDashboard() {
 
       <KeywordPerformancePanel projects={projects} />
 
-      <PendingApprovalsPanel docs={docs} projects={projects} onReply={setReplying} />
+      <PendingApprovalsPanel docs={docs} projects={projects} onReply={setReplying} onStartReview={startReview} />
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5">
         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2">
