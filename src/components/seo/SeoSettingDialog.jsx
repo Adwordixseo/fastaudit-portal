@@ -12,7 +12,7 @@ import { base44 } from '@/api/base44Client';
 const ROUTE_HINTS = ['/', '/platform/:slug', '/solutions/:slug', '/resources/:slug', '/login', '/register', '/app', '/app/audit', '/app/packages', '/app/projects', '/app/reports'];
 
 export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }) {
-  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', schema_json: '', h1: '', hero_subheading: '', is_active: true });
+  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', faq_schema_enabled: false, schema_json: '', h1: '', hero_subheading: '', is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
         twitter_image: setting?.twitter_image || '',
         canonical_url: setting?.canonical_url || '',
         sitemap_url: setting?.sitemap_url || '',
+        faq_schema_enabled: setting?.faq_schema_enabled || false,
         schema_json: setting?.schema_json || '',
         h1: setting?.h1 || '',
         hero_subheading: setting?.hero_subheading || '',
@@ -162,6 +163,11 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
               <Label>JSON-LD schema</Label>
               <Textarea value={form.schema_json} onChange={(e) => set('schema_json', e.target.value)} placeholder='{"@context":"https://schema.org","@type":"WebPage","name":"..."}' className="mt-1.5 font-mono text-xs" rows={5} />
               <p className="mt-1 text-xs text-slate-400">Paste valid JSON-LD. Can be a single object or an array.</p>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <Switch checked={form.faq_schema_enabled} onCheckedChange={(v) => set('faq_schema_enabled', v)} id="seo-faq-schema" />
+              <Label htmlFor="seo-faq-schema" className="text-sm text-slate-600">Auto-generate FAQ schema</Label>
+              <p className="text-xs text-slate-400">Injects a FAQPage JSON-LD schema built from this page's active FaqItem records.</p>
             </div>
           </section>
 

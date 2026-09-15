@@ -50,6 +50,11 @@
       "type": "string",
       "description": "XML sitemap URL referenced from this page's <link rel=\"sitemap\"> tag"
     },
+    "faq_schema_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, auto-generate FAQPage JSON-LD schema from this page's active FaqItem records"
+    },
     "schema_json": {
       "type": "string",
       "description": "JSON-LD structured data as a JSON string"

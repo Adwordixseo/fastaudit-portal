@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -23,8 +23,26 @@ export function useSeo() {
     queryKey: ['seo-settings'],
     queryFn: () => base44.entities.SeoSetting.filter({ is_active: true }),
   });
+  const { data: faqItems = [] } = useQuery({
+    queryKey: ['faq-items'],
+    queryFn: () => base44.entities.FaqItem.filter({ is_active: true }),
+  });
 
   const matched = matchPath(location.pathname, settings);
+
+  const matchedFaqs = useMemo(() => {
+    if (!matched?.faq_schema_enabled) return [];
+    return faqItems
+      .filter((item) => {
+        if (item.page_path === location.pathname) return true;
+        if (item.page_path && item.page_path.includes(':')) {
+          const pattern = item.page_path.replace(/:[^/]+/g, '[^/]+');
+          return new RegExp(`^${pattern}$`).test(location.pathname);
+        }
+        return false;
+      })
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  }, [matched?.faq_schema_enabled, faqItems, location.pathname]);
 
   useEffect(() => {
     if (!matched) return;
@@ -77,22 +95,35 @@ export function useSeo() {
 
     // JSON-LD schema: remove old injected scripts, add new ones
     document.head.querySelectorAll('script[data-seo-schema]').forEach((el) => el.remove());
+    const schemas = [];
     if (matched.schema_json) {
       try {
-        const schemas = JSON.parse(matched.schema_json);
-        const arr = Array.isArray(schemas) ? schemas : [schemas];
-        arr.forEach((schema) => {
-          const script = document.createElement('script');
-          script.type = 'application/ld+json';
-          script.setAttribute('data-seo-schema', 'true');
-          script.textContent = JSON.stringify(schema);
-          document.head.appendChild(script);
-        });
+        const parsed = JSON.parse(matched.schema_json);
+        const arr = Array.isArray(parsed) ? parsed : [parsed];
+        schemas.push(...arr);
       } catch (e) {
         // invalid JSON — skip
       }
     }
-  }, [matched?.id, location.pathname]);
+    if (matchedFaqs.length > 0) {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: matchedFaqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
+      });
+    }
+    schemas.forEach((schema) => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-seo-schema', 'true');
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
+  }, [matched?.id, location.pathname, matchedFaqs]);
 
   return matched;
 }
