@@ -31,8 +31,7 @@ export function useSeo() {
   const matched = matchPath(location.pathname, settings);
 
   const matchedFaqs = useMemo(() => {
-    if (!matched?.faq_schema_enabled) return [];
-    const exact = faqItems
+    return faqItems
       .filter((item) => {
         if (item.page_path === location.pathname) return true;
         if (item.page_path && item.page_path.includes(':')) {
@@ -42,15 +41,7 @@ export function useSeo() {
         return false;
       })
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-    if (exact.length > 0) return exact;
-    // Fall back to homepage FAQ items when no page-specific items exist
-    if (location.pathname !== '/') {
-      return faqItems
-        .filter((item) => item.page_path === '/')
-        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-    }
-    return [];
-  }, [matched?.faq_schema_enabled, faqItems, location.pathname]);
+  }, [faqItems, location.pathname]);
 
   useEffect(() => {
     if (!matched) return;

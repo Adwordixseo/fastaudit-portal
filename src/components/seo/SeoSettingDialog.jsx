@@ -164,11 +164,7 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
               <Textarea value={form.schema_json} onChange={(e) => set('schema_json', e.target.value)} placeholder='{"@context":"https://schema.org","@type":"WebPage","name":"..."}' className="mt-1.5 font-mono text-xs" rows={5} />
               <p className="mt-1 text-xs text-slate-400">Paste valid JSON-LD. Can be a single object or an array.</p>
             </div>
-            <div className="flex items-center gap-2 pt-1">
-              <Switch checked={form.faq_schema_enabled} onCheckedChange={(v) => set('faq_schema_enabled', v)} id="seo-faq-schema" />
-              <Label htmlFor="seo-faq-schema" className="text-sm text-slate-600">Auto-generate FAQ schema</Label>
-              <p className="text-xs text-slate-400">Injects a FAQPage JSON-LD schema built from this page's active FaqItem records.</p>
-            </div>
+            <p className="text-xs text-slate-400">FAQPage schema is auto-generated when this page has active FaqItem records — no toggle needed.</p>
           </section>
 
           {/* Page content overrides */}
