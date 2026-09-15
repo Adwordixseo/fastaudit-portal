@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FolderKanban, Search, Upload, Globe, ChevronRight } from 'lucide-react';
+import { FolderKanban, Search, Upload, Globe, ChevronRight, Reply } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import StatusBadge from '@/components/ui/StatusBadge';
 import MilestonePanel from '@/components/admin/MilestonePanel';
 import TeamUploadDialog from '@/components/team/TeamUploadDialog';
+import ReplyToClientDialog from '@/components/reports/ReplyToClientDialog';
+import { toast } from 'sonner';
+import { useUser } from '@/hooks/useUser';
 import TeamTaskPanel from '@/components/team/TeamTaskPanel';
 import ProjectKeywordRankings from '@/components/team/ProjectKeywordRankings';
 import ExportButtons from '@/components/portal/ExportButtons';
@@ -22,6 +25,8 @@ export default function TeamProjects() {
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [replying, setReplying] = useState(null);
+  const { user } = useUser();
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
 
@@ -33,6 +38,12 @@ export default function TeamProjects() {
 
   const saveProgress = async (val) => { if (!selected) return; await base44.entities.Project.update(selected.id, { progress: Number(val) || 0 }); refresh(); };
   const saveStatus = async (val) => { if (!selected) return; await base44.entities.Project.update(selected.id, { status: val }); refresh(); };
+  const reply = async (doc, note) => {
+    const project = projects.find((p) => p.id === doc.project_id);
+    await base44.entities.Document.update(doc.id, { history: [...(doc.history || []), { action: 'team_replied', by: user?.email || 'Team', note, date: new Date().toISOString() }] });
+    try { await base44.functions.invoke('replyToClientNotification', { clientEmail: project?.client_email, clientName: project?.client_email, documentTitle: doc.title, projectName: project?.name, reply: note }); } catch { /* best-effort */ }
+    refresh(); toast.success('Reply sent to client'); setReplying(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -127,7 +138,10 @@ export default function TeamProjects() {
                       {d.status === 'shared' && <p className="mt-0.5 text-xs text-sky-600">Shared with client — no approval needed</p>}
                       {d.status === 'draft' && <p className="mt-0.5 text-xs text-slate-400">Internal draft — not shared with client</p>}
                     </div>
-                    <StatusBadge status={d.status} />
+                    <div className="flex shrink-0 items-center gap-2">
+                      {d.status === 'changes_requested' && <Button size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50" onClick={() => setReplying(d)}><Reply className="mr-1.5 h-3.5 w-3.5" /> Reply</Button>}
+                      <StatusBadge status={d.status} />
+                    </div>
                   </div>
                   );
                 })}
@@ -140,6 +154,7 @@ export default function TeamProjects() {
       </div>
 
       <TeamUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} projects={projects} onSaved={refresh} defaultProjectId={selected?.id} />
+      <ReplyToClientDialog open={!!replying} onOpenChange={(o) => !o && setReplying(null)} clientNote={(replying?.history || []).find((h) => h.action === 'changes_requested')?.note} onSubmit={(note) => reply(replying, note)} />
     </div>
   );
 }

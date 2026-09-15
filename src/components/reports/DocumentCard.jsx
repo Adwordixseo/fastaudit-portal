@@ -6,8 +6,9 @@ import { fmtDate, fmtDateTime, fmtMonth, humanize } from '@/lib/format';
 
 const icons = { pdf: FileText, document: FileText, spreadsheet: FileSpreadsheet, other: File };
 
-export default function DocumentCard({ doc, projectName, onView, onApprove, onRequestChange }) {
+export default function DocumentCard({ doc, projectName, onView, onApprove, onRequestChange, onReply }) {
   const Icon = icons[doc.file_type] || File;
+  const teamReply = (doc.history || []).filter((h) => h.action === 'team_replied').pop();
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5">
       <div className="flex items-start gap-4">
@@ -16,6 +17,7 @@ export default function DocumentCard({ doc, projectName, onView, onApprove, onRe
           <div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold text-slate-900">{doc.title}</h3><StatusBadge status={doc.status} /></div>
           <p className="mt-1 text-xs text-slate-500">{projectName} · {fmtMonth(doc.report_month)} · Uploaded {fmtDate(doc.created_date)} · <span className="capitalize">{doc.file_type}</span></p>
           {doc.admin_comment && <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">"{doc.admin_comment}"</p>}
+          {teamReply && <div className="mt-2 rounded-xl bg-indigo-50 px-3 py-2 text-sm text-slate-700"><span className="font-semibold text-indigo-700">Team reply:</span> "{teamReply.note}"<span className="mt-0.5 block text-xs text-slate-400">— {teamReply.by} · {fmtDateTime(teamReply.date)}</span></div>}
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
@@ -24,6 +26,7 @@ export default function DocumentCard({ doc, projectName, onView, onApprove, onRe
         {doc.review_link && <Button asChild size="sm" variant="outline" className="rounded-full border-indigo-200 text-indigo-600 hover:bg-indigo-50"><a href={doc.review_link} target="_blank" rel="noreferrer"><ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Open review link</a></Button>}
         {onApprove && doc.status !== 'approved' && doc.status !== 'shared' && <Button size="sm" className="rounded-full bg-emerald-600 hover:bg-emerald-700" onClick={() => onApprove(doc)}><Check className="mr-1.5 h-3.5 w-3.5" /> Approve</Button>}
         {onRequestChange && doc.status === 'awaiting_approval' && <Button size="sm" variant="outline" className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50" onClick={() => onRequestChange(doc)}><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Request changes</Button>}
+        {onReply && doc.status === 'changes_requested' && <Button size="sm" className="rounded-full bg-indigo-600 hover:bg-indigo-700" onClick={() => onReply(doc)}><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Reply to client</Button>}
       </div>
       {doc.history?.length > 0 && (
         <details className="mt-4 text-xs text-slate-500">
