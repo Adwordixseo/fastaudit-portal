@@ -54,7 +54,7 @@ export default function TeamProjects() {
               <EmptyState icon={FolderKanban} title="No projects" text="No projects match your search." />
             ) : filtered.map((p) => {
               const pdocs = docs.filter((d) => d.project_id === p.id);
-              const pending = pdocs.filter((d) => d.status === 'awaiting_approval').length;
+              const pending = pdocs.filter((d) => d.status === 'awaiting_approval' || d.status === 'changes_requested').length;
               const active = selected?.id === p.id;
               return (
                 <button key={p.id} onClick={() => setSelectedId(p.id)} className={`w-full rounded-2xl border p-4 text-left transition ${active ? 'border-indigo-300 bg-indigo-50/60 ring-1 ring-indigo-200' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
@@ -116,13 +116,14 @@ export default function TeamProjects() {
                   <p className="text-sm text-slate-400">No deliverables shared yet.</p>
                 ) : sdocs.map((d) => {
                   const approval = (d.history || []).find((h) => h.action === 'approved');
+                  const changeReq = (d.history || []).find((h) => h.action === 'changes_requested');
                   return (
                   <div key={d.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-slate-800">{d.title}</p>
                       <p className="text-xs text-slate-400">{fileTypeFromName(d.file_url || d.title)} · {fmtDate(d.created_date)}</p>
                       {d.status === 'approved' && approval && <p className="mt-0.5 text-xs font-medium text-emerald-600">✓ Approved by client{approval.by ? ` · ${approval.by}` : ''}{approval.date ? ` · ${fmtDate(approval.date)}` : ''}</p>}
-                      {d.status === 'changes_requested' && <p className="mt-0.5 text-xs font-medium text-rose-600">Changes requested by client</p>}
+                      {d.status === 'changes_requested' && <p className="mt-0.5 text-xs font-medium text-rose-600">Changes requested by client{changeReq?.by ? ` · ${changeReq.by}` : ''}{changeReq?.note ? `: "${changeReq.note}"` : ''}</p>}
                       {d.status === 'shared' && <p className="mt-0.5 text-xs text-sky-600">Shared with client — no approval needed</p>}
                       {d.status === 'draft' && <p className="mt-0.5 text-xs text-slate-400">Internal draft — not shared with client</p>}
                     </div>
