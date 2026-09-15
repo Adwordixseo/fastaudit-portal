@@ -12,7 +12,7 @@ import { base44 } from '@/api/base44Client';
 const ROUTE_HINTS = ['/', '/platform/:slug', '/solutions/:slug', '/resources/:slug', '/login', '/register', '/app', '/app/audit', '/app/packages', '/app/projects', '/app/reports'];
 
 export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }) {
-  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', schema_json: '', h1: '', hero_subheading: '', is_active: true });
+  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', schema_json: '', h1: '', hero_subheading: '', is_active: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
         twitter_description: setting?.twitter_description || '',
         twitter_image: setting?.twitter_image || '',
         canonical_url: setting?.canonical_url || '',
+        sitemap_url: setting?.sitemap_url || '',
         schema_json: setting?.schema_json || '',
         h1: setting?.h1 || '',
         hero_subheading: setting?.hero_subheading || '',
@@ -151,6 +152,11 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
             <div>
               <Label>Canonical URL</Label>
               <Input value={form.canonical_url} onChange={(e) => set('canonical_url', e.target.value)} placeholder="https://yourdomain.com/page" className="mt-1.5" />
+            </div>
+            <div>
+              <Label>Sitemap URL</Label>
+              <Input value={form.sitemap_url} onChange={(e) => set('sitemap_url', e.target.value)} placeholder="https://yourdomain.com/sitemap.xml" className="mt-1.5" />
+              <p className="mt-1 text-xs text-slate-400">Emitted as a &lt;link rel="sitemap"&gt; tag in this page's head.</p>
             </div>
             <div>
               <Label>JSON-LD schema</Label>

@@ -46,6 +46,10 @@
     "canonical_url": {
       "type": "string"
     },
+    "sitemap_url": {
+      "type": "string",
+      "description": "XML sitemap URL referenced from this page's <link rel=\"sitemap\"> tag"
+    },
     "schema_json": {
       "type": "string",
       "description": "JSON-LD structured data as a JSON string"

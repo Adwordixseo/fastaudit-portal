@@ -64,6 +64,17 @@ export function useSeo() {
       link.setAttribute('href', matched.canonical_url);
     }
 
+    if (matched.sitemap_url) {
+      let sitemap = document.head.querySelector('link[rel="sitemap"]');
+      if (!sitemap) {
+        sitemap = document.createElement('link');
+        sitemap.setAttribute('rel', 'sitemap');
+        sitemap.setAttribute('type', 'application/xml');
+        document.head.appendChild(sitemap);
+      }
+      sitemap.setAttribute('href', matched.sitemap_url);
+    }
+
     // JSON-LD schema: remove old injected scripts, add new ones
     document.head.querySelectorAll('script[data-seo-schema]').forEach((el) => el.remove());
     if (matched.schema_json) {
