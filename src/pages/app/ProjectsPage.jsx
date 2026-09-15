@@ -29,8 +29,9 @@ export default function ProjectsPage() {
   const qc = useQueryClient();
   const { activeSubscriptions } = useSubscription();
   const linkedProjectIds = activeSubscriptions.map((s) => s.project_id).filter(Boolean);
-  const activeProjects = projects.filter((p) => linkedProjectIds.includes(p.id));
-  const availableSlots = activeSubscriptions.filter((s) => !activeProjects.find((p) => p.id === s.project_id));
+  const activeProjects = projects;
+  const linkedCount = projects.filter((p) => linkedProjectIds.includes(p.id)).length;
+  const availableSlots = activeSubscriptions.filter((s) => !projects.find((p) => p.id === s.project_id));
   const refresh = () => { qc.invalidateQueries({ queryKey: ['projects', uid] }); qc.invalidateQueries({ queryKey: ['subscriptions'] }); };
   const project = activeProjects.find((p) => p.id === selectedId) || activeProjects[0];
 
@@ -54,7 +55,7 @@ export default function ProjectsPage() {
         } />
       {activeSubscriptions.length > 0 && (
         <div className="flex items-center gap-2 rounded-2xl border border-indigo-100 bg-indigo-50/40 px-4 py-2.5 text-sm">
-          <span className="font-semibold text-indigo-700">{activeProjects.length} of {activeSubscriptions.length}</span>
+          <span className="font-semibold text-indigo-700">{linkedCount} of {activeSubscriptions.length}</span>
           <span className="text-slate-600">website slot{activeSubscriptions.length !== 1 ? 's' : ''} in use</span>
           {availableSlots.length > 0 && <span className="text-slate-500">· {availableSlots.length} available to add</span>}
         </div>

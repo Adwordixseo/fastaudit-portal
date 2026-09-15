@@ -18,7 +18,11 @@ export default function WebsiteSlots({ activeSubscriptions }) {
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['projects'] }); qc.invalidateQueries({ queryKey: ['subscriptions'] }); };
 
-  if (activeSubscriptions.length === 0) {
+  const linkedSubByProject = {};
+  activeSubscriptions.forEach((s) => { if (s.project_id) linkedSubByProject[s.project_id] = s; });
+  const availableSlots = activeSubscriptions.filter((s) => !projects.find((p) => p.id === s.project_id));
+
+  if (activeSubscriptions.length === 0 && projects.length === 0) {
     return (
       <section>
         <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold text-slate-900">Your websites</h2></div>
@@ -36,32 +40,30 @@ export default function WebsiteSlots({ activeSubscriptions }) {
     <section>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-slate-900">Your websites</h2>
-        <span className="text-sm text-slate-500">{activeSubscriptions.length} package{activeSubscriptions.length !== 1 ? 's' : ''}</span>
+        <span className="text-sm text-slate-500">{projects.length} project{projects.length !== 1 ? 's' : ''}{availableSlots.length > 0 && ` · ${availableSlots.length} slot${availableSlots.length !== 1 ? 's' : ''} available`}</span>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {activeSubscriptions.map((sub) => {
-          const project = projects.find((p) => p.id === sub.project_id);
-          if (project) {
-            return (
-              <div key={sub.id} className="rounded-3xl border border-slate-200 bg-white p-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{sub.package_name}</span>
-                  <StatusBadge status={project.status} />
-                </div>
-                <h3 className="mt-2 font-semibold text-slate-900">{project.name}</h3>
-                {project.website && <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500"><Globe className="h-3 w-3" /> {project.website}</p>}
-                <Progress value={project.progress || 0} className="mt-3 h-1.5" />
-                <Button variant="ghost" size="sm" className="mt-2 -ml-2 text-indigo-600" onClick={() => navigate(`/app/projects?id=${project.id}`)}>View project <ArrowRight className="ml-1 h-3 w-3" /></Button>
-              </div>
-            );
-          }
+        {projects.map((project) => {
+          const sub = linkedSubByProject[project.id];
           return (
-            <button key={sub.id} onClick={() => setAddSlot(sub)} className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-5 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-indigo-50 text-indigo-600"><Plus className="h-5 w-5" /></div>
-              <div><p className="text-sm font-semibold text-slate-700">Add website</p><p className="text-xs text-slate-400">{sub.package_name} slot</p></div>
-            </button>
+            <div key={project.id} className="rounded-3xl border border-slate-200 bg-white p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{sub?.package_name || 'Project'}</span>
+                <StatusBadge status={project.status} />
+              </div>
+              <h3 className="mt-2 font-semibold text-slate-900">{project.name}</h3>
+              {project.website && <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500"><Globe className="h-3 w-3" /> {project.website}</p>}
+              <Progress value={project.progress || 0} className="mt-3 h-1.5" />
+              <Button variant="ghost" size="sm" className="mt-2 -ml-2 text-indigo-600" onClick={() => navigate(`/app/projects?id=${project.id}`)}>View project <ArrowRight className="ml-1 h-3 w-3" /></Button>
+            </div>
           );
         })}
+        {availableSlots.map((sub) => (
+          <button key={sub.id} onClick={() => setAddSlot(sub)} className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-5 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-indigo-50 text-indigo-600"><Plus className="h-5 w-5" /></div>
+            <div><p className="text-sm font-semibold text-slate-700">Add website</p><p className="text-xs text-slate-400">{sub.package_name} slot</p></div>
+          </button>
+        ))}
       </div>
       <AddWebsiteDialog open={!!addSlot} onOpenChange={(o) => !o && setAddSlot(null)} subscription={addSlot} onDone={refresh} />
     </section>
