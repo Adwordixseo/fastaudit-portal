@@ -26,9 +26,13 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const bodyText = await req.text();
     const sig = req.headers.get('stripe-signature') || '';
-    const secret = secrets.get('STRIPE_WEBHOOK_SECRET');
-    if (!secret) return Response.json({ error: 'Webhook secret not configured' }, { status: 500 });
-    const ok = await verifySignature(bodyText, sig, secret);
+    // Accept both live and test webhook events so preview-environment test payments activate too.
+    const webhookSecrets = [secrets.get('STRIPE_WEBHOOK_SECRET'), secrets.get('STRIPE_TEST_WEBHOOK_SECRET')].filter(Boolean);
+    if (webhookSecrets.length === 0) return Response.json({ error: 'Webhook secret not configured' }, { status: 500 });
+    let ok = false;
+    for (const secret of webhookSecrets) {
+      if (await verifySignature(bodyText, sig, secret)) { ok = true; break; }
+    }
     if (!ok) return Response.json({ error: 'Invalid signature' }, { status: 401 });
 
     const event = JSON.parse(bodyText);

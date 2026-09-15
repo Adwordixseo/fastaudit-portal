@@ -21,6 +21,9 @@ export default async function(req) {
     const successUrl = `${origin}/app/packages?paid=1`;
     const cancelUrl = `${origin}/app/packages?canceled=1`;
     const appId = secrets.get('BASE44_APP_ID') || '';
+    // Use test keys in preview/sandbox environments so test cards work; live keys on the published domain.
+    const isPreview = /preview|sandbox|localhost|127\.0\.0\.1/i.test(origin);
+    const stripeKey = isPreview ? (secrets.get('STRIPE_TEST_SECRET_KEY') || secrets.get('STRIPE_SECRET_KEY')) : secrets.get('STRIPE_SECRET_KEY');
 
     const params = new URLSearchParams();
     params.append('mode', 'subscription');
@@ -49,7 +52,7 @@ export default async function(req) {
     const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${secrets.get('STRIPE_SECRET_KEY')}`,
+        'Authorization': `Bearer ${stripeKey}`,
         'Stripe-Version': '2025-10-29.clover',
         'Idempotency-Key': crypto.randomUUID(),
         'Content-Type': 'application/x-www-form-urlencoded'
