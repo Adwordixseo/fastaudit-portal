@@ -12,6 +12,7 @@ const nav = [
   { label: 'Free Audit', to: '/app/audit' },
   { label: 'Resources', href: '/#resources' },
   { label: 'FAQ', href: '/#faq' },
+  { label: 'Contact', to: '/contact' },
 ];
 
 function MobileGroup({ label, items, basePath, onNav }) {
