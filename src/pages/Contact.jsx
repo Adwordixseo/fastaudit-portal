@@ -140,7 +140,7 @@ export default function Contact() {
                   <Button type="submit" disabled={loading} className="w-full rounded-full py-2.5 text-base shadow-lg shadow-indigo-500/25">
                     {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending...</> : <><Send className="h-4 w-4" /> Send message</>}
                   </Button>
-                  <p className="text-center text-xs text-slate-400 hidden">Your enquiry will be sent to info@adwordix.com</p>
+                  
                 </form>
               }
             </div>
