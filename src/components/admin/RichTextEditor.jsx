@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { base44 } from '@/api/base44Client';
 
-export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady }) {
+export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, maxHeight = 320, onEditorReady }) {
   const quillRef = useRef(null);
 
   useEffect(() => {
@@ -51,15 +51,16 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
   const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'blockquote'];
 
   return (
-    <ReactQuill
-      ref={quillRef}
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      modules={modules}
-      formats={formats}
-      placeholder={placeholder}
-      style={{ minHeight }}
-    />
+    <div className="rich-text-editor" style={{ '--ql-min-height': `${minHeight}px`, '--ql-max-height': `${maxHeight}px` }}>
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        modules={modules}
+        formats={formats}
+        placeholder={placeholder}
+      />
+    </div>
   );
 }
