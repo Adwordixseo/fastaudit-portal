@@ -61,7 +61,7 @@ export default function Contact() {
                   <h3 className="text-base font-semibold text-slate-900">Phone</h3>
                 </div>
                 <div className="mt-4 space-y-1.5">
-                  <a href="tel:9953269191" className="block text-sm text-slate-600 hover:text-indigo-600">9953269191</a>
+                  <a href="tel:9953269191" className="block text-sm text-slate-600 hover:text-indigo-600">+91-9953269191</a>
                   <a href="tel:+918104330050" className="block text-sm text-slate-600 hover:text-indigo-600">+91-8104330050</a>
                 </div>
               </div>
@@ -96,15 +96,15 @@ export default function Contact() {
 
             {/* Form */}
             <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-              {sent ? (
-                <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+              {sent ?
+              <div className="flex h-full flex-col items-center justify-center py-12 text-center">
                   <div className="grid h-16 w-16 place-items-center rounded-full bg-green-50 text-green-600"><CheckCircle2 className="h-8 w-8" /></div>
                   <h3 className="mt-5 text-xl font-bold text-slate-900">Message sent!</h3>
                   <p className="mt-2 max-w-sm text-sm text-slate-500">Thank you for reaching out. Our team will get back to you at the email you provided within 24 hours.</p>
                   <Button variant="outline" className="mt-6 rounded-full" onClick={() => setSent(false)}>Send another message</Button>
-                </div>
-              ) : (
-                <form onSubmit={submit} className="space-y-5">
+                </div> :
+
+              <form onSubmit={submit} className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="c-name">Name <span className="text-red-500">*</span></Label>
@@ -142,12 +142,12 @@ export default function Contact() {
                   </Button>
                   <p className="text-center text-xs text-slate-400">Your enquiry will be sent to info@adwordix.com</p>
                 </form>
-              )}
+              }
             </div>
           </div>
         </div>
       </section>
       <SiteFooter />
-    </div>
-  );
+    </div>);
+
 }
