@@ -26,6 +26,10 @@ export function useSeo() {
   const matched = matchPath(location.pathname, settings);
 
   useEffect(() => {
+    // Always clean up page-specific schemas from the previous route,
+    // even when the current page has no matching SEO setting.
+    document.head.querySelectorAll('script[data-seo-schema]').forEach((el) => el.remove());
+
     if (!matched) return;
 
     const setMeta = (attr, key, content) => {
@@ -76,8 +80,7 @@ export function useSeo() {
       sitemap.setAttribute('href', matched.sitemap_url);
     }
 
-    // JSON-LD schema: remove old injected scripts, add new ones
-    document.head.querySelectorAll('script[data-seo-schema]').forEach((el) => el.remove());
+    // JSON-LD schema: add new ones (old ones already cleaned up above)
     const schemas = [];
     if (matched.schema_json) {
       try {
