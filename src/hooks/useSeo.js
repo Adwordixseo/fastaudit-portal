@@ -46,12 +46,14 @@ export function useSeo() {
     setMeta('property', 'og:title', matched.og_title || matched.title);
     setMeta('property', 'og:description', matched.og_description || matched.description);
     setMeta('property', 'og:image', matched.og_image);
+    setMeta('property', 'og:image:alt', matched.og_image_alt);
     setMeta('property', 'og:url', matched.canonical_url || window.location.href);
     setMeta('property', 'og:type', 'website');
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:title', matched.twitter_title || matched.og_title || matched.title);
     setMeta('name', 'twitter:description', matched.twitter_description || matched.og_description || matched.description);
     setMeta('name', 'twitter:image', matched.twitter_image || matched.og_image);
+    setMeta('name', 'twitter:image:alt', matched.og_image_alt);
 
     if (matched.canonical_url) {
       let link = document.head.querySelector('link[rel="canonical"]');

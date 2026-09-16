@@ -12,7 +12,7 @@ import { base44 } from '@/api/base44Client';
 const ROUTE_HINTS = ['/', '/platform/:slug', '/solutions/:slug', '/resources/:slug', '/login', '/register', '/app', '/app/audit', '/app/packages', '/app/projects', '/app/reports'];
 
 export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }) {
-  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', faq_schema_enabled: false, schema_json: '', h1: '', hero_subheading: '', is_active: true });
+  const [form, setForm] = useState({ path: '', page_name: '', title: '', description: '', meta_keywords: '', robots: 'index, follow', og_title: '', og_description: '', og_image: '', og_image_alt: '', twitter_title: '', twitter_description: '', twitter_image: '', canonical_url: '', sitemap_url: '', faq_schema_enabled: false, schema_json: '', h1: '', hero_subheading: '', is_active: true });
   const [schemas, setSchemas] = useState(['']);
   const [saving, setSaving] = useState(false);
 
@@ -42,6 +42,7 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
         og_title: setting?.og_title || '',
         og_description: setting?.og_description || '',
         og_image: setting?.og_image || '',
+        og_image_alt: setting?.og_image_alt || '',
         twitter_title: setting?.twitter_title || '',
         twitter_description: setting?.twitter_description || '',
         twitter_image: setting?.twitter_image || '',
@@ -156,6 +157,11 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
             <div>
               <Label>OG image URL</Label>
               <Input value={form.og_image} onChange={(e) => set('og_image', e.target.value)} placeholder="https://..." className="mt-1.5" />
+            </div>
+            <div>
+              <Label>OG image alt text</Label>
+              <Input value={form.og_image_alt} onChange={(e) => set('og_image_alt', e.target.value)} placeholder="Describe the image for accessibility & SEO" className="mt-1.5" />
+              <p className="mt-1 text-xs text-slate-400">Emitted as og:image:alt and twitter:image:alt meta tags.</p>
             </div>
           </section>
 
