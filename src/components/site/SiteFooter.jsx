@@ -5,7 +5,7 @@ import Logo from '@/components/site/Logo';
 const columns = [
   { title: 'Features', links: [{ l: 'Website Audit', to: '/app/audit' }, { l: 'Monthly Reports', to: '/app/reports' }, { l: 'Project Tracking', to: '/app/projects' }, { l: 'Approvals', to: '/app/reports' }] },
   { title: 'Solutions', links: [{ l: 'For Agencies', href: '/#solutions' }, { l: 'For SaaS', href: '/#solutions' }, { l: 'For E-Commerce', href: '/#solutions' }, { l: 'For Local Business', href: '/#solutions' }] },
-  { title: 'Resources', links: [{ l: 'Free Audit', to: '/app/audit' }, { l: 'Pricing', href: '/#pricing' }, { l: 'FAQ', href: '/#faq' }, { l: 'Support', to: '/app/support' }] },
+  { title: 'Resources', links: [{ l: 'Free Audit', to: '/app/audit' }, { l: 'Pricing', to: '/pricing' }, { l: 'FAQ', href: '/#faq' }, { l: 'Support', to: '/app/support' }] },
   { title: 'Company', links: [{ l: 'Contact', to: '/contact' }, { l: 'Login', to: '/login' }, { l: 'Team login', to: '/team' }, { l: 'Get started', to: '/register' }, { l: 'Privacy Policy', to: '/privacy-policy' }, { l: 'Terms of Service', to: '/terms' }] },
 ];
 

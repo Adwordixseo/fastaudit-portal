@@ -8,7 +8,7 @@ import NavDropdown from '@/components/site/NavDropdown';
 import { platformItems, solutionsItems } from '@/lib/siteNav';
 
 const nav = [
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Pricing', to: '/pricing' },
   { label: 'Free Audit', to: '/app/audit' },
   { label: 'Resources', href: '/#resources' },
   { label: 'FAQ', href: '/#faq' },
