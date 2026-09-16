@@ -16,9 +16,11 @@ function slugify(str) {
 export default function ResourceDialog({ open, onOpenChange, resource, onSave }) {
   const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
   const [saving, setSaving] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(false);
 
   useEffect(() => {
     if (open) {
+      setSlugTouched(!!resource?.slug);
       setForm({
         slug: resource?.slug || '',
         title: resource?.title || '',
@@ -43,6 +45,20 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
   }, [open, resource]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const setTitle = (v) => {
+    setForm((f) => ({ ...f, title: v, slug: slugTouched ? f.slug : slugify(v) }));
+  };
+
+  const setSlug = (v) => {
+    setSlugTouched(true);
+    set('slug', slugify(v));
+  };
+
+  const generateSlug = () => {
+    setSlugTouched(true);
+    set('slug', slugify(form.title));
+  };
 
   const submit = async () => {
     if (!form.slug.trim() || !form.title.trim()) { toast.error('Slug and title are required'); return; }
@@ -69,12 +85,17 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Slug (URL)</Label>
-              <Input
-                value={form.slug}
-                onChange={(e) => set('slug', slugify(e.target.value))}
-                placeholder="my-article"
-                className="mt-1.5 font-mono text-sm"
-              />
+              <div className="mt-1.5 flex gap-1.5">
+                <Input
+                  value={form.slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="my-article"
+                  className="font-mono text-sm"
+                />
+                <Button type="button" variant="outline" size="sm" onClick={generateSlug} disabled={!form.title.trim()} className="shrink-0 text-xs" title="Generate from title">
+                  Auto
+                </Button>
+              </div>
               <p className="mt-1 text-xs text-slate-400">Page URL: /resources/{form.slug || '...'}</p>
             </div>
             <div>
@@ -85,7 +106,8 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
 
           <div>
             <Label>Title</Label>
-            <Input value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="What a good SEO score means" className="mt-1.5" />
+            <Input value={form.title} onChange={(e) => setTitle(e.target.value)} placeholder="What a good SEO score means" className="mt-1.5" />
+            <p className="mt-1 text-xs text-slate-400">Slug auto-fills from the title until you edit it manually.</p>
           </div>
 
           <div>
