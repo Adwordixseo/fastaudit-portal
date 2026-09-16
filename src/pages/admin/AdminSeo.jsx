@@ -58,7 +58,25 @@ export default function AdminSeo() {
                   <td className="px-5 py-4 font-medium text-slate-900">{s.page_name}</td>
                   <td className="px-5 py-4"><code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-600">{s.path}</code></td>
                   <td className="max-w-xs px-5 py-4 truncate text-slate-600">{s.title || <span className="text-slate-400">—</span>}</td>
-                  <td className="px-5 py-4">{s.schema_json ? <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Yes</span> : <span className="text-slate-400">—</span>}</td>
+                  <td className="px-5 py-4">
+                    {(() => {
+                      if (!s.schema_json) return <span className="text-slate-400">—</span>;
+                      try {
+                        const parsed = JSON.parse(s.schema_json);
+                        const arr = Array.isArray(parsed) ? parsed : [parsed];
+                        const types = arr.map((sc) => sc['@type'] || 'schema').filter(Boolean);
+                        return (
+                          <div className="flex flex-wrap gap-1">
+                            {types.map((t, i) => (
+                              <span key={i} className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">{t}</span>
+                            ))}
+                          </div>
+                        );
+                      } catch {
+                        return <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">Invalid JSON</span>;
+                      }
+                    })()}
+                  </td>
                   <td className="px-5 py-4"><StatusBadge status={s.is_active !== false ? 'active' : 'inactive'} /></td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1">
