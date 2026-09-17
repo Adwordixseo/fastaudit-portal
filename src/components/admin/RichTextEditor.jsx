@@ -1,57 +1,61 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { base44 } from '@/api/base44Client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-// ── Register table blots ───────────────────────────────────────────────────
-// Container-based blots let Quill parse and preserve <table>/<tbody>/<tr>/<td>
-// from both inserted and pasted HTML.
-const Quill = ReactQuill.Quill;
-const Container = Quill.import('blots/container');
-const Block = Quill.import('blots/block');
+// ── Register table blots (wrapped in try-catch so a registration failure
+// doesn't crash the entire editor module) ────────────────────────────────────
+let tableBlotsReady = false;
+try {
+  const Quill = ReactQuill.Quill;
+  const Container = Quill.import('blots/container');
+  const Block = Quill.import('blots/block');
 
-class TableBlot extends Container { static create() { return super.create(); } }
-TableBlot.blotName = 'table';
-TableBlot.tagName = 'TABLE';
+  class TableBlot extends Container { static create() { return super.create(); } }
+  TableBlot.blotName = 'table';
+  TableBlot.tagName = 'TABLE';
 
-class TableBodyBlot extends Container { static create() { return super.create(); } }
-TableBodyBlot.blotName = 'table-body';
-TableBodyBlot.tagName = 'TBODY';
+  class TableBodyBlot extends Container { static create() { return super.create(); } }
+  TableBodyBlot.blotName = 'table-body';
+  TableBodyBlot.tagName = 'TBODY';
 
-class TableRowBlot extends Container { static create() { return super.create(); } }
-TableRowBlot.blotName = 'table-row';
-TableRowBlot.tagName = 'TR';
+  class TableRowBlot extends Container { static create() { return super.create(); } }
+  TableRowBlot.blotName = 'table-row';
+  TableRowBlot.tagName = 'TR';
 
-class TableCellBlot extends Block { static create() { return super.create(); } }
-TableCellBlot.blotName = 'table-cell';
-TableCellBlot.tagName = 'TD';
+  class TableCellBlot extends Block { static create() { return super.create(); } }
+  TableCellBlot.blotName = 'table-cell';
+  TableCellBlot.tagName = 'TD';
 
-class TableHeaderCellBlot extends Block { static create() { return super.create(); } }
-TableHeaderCellBlot.blotName = 'table-header-cell';
-TableHeaderCellBlot.tagName = 'TH';
+  class TableHeaderCellBlot extends Block { static create() { return super.create(); } }
+  TableHeaderCellBlot.blotName = 'table-header-cell';
+  TableHeaderCellBlot.tagName = 'TH';
 
-TableBlot.allowedChildren = [TableRowBlot, TableBodyBlot];
-TableBodyBlot.allowedChildren = [TableRowBlot];
-TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
+  TableBlot.allowedChildren = [TableRowBlot, TableBodyBlot];
+  TableBodyBlot.allowedChildren = [TableRowBlot];
+  TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
 
-Quill.register({
-  'formats/table': TableBlot,
-  'formats/table-body': TableBodyBlot,
-  'formats/table-row': TableRowBlot,
-  'formats/table-cell': TableCellBlot,
-  'formats/table-header-cell': TableHeaderCellBlot,
-}, true);
+  Quill.register({
+    'formats/table': TableBlot,
+    'formats/table-body': TableBodyBlot,
+    'formats/table-row': TableRowBlot,
+    'formats/table-cell': TableCellBlot,
+    'formats/table-header-cell': TableHeaderCellBlot,
+  }, true);
+  tableBlotsReady = true;
+} catch (e) {
+  console.error('Table blot registration failed:', e);
+}
 
 export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady }) {
   const quillRef = useRef(null);
-  const [tableDialog, setTableDialog] = useState(false);
+  const [tablePanel, setTablePanel] = useState(false);
   const [rows, setRows] = useState(3);
   const [cols, setCols] = useState(3);
-  const [imageDialog, setImageDialog] = useState(null);
+  const [imagePanel, setImagePanel] = useState(null); // { file_url }
   const [altText, setAltText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedAlt, setSelectedAlt] = useState('');
@@ -80,14 +84,13 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     return () => quill.root.removeEventListener('click', handleClick);
   }, []);
 
-  // Intercept paste when content contains tables — clean Office/Docs cruft
-  // then let Quill's clipboard parse the HTML with our registered table blots.
+  // Intercept paste when content contains tables
   useEffect(() => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
     const handlePaste = (e) => {
       const html = e.clipboardData?.getData('text/html');
-      if (!html || !html.toLowerCase().includes('<table')) return; // let Quill handle non-table paste
+      if (!html || !html.toLowerCase().includes('<table')) return;
       e.preventDefault();
       e.stopPropagation();
       const range = quill.getSelection(true) || { index: 0 };
@@ -127,7 +130,7 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       if (!file) return;
       try {
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        setImageDialog({ file_url });
+        setImagePanel({ file_url });
         setAltText('');
       } catch (err) {
         console.error(err);
@@ -137,17 +140,17 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
 
   const insertImage = () => {
     const quill = quillRef.current?.getEditor();
-    if (!quill || !imageDialog) return;
+    if (!quill || !imagePanel) return;
     const range = quill.getSelection(true) || { index: 0 };
-    quill.insertEmbed(range.index, 'image', imageDialog.file_url);
-    const imgs = quill.root.querySelectorAll(`img[src="${imageDialog.file_url}"]`);
+    quill.insertEmbed(range.index, 'image', imagePanel.file_url);
+    const imgs = quill.root.querySelectorAll(`img[src="${imagePanel.file_url}"]`);
     if (imgs.length > 0) imgs[imgs.length - 1].setAttribute('alt', altText);
     onChange(quill.root.innerHTML);
-    setImageDialog(null);
+    setImagePanel(null);
     setAltText('');
   };
 
-  const tableHandler = () => setTableDialog(true);
+  const tableHandler = () => setTablePanel((v) => !v);
 
   const insertTable = () => {
     const quill = quillRef.current?.getEditor();
@@ -162,10 +165,11 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     html += '</tbody></table><p><br></p>';
     quill.clipboard.dangerouslyPasteHTML(range.index, html);
     onChange(quill.root.innerHTML);
-    setTableDialog(false);
+    setTablePanel(false);
   };
 
-  const modules = {
+  // Memoize modules so ReactQuill doesn't re-initialize on every render
+  const modules = useMemo(() => ({
     toolbar: {
       container: [
         [{ header: [2, 3, false] }],
@@ -174,9 +178,12 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
         ['link', 'image', 'table', 'blockquote'],
         ['clean'],
       ],
-      handlers: { image: imageHandler, table: tableHandler },
+      handlers: {
+        image: imageHandler,
+        table: tableHandler,
+      },
     },
-  };
+  }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'table', 'table-body', 'table-row', 'table-cell', 'table-header-cell', 'blockquote'];
 
@@ -207,51 +214,42 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
         </div>
       )}
 
-      {/* Image insertion dialog with alt text */}
-      <Dialog open={!!imageDialog} onOpenChange={(v) => !v && setImageDialog(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Insert image</DialogTitle>
-          </DialogHeader>
-          {imageDialog && (
-            <div className="space-y-3">
-              <img src={imageDialog.file_url} alt="" className="max-h-48 mx-auto rounded-lg border border-slate-200 object-contain" />
-              <div>
-                <Label>Alternative text</Label>
-                <Input value={altText} onChange={(e) => setAltText(e.target.value)} placeholder="Describe this image for accessibility" className="mt-1.5" />
-                <p className="mt-1 text-xs text-slate-400">Used by screen readers and shown when the image can't load.</p>
-              </div>
+      {/* Image insertion panel with alt text */}
+      {imagePanel && (
+        <div className="mt-2 rounded-lg border border-indigo-200 bg-indigo-50/40 p-4">
+          <div className="flex items-start gap-4">
+            <img src={imagePanel.file_url} alt="" className="h-20 w-20 rounded-lg border border-slate-200 object-cover" />
+            <div className="flex-1">
+              <Label>Alternative text</Label>
+              <Input value={altText} onChange={(e) => setAltText(e.target.value)} placeholder="Describe this image for accessibility" className="mt-1.5" />
+              <p className="mt-1 text-xs text-slate-400">Used by screen readers and shown when the image can't load.</p>
             </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setImageDialog(null)}>Cancel</Button>
-            <Button onClick={insertImage}>Insert image</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+          <div className="mt-3 flex justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={() => { setImagePanel(null); setAltText(''); }}>Cancel</Button>
+            <Button size="sm" onClick={insertImage}>Insert image</Button>
+          </div>
+        </div>
+      )}
 
-      {/* Table insertion dialog — choose rows and columns */}
-      <Dialog open={tableDialog} onOpenChange={setTableDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Insert table</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
+      {/* Table insertion panel — choose rows and columns */}
+      {tablePanel && (
+        <div className="mt-2 rounded-lg border border-indigo-200 bg-indigo-50/40 p-4">
+          <div className="flex items-end gap-4">
             <div>
               <Label>Rows</Label>
-              <Input type="number" min="1" max="20" value={rows} onChange={(e) => setRows(Math.max(1, Math.min(20, Number(e.target.value))))} className="mt-1.5" />
+              <Input type="number" min="1" max="20" value={rows} onChange={(e) => setRows(Math.max(1, Math.min(20, Number(e.target.value))))} className="mt-1.5 w-24" />
             </div>
             <div>
               <Label>Columns</Label>
-              <Input type="number" min="1" max="10" value={cols} onChange={(e) => setCols(Math.max(1, Math.min(10, Number(e.target.value))))} className="mt-1.5" />
+              <Input type="number" min="1" max="10" value={cols} onChange={(e) => setCols(Math.max(1, Math.min(10, Number(e.target.value))))} className="mt-1.5 w-24" />
             </div>
+            <div className="flex-1" />
+            <Button variant="outline" size="sm" onClick={() => setTablePanel(false)}>Cancel</Button>
+            <Button size="sm" onClick={insertTable}>Insert table</Button>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setTableDialog(false)}>Cancel</Button>
-            <Button onClick={insertTable}>Insert table</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }
