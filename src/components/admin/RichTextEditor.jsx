@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // ── Register table blots (wrapped in try-catch so a registration failure
 // doesn't crash the entire editor module) ────────────────────────────────────
@@ -14,32 +15,64 @@ try {
   const Container = Quill.import('blots/container');
   const Block = Quill.import('blots/block');
 
-  class TableBlot extends Container { static create() { return super.create(); } }
+  // Copy attributes from a source DOM node to the newly-created blot node,
+  // skipping Office/VML cruft. This is what lets pasted tables keep their
+  // widths, styles, colspan/rowspan, etc.
+  function copyAttrs(source, target) {
+    if (source && source instanceof HTMLElement) {
+      [...source.attributes].forEach((attr) => {
+        if (attr.name.startsWith('o:') || attr.name.startsWith('v:')) return;
+        if (attr.name === 'class' && /mso/i.test(attr.value)) return;
+        target.setAttribute(attr.name, attr.value);
+      });
+    }
+    return target;
+  }
+
+  class TableBlot extends Container {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
   TableBlot.blotName = 'table';
   TableBlot.tagName = 'TABLE';
 
-  class TableBodyBlot extends Container { static create() { return super.create(); } }
+  class TableHeaderSectionBlot extends Container {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
+  TableHeaderSectionBlot.blotName = 'table-header-section';
+  TableHeaderSectionBlot.tagName = 'THEAD';
+
+  class TableBodyBlot extends Container {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
   TableBodyBlot.blotName = 'table-body';
   TableBodyBlot.tagName = 'TBODY';
 
-  class TableRowBlot extends Container { static create() { return super.create(); } }
+  class TableRowBlot extends Container {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
   TableRowBlot.blotName = 'table-row';
   TableRowBlot.tagName = 'TR';
 
-  class TableCellBlot extends Block { static create() { return super.create(); } }
+  class TableCellBlot extends Block {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
   TableCellBlot.blotName = 'table-cell';
   TableCellBlot.tagName = 'TD';
 
-  class TableHeaderCellBlot extends Block { static create() { return super.create(); } }
+  class TableHeaderCellBlot extends Block {
+    static create(value) { return copyAttrs(value, super.create()); }
+  }
   TableHeaderCellBlot.blotName = 'table-header-cell';
   TableHeaderCellBlot.tagName = 'TH';
 
-  TableBlot.allowedChildren = [TableRowBlot, TableBodyBlot];
+  TableBlot.allowedChildren = [TableHeaderSectionBlot, TableBodyBlot, TableRowBlot];
+  TableHeaderSectionBlot.allowedChildren = [TableRowBlot];
   TableBodyBlot.allowedChildren = [TableRowBlot];
   TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
 
   Quill.register({
     'formats/table': TableBlot,
+    'formats/table-header-section': TableHeaderSectionBlot,
     'formats/table-body': TableBodyBlot,
     'formats/table-row': TableRowBlot,
     'formats/table-cell': TableCellBlot,
@@ -55,6 +88,7 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
   const [tablePanel, setTablePanel] = useState(false);
   const [rows, setRows] = useState(3);
   const [cols, setCols] = useState(3);
+  const [includeHeader, setIncludeHeader] = useState(true);
   const [imagePanel, setImagePanel] = useState(null); // { file_url }
   const [altText, setAltText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -84,7 +118,9 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     return () => quill.root.removeEventListener('click', handleClick);
   }, []);
 
-  // Intercept paste when content contains tables
+  // Intercept paste when content contains tables — clean Office/Docs cruft
+  // then let Quill's clipboard parse the HTML with our registered table blots.
+  // The blots copy attributes from the source nodes so formatting survives.
   useEffect(() => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
@@ -96,13 +132,28 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       const range = quill.getSelection(true) || { index: 0 };
       const temp = document.createElement('div');
       temp.innerHTML = html;
-      temp.querySelectorAll('script, style, meta, link').forEach((el) => el.remove());
+      // Remove Office cruft nodes entirely
+      temp.querySelectorAll('script, style, meta, link, o:p, v:shape').forEach((el) => el.remove());
+      // Strip Office-specific attributes but keep style, width, colspan, rowspan, etc.
       temp.querySelectorAll('*').forEach((el) => {
         [...el.attributes].forEach((attr) => {
-          if (attr.name.startsWith('o:') || attr.name.startsWith('v:') || (attr.name === 'class' && /mso/i.test(attr.value))) {
+          if (attr.name.startsWith('o:') || attr.name.startsWith('v:')) {
+            el.removeAttribute(attr.name);
+          }
+          if (attr.name === 'class' && /mso/i.test(attr.value)) {
             el.removeAttribute(attr.name);
           }
         });
+      });
+      // Ensure every table has a tbody (Quill requires it for the blot hierarchy)
+      temp.querySelectorAll('table').forEach((table) => {
+        if (!table.querySelector('tbody')) {
+          const tbody = document.createElement('tbody');
+          [...table.querySelectorAll('tr')].forEach((tr) => {
+            if (tr.parentElement === table) tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+        }
       });
       quill.clipboard.dangerouslyPasteHTML(range.index, temp.innerHTML);
       onChange(quill.root.innerHTML);
@@ -156,7 +207,13 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
     const range = quill.getSelection(true) || { index: 0 };
-    let html = '<table><tbody>';
+    let html = '<table>';
+    if (includeHeader) {
+      html += '<thead><tr>';
+      for (let j = 0; j < cols; j++) html += '<th>Header</th>';
+      html += '</tr></thead>';
+    }
+    html += '<tbody>';
     for (let i = 0; i < rows; i++) {
       html += '<tr>';
       for (let j = 0; j < cols; j++) html += '<td>&nbsp;</td>';
@@ -185,7 +242,7 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     },
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'table', 'table-body', 'table-row', 'table-cell', 'table-header-cell', 'blockquote'];
+  const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'table', 'table-header-section', 'table-body', 'table-row', 'table-cell', 'table-header-cell', 'blockquote'];
 
   return (
     <div>
@@ -232,10 +289,10 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
         </div>
       )}
 
-      {/* Table insertion panel — choose rows and columns */}
+      {/* Table insertion panel — choose rows, columns, and header row */}
       {tablePanel && (
         <div className="mt-2 rounded-lg border border-indigo-200 bg-indigo-50/40 p-4">
-          <div className="flex items-end gap-4">
+          <div className="flex flex-wrap items-end gap-4">
             <div>
               <Label>Rows</Label>
               <Input type="number" min="1" max="20" value={rows} onChange={(e) => setRows(Math.max(1, Math.min(20, Number(e.target.value))))} className="mt-1.5 w-24" />
@@ -244,10 +301,15 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
               <Label>Columns</Label>
               <Input type="number" min="1" max="10" value={cols} onChange={(e) => setCols(Math.max(1, Math.min(10, Number(e.target.value))))} className="mt-1.5 w-24" />
             </div>
+            <div className="flex items-center gap-2 pb-2">
+              <Checkbox id="table-header" checked={includeHeader} onCheckedChange={setIncludeHeader} />
+              <Label htmlFor="table-header" className="text-sm text-slate-600 cursor-pointer">Header row</Label>
+            </div>
             <div className="flex-1" />
             <Button variant="outline" size="sm" onClick={() => setTablePanel(false)}>Cancel</Button>
             <Button size="sm" onClick={insertTable}>Insert table</Button>
           </div>
+          <p className="mt-2 text-xs text-slate-400">Tip: you can also paste tables directly from Google Docs, Excel, or Word — formatting is preserved.</p>
         </div>
       )}
     </div>
