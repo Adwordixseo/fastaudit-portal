@@ -207,11 +207,9 @@ export default function SeoSettingDialog({ open, onOpenChange, setting, onSave }
                   <div key={i} className="rounded-lg border border-slate-200 p-3">
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-xs font-medium text-slate-500">Schema {i + 1}</span>
-                      {schemas.length > 1 && (
-                        <Button type="button" variant="ghost" size="sm" onClick={() => removeSchema(i)} className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-50">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
+                      <Button type="button" variant="ghost" size="sm" onClick={() => removeSchema(i)} className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-50">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                     <Textarea value={schema} onChange={(e) => updateSchema(i, e.target.value)} placeholder='{"@context":"https://schema.org","@type":"Service","name":"..."}' className="font-mono text-xs" rows={6} />
                   </div>

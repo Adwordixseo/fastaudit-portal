@@ -58,11 +58,13 @@ export default function InternalLinkInserter({ editor }) {
   const apply = () => {
     if (selected === null || !url.trim() || !editor || !occurrences[selected]) return;
     const occ = occurrences[selected];
-    editor.setSelection(occ.index, occ.length);
-    editor.format('link', url.trim());
+    editor.focus();
+    editor.removeFormat(occ.index, occ.length);
+    editor.formatText(occ.index, occ.length, 'link', url.trim());
     setUrl('');
     setWord('');
     setSelected(null);
+    setTextVersion((v) => v + 1);
   };
 
   return (

@@ -1,15 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import Logo from '@/components/site/Logo';
 
 const columns = [
   { title: 'Features', links: [{ l: 'Website Audit', to: '/app/audit' }, { l: 'Monthly Reports', to: '/app/reports' }, { l: 'Project Tracking', to: '/app/projects' }, { l: 'Approvals', to: '/app/reports' }] },
-  { title: 'Solutions', links: [{ l: 'For Agencies', href: '/#solutions' }, { l: 'For SaaS', href: '/#solutions' }, { l: 'For E-Commerce', href: '/#solutions' }, { l: 'For Local Business', href: '/#solutions' }] },
-  { title: 'Resources', links: [{ l: 'Free Audit', to: '/app/audit' }, { l: 'Pricing', to: '/pricing' }, { l: 'FAQ', href: '/#faq' }, { l: 'Support', to: '/app/support' }] },
+  { title: 'Solutions', links: [{ l: 'For Agencies', to: '/solutions/agencies' }, { l: 'For SaaS', to: '/solutions/saas-startups' }, { l: 'For E-Commerce', to: '/solutions/ecommerce' }, { l: 'For Local Business', to: '/solutions/local-business' }] },
+  { title: 'Resources', links: [{ l: 'Free Audit', to: '/app/audit' }, { l: 'Pricing', to: '/pricing' }, { l: 'FAQ', to: '/#faq' }, { l: 'Support', to: '/app/support' }] },
   { title: 'Company', links: [{ l: 'Contact', to: '/contact' }, { l: 'Login', to: '/login' }, { l: 'Team login', to: '/team' }, { l: 'Get started', to: '/register' }, { l: 'Privacy Policy', to: '/privacy-policy' }, { l: 'Terms of Service', to: '/terms' }] },
 ];
 
 export default function SiteFooter() {
+  const { data: latestPosts = [] } = useQuery({
+    queryKey: ['footer-latest-resources'],
+    queryFn: () => base44.entities.Resource.filter({ is_active: true }, '-created_date', 3),
+  });
+
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
@@ -26,13 +33,27 @@ export default function SiteFooter() {
               <ul className="mt-4 space-y-2.5">
                 {c.links.map((x) => (
                   <li key={x.l}>
-                    {x.to ? <Link to={x.to} className="text-sm text-slate-500 hover:text-indigo-600">{x.l}</Link> : <a href={x.href} className="text-sm text-slate-500 hover:text-indigo-600">{x.l}</a>}
+                    <Link to={x.to} className="text-sm text-slate-500 hover:text-indigo-600">{x.l}</Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+        {latestPosts.length > 0 && (
+          <div className="mt-12 border-t border-slate-200 pt-10">
+            <h4 className="text-sm font-semibold text-slate-900">Latest from the blog</h4>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              {latestPosts.map((post) => (
+                <Link key={post.id} to={`/resources/${post.slug}`} className="group rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/30">
+                  {post.tag && <span className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{post.tag}</span>}
+                  <p className="mt-1.5 text-sm font-medium text-slate-900 group-hover:text-indigo-700">{post.title}</p>
+                  {post.read_time && <p className="mt-1 text-xs text-slate-400">{post.read_time}</p>}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center">
           <span>© {new Date().getFullYear()} Adwordix. All rights reserved.</span>
           <span>Built for agencies that deliver measurable growth.</span>

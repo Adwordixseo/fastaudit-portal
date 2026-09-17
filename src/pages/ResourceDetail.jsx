@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Clock, FileText } from 'lucide-react';
@@ -16,6 +16,7 @@ import AuthorBox from '@/components/resources/AuthorBox';
 export default function ResourceDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: dbResource } = useQuery({
     queryKey: ['resource', slug],
@@ -78,6 +79,9 @@ export default function ResourceDetail() {
 
       {/* Body */}
       <div className="mx-auto max-w-5xl px-5 py-16 lg:px-8">
+        {isDynamic && dbResource?.image_url && (
+          <img src={dbResource.image_url} alt={dbResource.title || ''} className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+        )}
         <div className={`grid gap-12 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[220px_1fr]' : ''}`}>
           {isDynamic && tocHeadings.length > 0 && (
             <aside className="hidden lg:block min-w-0">
@@ -89,9 +93,6 @@ export default function ResourceDetail() {
           <article className="max-w-3xl min-w-0">
             {isDynamic ? (
               <>
-                {dbResource.image_url && (
-                  <img src={dbResource.image_url} alt="" className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
-                )}
                 <div className="rich-text space-y-4" dangerouslySetInnerHTML={{ __html: processedBody }} />
                 <AuthorBox
                   name={dbResource.author_name || dbResource.author}

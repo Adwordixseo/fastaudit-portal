@@ -114,6 +114,10 @@
     0% { background-position: 0% center; }
     100% { background-position: 200% center; }
   }
+  .ql-editor table { width: 100%; border-collapse: collapse; margin: 1rem 0; border: 1px solid #e2e8f0; }
+  .ql-editor th, .ql-editor td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; min-width: 50px; vertical-align: top; }
+  .ql-editor th { background: #f8fafc; font-weight: 600; }
+  .ql-snow button.ql-table::before { content: '▦'; font-size: 14px; }
   .rich-text-editor .ql-toolbar { border-radius: 0.5rem 0.5rem 0 0; border-color: #e2e8f0; }
   .rich-text-editor .ql-container { border-radius: 0 0 0.5rem 0.5rem; border-color: #e2e8f0; }
   .rich-text-editor .ql-editor { min-height: var(--ql-min-height, 180px); max-height: var(--ql-max-height, 320px); overflow-y: auto; overscroll-behavior: contain; }
@@ -127,6 +131,12 @@
   .rich-text a:hover { color: #4338ca; }
   .rich-text strong { font-weight: 600; color: #0f172a; }
   .rich-text blockquote { border-left: 3px solid #c7d2fe; padding-left: 1rem; margin: 1rem 0; color: #475569; font-style: italic; }
+  .rich-text table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; border: 1px solid #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
+  .rich-text thead { background: #f8fafc; }
+  .rich-text th { padding: 0.625rem 0.875rem; text-align: left; font-weight: 600; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
+  .rich-text td { padding: 0.5rem 0.875rem; text-align: left; color: #475569; border-bottom: 1px solid #f1f5f9; }
+  .rich-text tr:last-child td { border-bottom: none; }
+  .rich-text table tr:hover td { background: #f8fafc; }
   .portal-sidebar-scroll::-webkit-scrollbar { width: 4px; }
   .portal-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
   .portal-sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }

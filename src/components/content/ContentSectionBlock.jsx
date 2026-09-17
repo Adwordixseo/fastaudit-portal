@@ -38,6 +38,7 @@ export default function ContentSectionBlock({ section: s }) {
             {s.body && (
               <div
                 className="rich-text mt-4 text-slate-600"
+                style={s.columns > 1 ? { columnCount: s.columns, columnGap: '2rem' } : undefined}
                 dangerouslySetInnerHTML={{ __html: s.body }}
                 onClick={handleBodyClick}
               />

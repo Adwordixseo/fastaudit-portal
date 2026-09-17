@@ -102,7 +102,12 @@ export default async function(req) {
     const h1s = matchAllText(html, /<h1[^>]*>([\s\S]*?)<\/h1>/gi);
     const h2s = matchAllText(html, /<h2[^>]*>([\s\S]*?)<\/h2>/gi);
     const h3Count = count(/<h3[\s>]/gi), h4Count = count(/<h4[\s>]/gi), h5Count = count(/<h5[\s>]/gi), h6Count = count(/<h6[\s>]/gi);
-    const bodyText = stripTags(html);
+    // Extract <body> content only for text analysis (word count, keywords, emails, phones)
+    // — the full `html` includes <head> metadata (title, meta content, JSON-LD) which
+    // would inflate word counts and pollute keyword extraction with non-visible text.
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    const bodyHtml = bodyMatch ? bodyMatch[1] : html;
+    const bodyText = stripTags(bodyHtml);
     const wordCount = bodyText ? bodyText.split(/\s+/).filter(Boolean).length : 0;
 
     // --- On-Page SEO ---
@@ -179,8 +184,24 @@ export default async function(req) {
     const hasFavicon = /<link[^>]+rel=["'](?:shortcut icon|icon)["']/i.test(html);
     addCheck('technical', 'Favicon', hasFavicon ? 'pass' : 'warning', hasFavicon ? 'Present' : 'Missing', hasFavicon ? 'Your page has specified a Favicon.' : 'Your page is missing a Favicon.');
 
-    const hasJsonLd = /application\/ld\+json/i.test(html);
-    addCheck('technical', 'Schema.org Structured Data', hasJsonLd ? 'pass' : 'warning', hasJsonLd ? 'JSON-LD present' : 'Not found', hasJsonLd ? 'You are using JSON-LD Schema on your page.' : 'No Schema.org structured data was found on your page.');
+    // Extract JSON-LD schema types from the page
+    const schemaBlocks = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+    const schemaTypes = [];
+    schemaBlocks.forEach((m) => {
+      try {
+        const cleaned = m[1].trim().replace(/<!--[\s\S]*?-->/g, '');
+        const parsed = JSON.parse(cleaned);
+        const items = Array.isArray(parsed) ? parsed : [parsed];
+        items.forEach((item) => {
+          if (item && item['@type']) {
+            const types = Array.isArray(item['@type']) ? item['@type'] : [item['@type']];
+            types.forEach((t) => { if (t && !schemaTypes.includes(t)) schemaTypes.push(t); });
+          }
+        });
+      } catch { /* skip invalid JSON-LD */ }
+    });
+    const hasJsonLd = schemaBlocks.length > 0;
+    addCheck('technical', 'Schema.org Structured Data', hasJsonLd ? 'pass' : 'warning', hasJsonLd ? schemaTypes.join(', ') : 'Not found', hasJsonLd ? `You are using JSON-LD Schema (${schemaTypes.join(', ')}).` : 'No Schema.org structured data was found on your page.');
 
     // robots.txt / sitemap
     let robotsText = '', robotsOk = false;

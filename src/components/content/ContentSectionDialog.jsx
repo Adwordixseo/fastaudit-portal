@@ -14,8 +14,61 @@ import InternalLinkInserter from '@/components/admin/InternalLinkInserter';
 
 const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
 
+const PAGE_SECTIONS = {
+  '/': [
+    { value: 'hero', label: 'Hero' },
+    { value: 'platform', label: 'Platform features' },
+    { value: 'how_it_works', label: 'How it works' },
+    { value: 'solutions', label: 'Solutions' },
+    { value: 'pricing', label: 'Pricing' },
+    { value: 'resources', label: 'Resources' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+  '/platform/:slug': [
+    { value: 'hero', label: 'Hero' },
+    { value: 'features', label: 'Features grid' },
+    { value: 'steps', label: 'How it works steps' },
+    { value: 'faq', label: 'FAQ' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+  '/solutions/:slug': [
+    { value: 'hero', label: 'Hero' },
+    { value: 'features', label: 'Features grid' },
+    { value: 'steps', label: 'How it works steps' },
+    { value: 'faq', label: 'FAQ' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+  '/resources/:slug': [
+    { value: 'hero', label: 'Hero' },
+    { value: 'body', label: 'Article body' },
+    { value: 'faq', label: 'FAQ' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+  '/pricing': [
+    { value: 'pricing', label: 'Pricing packages' },
+    { value: 'faq', label: 'FAQ' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+  '/contact': [
+    { value: 'hero', label: 'Hero' },
+    { value: 'cta', label: 'CTA banner' },
+  ],
+};
+
+function getSectionsForPage(path) {
+  if (!path) return [];
+  if (PAGE_SECTIONS[path]) return PAGE_SECTIONS[path];
+  for (const [pattern, sections] of Object.entries(PAGE_SECTIONS)) {
+    if (pattern.includes(':')) {
+      const re = new RegExp('^' + pattern.replace(/:[^/]+/g, '[^/]+') + '$');
+      if (re.test(path)) return sections;
+    }
+  }
+  return [];
+}
+
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
-  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', link_url: '', link_label: '', extra_links: [], replace_section: '', hide_default: false, sort_order: 0, background: 'white', is_active: true });
+  const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', columns: 1, link_url: '', link_label: '', extra_links: [], replace_section: '', hide_default: false, sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
   const [quillEditor, setQuillEditor] = useState(null);
 
@@ -29,6 +82,7 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
         image_url: section?.image_url || '',
         image_alt: section?.image_alt || '',
         image_position: section?.image_position || 'top',
+        columns: section?.columns || 1,
         link_url: section?.link_url || '',
         link_label: section?.link_label || '',
         extra_links: Array.isArray(section?.extra_links) ? section.extra_links.map((l) => ({ url: l.url || '', label: l.label || '' })) : [],
@@ -84,19 +138,18 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Replace existing section</Label>
-              <Select value={form.replace_section} onValueChange={(v) => set('replace_section', v)}>
+              <Select value={form.replace_section || 'none'} onValueChange={(v) => set('replace_section', v === 'none' ? '' : v)}>
                 <SelectTrigger className="mt-1.5"><SelectValue placeholder="None — add as new section" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>None — add as new section</SelectItem>
-                  <SelectItem value="hero">Hero</SelectItem>
-                  <SelectItem value="platform">Platform features</SelectItem>
-                  <SelectItem value="how_it_works">How it works</SelectItem>
-                  <SelectItem value="solutions">Solutions</SelectItem>
-                  <SelectItem value="pricing">Pricing</SelectItem>
-                  <SelectItem value="resources">Resources</SelectItem>
-                  <SelectItem value="cta">CTA banner</SelectItem>
+                  <SelectItem value="none">None — add as new section</SelectItem>
+                  {getSectionsForPage(form.page_path).map((s) => (
+                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {form.page_path.trim() && getSectionsForPage(form.page_path).length === 0 && (
+                <p className="mt-1 text-xs text-amber-600">No known sections for this page path. You can still add this as a new standalone section.</p>
+              )}
             </div>
             <div className="flex items-end pb-2">
               <div className={`flex items-center gap-2 ${!form.replace_section ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -181,10 +234,17 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Sort order</Label>
-              <Input type="number" value={form.sort_order} onChange={(e) => set('sort_order', Number(e.target.value))} className="mt-1.5" />
+              <Label>Body layout (columns)</Label>
+              <Select value={String(form.columns || 1)} onValueChange={(v) => set('columns', Number(v))}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Single column</SelectItem>
+                  <SelectItem value="2">Two columns</SelectItem>
+                  <SelectItem value="3">Three columns</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Background</Label>
@@ -196,6 +256,13 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
                   <SelectItem value="indigo">Indigo tint</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Sort order</Label>
+              <Input type="number" value={form.sort_order} onChange={(e) => set('sort_order', Number(e.target.value))} className="mt-1.5" />
             </div>
             <div className="flex items-end pb-2">
               <div className="flex items-center gap-2">

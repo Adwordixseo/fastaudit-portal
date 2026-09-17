@@ -35,9 +35,17 @@ export default function AdminFaqs() {
 
   const filtered = pageFilter === 'all' ? faqs : faqs.filter((f) => f.page_path === pageFilter);
 
-  const save = async (form) => {
-    if (dialog.faq) await base44.entities.FaqItem.update(dialog.faq.id, form);
-    else await base44.entities.FaqItem.create(form);
+  const save = async (formOrForms) => {
+    if (dialog.faq) {
+      await base44.entities.FaqItem.update(dialog.faq.id, formOrForms);
+    } else if (Array.isArray(formOrForms)) {
+      await base44.entities.FaqItem.bulkCreate(formOrForms);
+      toast.success(`${formOrForms.length} FAQs saved`);
+      refresh();
+      return;
+    } else {
+      await base44.entities.FaqItem.create(formOrForms);
+    }
     refresh();
     toast.success('FAQ saved');
   };

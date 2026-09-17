@@ -35,6 +35,11 @@
       "default": "top",
       "description": "Where the image sits relative to the text"
     },
+    "columns": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of columns for body text layout (1, 2, or 3)"
+    },
     "link_url": {
       "type": "string",
       "description": "Primary internal link URL for CTA button"
@@ -70,7 +75,13 @@
         "solutions",
         "pricing",
         "resources",
-        "cta"
+        "cta",
+        "features",
+        "steps",
+        "faq",
+        "body",
+        "testimonials",
+        "stats"
       ],
       "default": "",
       "description": "Which hardcoded page section this replaces (empty = standalone section added to the page)"
