@@ -80,7 +80,7 @@ export default function ResourceDetail() {
       {/* Body */}
       <div className="mx-auto max-w-5xl px-5 py-16 lg:px-8">
         {isDynamic && dbResource?.image_url && (
-          <img src={dbResource.image_url} alt={dbResource.title || ''} className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+          <img src={dbResource.image_url} alt={dbResource.image_alt || dbResource.title || ''} className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
         )}
         <div className={`grid gap-12 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[220px_1fr]' : ''}`}>
           {isDynamic && tocHeadings.length > 0 && (

@@ -25,6 +25,10 @@
       "type": "string",
       "description": "Hero image for the article"
     },
+    "image_alt": {
+      "type": "string",
+      "description": "Alt text for the hero image, used for SEO and accessibility"
+    },
     "author": {
       "type": "string"
     },

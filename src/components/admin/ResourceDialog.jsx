@@ -14,7 +14,7 @@ function slugify(str) {
 }
 
 export default function ResourceDialog({ open, onOpenChange, resource, onSave }) {
-  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
+  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', image_alt: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
   const [saving, setSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
 
@@ -28,6 +28,7 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
         excerpt: resource?.excerpt || '',
         body: resource?.body || '',
         image_url: resource?.image_url || '',
+        image_alt: resource?.image_alt || '',
         author: resource?.author || '',
         author_name: resource?.author_name || '',
         author_position: resource?.author_position || '',
@@ -121,6 +122,17 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
             onChange={(v) => set('image_url', v)}
             help="Shown at the top of the article and on the card."
           />
+
+          <div>
+            <Label>Hero image alt text</Label>
+            <Input
+              value={form.image_alt}
+              onChange={(e) => set('image_alt', e.target.value)}
+              placeholder="Describe the hero image for SEO and screen readers"
+              className="mt-1.5"
+            />
+            <p className="mt-1 text-xs text-slate-400">Used as the &lt;img alt&gt; attribute — improves SEO and accessibility.</p>
+          </div>
 
           <div>
             <Label>Body content</Label>
