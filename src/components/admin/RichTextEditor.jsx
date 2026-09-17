@@ -155,7 +155,11 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
           table.appendChild(tbody);
         }
       });
-      quill.clipboard.dangerouslyPasteHTML(range.index, temp.innerHTML);
+      quill.focus();
+      quill.setSelection(range.index, 0);
+      // Insert directly into the DOM to preserve table structure and formatting
+      const ok = document.execCommand('insertHTML', false, temp.innerHTML);
+      if (!ok) quill.clipboard.dangerouslyPasteHTML(range.index, temp.innerHTML);
       onChange(quill.root.innerHTML);
     };
     quill.root.addEventListener('paste', handlePaste, true);
@@ -220,7 +224,12 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       html += '</tr>';
     }
     html += '</tbody></table><p><br></p>';
-    quill.clipboard.dangerouslyPasteHTML(range.index, html);
+    quill.focus();
+    quill.setSelection(range.index, 0);
+    // Insert directly into the DOM — dangerouslyPasteHTML converts to a delta
+    // which flattens and strips the table structure.
+    const ok = document.execCommand('insertHTML', false, html);
+    if (!ok) quill.clipboard.dangerouslyPasteHTML(range.index, html);
     onChange(quill.root.innerHTML);
     setTablePanel(false);
   };
