@@ -117,6 +117,8 @@
   .ql-editor table { width: 100%; border-collapse: collapse; margin: 1rem 0; border: 1px solid #e2e8f0; }
   .ql-editor th, .ql-editor td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; min-width: 50px; vertical-align: top; }
   .ql-editor th { background: #f8fafc; font-weight: 600; }
+  .ql-editor table td[contenteditable="true"], .ql-editor table th[contenteditable="true"] { cursor: text; }
+  .ql-editor table td:focus, .ql-editor table th:focus { outline: 2px solid #c7d2fe; outline-offset: -2px; }
   .ql-snow button.ql-table::before { content: '▦'; font-size: 14px; }
   .rich-text-editor .ql-toolbar { border-radius: 0.5rem 0.5rem 0 0; border-color: #e2e8f0; }
   .rich-text-editor .ql-container { border-radius: 0 0 0.5rem 0.5rem; border-color: #e2e8f0; }
