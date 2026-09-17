@@ -7,39 +7,51 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-// ── Register a raw-HTML block embed ─────────────────────────────────────────
-// Tables (inserted or pasted) are stored as raw HTML inside this embed.
-// The embed is contenteditable so users can edit cells directly; an input
-// listener syncs changes back to onChange.
+// ── Register table blots ───────────────────────────────────────────────────
+// Container-based blots let Quill parse and preserve <table>/<tbody>/<tr>/<td>
+// from both inserted and pasted HTML.
 const Quill = ReactQuill.Quill;
-const BlockEmbed = Quill.import('blots/block/embed');
+const Container = Quill.import('blots/container');
+const Block = Quill.import('blots/block');
 
-class RawHtmlEmbed extends BlockEmbed {
-  static create(value) {
-    const node = super.create();
-    node.classList.add('ql-raw-html');
-    node.setAttribute('contenteditable', 'true');
-    if (typeof value === 'string') node.innerHTML = value;
-    return node;
-  }
-  static value(node) {
-    return node.innerHTML;
-  }
-}
-RawHtmlEmbed.blotName = 'raw-html';
-RawHtmlEmbed.tagName = 'div';
-RawHtmlEmbed.className = 'ql-raw-html';
-Quill.register(RawHtmlEmbed, true);
+class TableBlot extends Container { static create() { return super.create(); } }
+TableBlot.blotName = 'table';
+TableBlot.tagName = 'TABLE';
 
-// Strip contenteditable attrs from saved HTML so they don't leak to the live page
-const cleanHtml = (html) => (html || '').replace(/ contenteditable="(?:true|false)"/g, '');
+class TableBodyBlot extends Container { static create() { return super.create(); } }
+TableBodyBlot.blotName = 'table-body';
+TableBodyBlot.tagName = 'TBODY';
+
+class TableRowBlot extends Container { static create() { return super.create(); } }
+TableRowBlot.blotName = 'table-row';
+TableRowBlot.tagName = 'TR';
+
+class TableCellBlot extends Block { static create() { return super.create(); } }
+TableCellBlot.blotName = 'table-cell';
+TableCellBlot.tagName = 'TD';
+
+class TableHeaderCellBlot extends Block { static create() { return super.create(); } }
+TableHeaderCellBlot.blotName = 'table-header-cell';
+TableHeaderCellBlot.tagName = 'TH';
+
+TableBlot.allowedChildren = [TableRowBlot, TableBodyBlot];
+TableBodyBlot.allowedChildren = [TableRowBlot];
+TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
+
+Quill.register({
+  'formats/table': TableBlot,
+  'formats/table-body': TableBodyBlot,
+  'formats/table-row': TableRowBlot,
+  'formats/table-cell': TableCellBlot,
+  'formats/table-header-cell': TableHeaderCellBlot,
+}, true);
 
 export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady }) {
   const quillRef = useRef(null);
   const [tableDialog, setTableDialog] = useState(false);
   const [rows, setRows] = useState(3);
   const [cols, setCols] = useState(3);
-  const [imageDialog, setImageDialog] = useState(null); // { file_url }
+  const [imageDialog, setImageDialog] = useState(null);
   const [altText, setAltText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedAlt, setSelectedAlt] = useState('');
@@ -68,21 +80,8 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     return () => quill.root.removeEventListener('click', handleClick);
   }, []);
 
-  // Sync edits inside raw-html embeds (table cells) back to onChange
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-    const handleInput = (e) => {
-      if (e.target.closest('.ql-raw-html')) {
-        onChange(cleanHtml(quill.root.innerHTML));
-      }
-    };
-    quill.root.addEventListener('input', handleInput);
-    return () => quill.root.removeEventListener('input', handleInput);
-  }, [onChange]);
-
-  // Intercept paste when content contains tables — insert as raw HTML to
-  // preserve the full <table>/<tr>/<td> structure from Word/Google Docs/etc.
+  // Intercept paste when content contains tables — clean Office/Docs cruft
+  // then let Quill's clipboard parse the HTML with our registered table blots.
   useEffect(() => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
@@ -92,7 +91,6 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       e.preventDefault();
       e.stopPropagation();
       const range = quill.getSelection(true) || { index: 0 };
-      // Clean up Office/Docs cruft but keep table structure
       const temp = document.createElement('div');
       temp.innerHTML = html;
       temp.querySelectorAll('script, style, meta, link').forEach((el) => el.remove());
@@ -103,24 +101,19 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
           }
         });
       });
-      quill.insertEmbed(range.index, 'raw-html', temp.innerHTML);
-      quill.setSelection(range.index + 1);
-      onChange(cleanHtml(quill.root.innerHTML));
+      quill.clipboard.dangerouslyPasteHTML(range.index, temp.innerHTML);
+      onChange(quill.root.innerHTML);
     };
     quill.root.addEventListener('paste', handlePaste, true);
     return () => quill.root.removeEventListener('paste', handlePaste, true);
   }, [onChange]);
 
-  const emitChange = () => {
-    const quill = quillRef.current?.getEditor();
-    if (quill) onChange(cleanHtml(quill.root.innerHTML));
-  };
-
   const updateSelectedAlt = (val) => {
     setSelectedAlt(val);
     if (selectedImage) {
       selectedImage.setAttribute('alt', val);
-      emitChange();
+      const quill = quillRef.current?.getEditor();
+      if (quill) onChange(quill.root.innerHTML);
     }
   };
 
@@ -147,10 +140,9 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     if (!quill || !imageDialog) return;
     const range = quill.getSelection(true) || { index: 0 };
     quill.insertEmbed(range.index, 'image', imageDialog.file_url);
-    // Set alt text on the just-inserted image
     const imgs = quill.root.querySelectorAll(`img[src="${imageDialog.file_url}"]`);
     if (imgs.length > 0) imgs[imgs.length - 1].setAttribute('alt', altText);
-    emitChange();
+    onChange(quill.root.innerHTML);
     setImageDialog(null);
     setAltText('');
   };
@@ -168,9 +160,8 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       html += '</tr>';
     }
     html += '</tbody></table><p><br></p>';
-    quill.insertEmbed(range.index, 'raw-html', html);
-    quill.setSelection(range.index + 1);
-    emitChange();
+    quill.clipboard.dangerouslyPasteHTML(range.index, html);
+    onChange(quill.root.innerHTML);
     setTableDialog(false);
   };
 
@@ -187,7 +178,7 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
     },
   };
 
-  const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'raw-html', 'blockquote'];
+  const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'table', 'table-body', 'table-row', 'table-cell', 'table-header-cell', 'blockquote'];
 
   return (
     <div>
@@ -196,7 +187,7 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
           ref={quillRef}
           theme="snow"
           value={value}
-          onChange={(content) => onChange(cleanHtml(content))}
+          onChange={onChange}
           modules={modules}
           formats={formats}
           placeholder={placeholder}

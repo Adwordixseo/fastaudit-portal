@@ -90,7 +90,7 @@ export default function ResourceDetail() {
               </div>
             </aside>
           )}
-          <article className="max-w-3xl min-w-0">
+          <article className="min-w-0">
             {isDynamic ? (
               <>
                 <div className="rich-text space-y-4" dangerouslySetInnerHTML={{ __html: processedBody }} />
