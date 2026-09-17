@@ -126,7 +126,11 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
       const range = quill.getSelection(true) || { index: 0 };
       const temp = document.createElement('div');
       temp.innerHTML = html;
-      temp.querySelectorAll('script, style, meta, link, o:p, v:shape').forEach((el) => el.remove());
+      temp.querySelectorAll('script, style, meta, link').forEach((el) => el.remove());
+      // Remove Office/VML namespaced elements (o:p, v:shape) — these aren't valid CSS selectors
+      temp.querySelectorAll('*').forEach((el) => {
+        if (el.tagName.toLowerCase() === 'o:p' || el.tagName.toLowerCase() === 'v:shape') el.remove();
+      });
       temp.querySelectorAll('*').forEach((el) => {
         [...el.attributes].forEach((attr) => {
           if (attr.name.startsWith('o:') || attr.name.startsWith('v:')) el.removeAttribute(attr.name);
