@@ -75,6 +75,9 @@ export default function FeatureDetail() {
         </section>
       )}
 
+      {/* Dynamic content sections */}
+      <ContentSectionsRenderer />
+
       {/* Features */}
       <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
         <h2 className="text-2xl font-bold text-slate-900">What you get</h2>
@@ -112,8 +115,6 @@ export default function FeatureDetail() {
 
       {/* FAQ */}
       <FaqSection pagePath={location.pathname} fallbackFaqs={item.faq} />
-
-      <ContentSectionsRenderer />
 
       {/* Prev / next */}
       <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">
