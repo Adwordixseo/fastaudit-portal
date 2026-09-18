@@ -3,20 +3,20 @@ import { motion } from 'framer-motion';
 import { Search, FolderKanban, FileText, CheckCircle2, LifeBuoy, RefreshCw } from 'lucide-react';
 
 const items = [
-  { icon: Search, title: 'Instant Website Audit', text: 'Score your SEO, performance, content and AI-readiness with a prioritised fix list.' },
-  { icon: FolderKanban, title: 'Project Progress', text: 'Watch every milestone move from pending to done with live progress bars.' },
-  { icon: FileText, title: 'Monthly Reports', text: 'PDFs, documents and spreadsheets delivered to your dashboard — preview or download.' },
-  { icon: CheckCircle2, title: 'One-click Approvals', text: 'Approve deliverables or request changes, with a full history log per document.' },
-  { icon: LifeBuoy, title: 'Support Tickets', text: 'Raise a ticket, track its status and keep the whole conversation in one thread.' },
-  { icon: RefreshCw, title: 'Renew & Upgrade', text: 'See active and expired packages and renew or scale up in a couple of clicks.' },
+  { icon: Search, title: 'Instant Website Audit', text: "Find what is working against your website's success with our instant, free SEO audit reports." },
+  { icon: FolderKanban, title: 'Project Progress', text: 'Access an advanced dashboard to see what\u2019s happening and keep track of milestone achievements.' },
+  { icon: FileText, title: 'Monthly Reports', text: 'Get easy-to-understand and downloadable SEO audit reports from one online SEO platform every month.' },
+  { icon: CheckCircle2, title: 'One-Click Approvals', text: 'Handle approvals and key SEO deliverables with a one-click, easy-to-access automated dashboard.' },
+  { icon: LifeBuoy, title: 'Support Tickets', text: 'Need help or have a question? Raise a support ticket, and the entire conversation will be together.' },
+  { icon: RefreshCw, title: 'Renew & Upgrade', text: 'Review your SEO package and plan status, and renew or upgrade it for continuous SEO improvement.' },
 ];
 
 export default function PlatformSection() {
   return (
     <section id="platform" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="max-w-2xl">
-        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">The features</span>
-        <h2 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">Everything your SEO project needs, in one portal.</h2>
+        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Features Beyond Audit</span>
+        <h2 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">From SEO audits to monthly progress, everything is done right on a single-click-accessible platform by Adwordix LLC.</h2>
       </div>
       <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((it, i) => (

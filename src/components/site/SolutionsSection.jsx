@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { Building2, Rocket, ShoppingBag, MapPin, ArrowRight } from 'lucide-react';
 
 const items = [
-  { icon: Building2, title: 'Agencies', slug: 'agencies', text: 'White-glove reporting for every client project, delivered through one branded portal.' },
-  { icon: Rocket, title: 'SaaS & Startups', slug: 'saas-startups', text: 'Own the answers buyers ask Google and AI assistants at every stage of the funnel.' },
-  { icon: ShoppingBag, title: 'E-Commerce', slug: 'ecommerce', text: 'Win product-intent searches and turn category pages into revenue machines.' },
-  { icon: MapPin, title: 'Local Business', slug: 'local-business', text: 'Show up first on the map and in "near me" searches with local SEO that compounds.' },
+  { icon: Building2, title: 'Agencies', slug: 'agencies', text: 'Choose a professional and expert white-label website audit tool to track multiple clients in one place.' },
+  { icon: Rocket, title: 'SaaS & Startups', slug: 'saas-startups', text: 'With advanced SEO audits, find the real gaps and target high-intent searches for your solutions.' },
+  { icon: ShoppingBag, title: 'E-Commerce', slug: 'ecommerce', text: 'Get precise SEO audit reports and track how you can convert your potential consumers into your customers.' },
+  { icon: MapPin, title: 'Local Businesses', slug: 'local-business', text: 'Never miss a near-me search for your service or product. See where you can win the high-intent searches.' },
 ];
 
 export default function SolutionsSection() {
@@ -16,9 +16,9 @@ export default function SolutionsSection() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">Solutions</span>
-            <h2 className="mt-3 text-4xl font-bold sm:text-5xl">Built for how you grow.</h2>
+            <h2 className="mt-3 text-4xl font-bold sm:text-5xl">SEO insights aligned with your business model</h2>
           </div>
-          <p className="max-w-md text-slate-400">Whatever you sell, the process is the same: audit, fix, report, approve, repeat — and watch the graph go up.</p>
+          <p className="max-w-md text-slate-400">Whether you sell a product, a service, or software, get free SEO audits and more for precise results.</p>
         </div>
         <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {items.map((it) => (

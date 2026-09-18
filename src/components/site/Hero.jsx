@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, ShieldCheck, Sparkles, Star, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Globe, ShieldCheck, Sparkles, Star, TrendingUp, Zap, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import KeywordRankingTicker from '@/components/site/KeywordRankingTicker';
 
 const stats = [
-  { n: '92%', t: 'of clients see ranking gains in 90 days', icon: TrendingUp },
-  { n: '1,200+', t: 'websites audited and improved', icon: Globe },
-  { n: '24h', t: 'average support ticket response', icon: Zap },
+  { n: '90%', t: 'Websites Are Not SEO-Ready', icon: AlertTriangle },
+  { n: '1500+', t: 'Website Audits Done', icon: Globe },
+  { n: '24/7', t: 'Accessible SEO Audit Tool', icon: Zap },
+  { n: '100+', t: 'Sites Are Getting AI-Ready', icon: Sparkles },
 ];
 
 const scanSteps = ['Crawling pages…', 'Scoring performance…', 'Checking AI-readiness…', 'Analyzing keywords…'];
@@ -56,10 +57,10 @@ export default function Hero() {
               Free instant audit · AI-search ready · No credit card
             </span>
             <h1 className="mt-7 text-5xl font-extrabold leading-[1.02] sm:text-6xl lg:text-7xl">
-              Find out why your website <span className="gradient-text shimmer-text">isn't ranking.</span>
+              Free Website <span className="gradient-text shimmer-text">SEO Audit Tool</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 lg:mx-0">
-              Run a free SEO & AI-readiness audit in under a minute. Then let our team fix it — with monthly reports, milestone tracking and approvals all in one client portal.
+              Run a free website SEO audit to uncover key issues, missed opportunities, and improvements that can help your site perform better.
             </p>
             <form onSubmit={go} className="mx-auto mt-10 flex max-w-xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur sm:flex-row">
               <div className="flex flex-1 items-center gap-2 rounded-xl bg-white/5 px-4 transition-colors focus-within:bg-white/10">
@@ -219,7 +220,7 @@ export default function Hero() {
         </div>
 
         {/* Stat cards */}
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.25 }} className="mx-auto mt-16 grid max-w-4xl gap-4 sm:grid-cols-3">
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.25 }} className="mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map(({ n, t, icon: Icon }) => (
             <motion.div
               key={t}

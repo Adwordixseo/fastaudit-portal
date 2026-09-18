@@ -5,12 +5,14 @@ import { base44 } from '@/api/base44Client';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const DEFAULT_FAQS = [
-  ['Is the website audit really free?', 'Yes. Create an account, enter your URL and you get scored results on screen instantly. The full downloadable PDF report is unlocked when you choose any package.'],
-  ['What does a package include?', 'A dedicated project dashboard, milestone tracking, monthly reports (PDF, documents and spreadsheets), one-click approvals and priority support tickets.'],
-  ['Can I pay monthly, quarterly or yearly?', 'All three. Quarterly and yearly billing come with a built-in discount and you can renew or upgrade at any time from your dashboard.'],
-  ['How do approvals work?', 'Every deliverable we upload shows an Approve or Request Changes button. Your decision and notes are logged so nothing gets lost.'],
-  ['How quickly will I see results?', 'Technical fixes usually show within weeks; competitive keyword growth typically compounds over 3–6 months. Your monthly reports show the trend.'],
-  ['Can I manage more than one website?', 'Yes — add as many projects as you like under one account. Each project gets its own dashboard, reports and milestones.'],
+  ["Does Adwordix LLC offer a completely free online SEO audit tool?", "Yes. Adwordix LLC offers a free online SEO audit tool that checks your website and provides insights into its SEO strengths, issues, and areas that may need improvement. You can start with the tool for free and get a precise SEO audit report."],
+  ["How can I check my website's SEO for free?", "Enter your website URL into the free website SEO audit tool and run the analysis. You'll receive an instant free SEO report that highlights important areas of your website, including strengths and potential gaps. Then, if you need more assistance and growth plans, you can pick a package that fits your requirements."],
+  ["What can a free SEO audit tell me about my website?", "A free SEO audit can help you identify important website issues and optimization opportunities. It gives you a starting point for understanding your current SEO health and deciding what needs attention. From content gaps to AI readiness and technical insights, it covers what exactly limits and strengthens your online performance."],
+  ["Are free SEO audit tools enough for a complete SEO analysis?", "Not always. While a free audit is useful for identifying key issues and opportunities, a deeper SEO analysis may require more detailed technical, content, keyword, competitor, and performance research. This happens when you choose the right SEO tool package. Here, you can access multiple SEO plans and everything on one dashboard. From reports to support, everything is seamless with Adwordix LLC's website audit services."],
+  ["Can a free SEO audit improve my website rankings?", "The audit itself does not improve rankings. It identifies SEO issues and opportunities that you can act on. Improving rankings requires implementing the right changes and maintaining an ongoing SEO strategy based on your website, competition, search intent, and other ranking factors."],
+  ["Is an SEO audit useful if my website already ranks on Google?", "Yes. An SEO audit can help identify areas that may be limiting your existing visibility, along with opportunities to improve pages, content, technical SEO, and search performance. Even if you do not have SEO knowledge or your website is already ranking, you can always find a new parameter to work on."],
+  ["What should I do after receiving my free SEO report?", "Start with the most important findings and prioritize fixes based on their potential impact. If you prefer expert support, you can use the audit findings as a starting point to choose an SEO package and take your optimization further."],
+  ["Does Adwordix LLC offer a white-label website audit tool for agencies?", "Yes. Adwordix LLC offers a white-label website audit tool that agencies can use to audit client websites, present SEO findings under their own brand, and provide clients with clear, professional audit reports."],
 ];
 
 function matchPath(pathname, items) {
@@ -73,8 +75,8 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
     <section id="faq" className="bg-slate-50 py-24">
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <div className="text-center">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">FAQ</span>
-          <h2 className="mt-3 text-4xl font-bold text-slate-900">Common questions</h2>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">FAQs</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">Free SEO Audit Tool: Your Questions, Answered</h2>
         </div>
         <Accordion type="single" collapsible className="mt-12 space-y-3">
           {faqs.map(([q, a], i) => (

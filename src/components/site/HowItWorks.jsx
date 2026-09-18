@@ -1,9 +1,9 @@
 import React from 'react';
 
 const steps = [
-  { n: '01', title: 'Audit your website', text: 'Enter your URL and get a scored report with the issues holding you back.' },
-  { n: '02', title: 'Pick a growth package', text: 'Unlock the full PDF report and choose monthly, quarterly or yearly billing.' },
-  { n: '03', title: 'Track, approve, grow', text: 'Follow milestones, review monthly reports and approve deliverables from your dashboard.' },
+  { n: '01', title: 'Run Your Free SEO Audit', text: 'Enter your website URL and get a free SEO audit report, including key issues and missed opportunities.' },
+  { n: '02', title: 'Choose Your SEO Package', text: 'There are three SEO packages to meet your needs, and all lead to building a stronger website ready to rank.' },
+  { n: '03', title: 'Continuous SEO Improvements', text: 'Clear the issues, achieve the milestones, and track your regular SEO progress from a single dashboard.' },
 ];
 
 export default function HowItWorks() {
@@ -11,9 +11,9 @@ export default function HowItWorks() {
     <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">How it works</span>
-          <h2 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">From first audit to first-page results.</h2>
-          <p className="mt-5 text-slate-500">No spreadsheets, no lost emails. Every step of your SEO engagement lives in the portal.</p>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">How It Works</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">From a free SEO report to a stronger website.</h2>
+          <p className="mt-5 text-slate-500">The first report shows what\u2019s wrong, and you enroll in monthly progress and AI-SEO success.</p>
         </div>
         <ol className="space-y-4">
           {steps.map((s) => (

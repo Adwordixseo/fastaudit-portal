@@ -27,7 +27,7 @@ export default function ResourcesSection() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Resources</span>
-          <h2 className="mt-3 text-4xl font-bold text-slate-900">Learn what drives rankings.</h2>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">Learn How to Lead the Market With a Free SEO Audit</h2>
         </div>
         <Link to="/app/audit" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">Start with a free audit <ArrowRight className="h-4 w-4" /></Link>
       </div>
