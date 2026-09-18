@@ -55,7 +55,7 @@ export default function FeatureDetail() {
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-slate-600">{item.tagline}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full px-6 shadow-lg shadow-indigo-500/25"><Link to="/app/audit">Run a free audit <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full px-6"><Link to="/#pricing">View pricing</Link></Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full px-6"><Link to={item.secondaryCta?.to || '/#pricing'}>{item.secondaryCta?.label || 'View pricing'}</Link></Button>
             </div>
           </motion.div>
         </div>
