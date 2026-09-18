@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2, FileText, ArrowRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, FileText, ArrowRight, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import ContentSectionDialog from '@/components/content/ContentSectionDialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import StatusBadge from '@/components/ui/StatusBadge';
 
 export default function AdminContent() {
   const qc = useQueryClient();
   const [dialog, setDialog] = useState({ open: false, section: null });
+  const [pathFilter, setPathFilter] = useState('');
   const { data: sections = [] } = useQuery({ queryKey: ['admin-content'], queryFn: () => base44.entities.ContentSection.list('sort_order') });
+  const filtered = sections.filter((s) => !pathFilter.trim() || (s.page_path || '').toLowerCase().includes(pathFilter.trim().toLowerCase()));
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-content'] }); qc.invalidateQueries({ queryKey: ['content-sections'] }); };
 
   const save = async (form) => {
@@ -32,6 +35,16 @@ export default function AdminContent() {
     <div>
       <PageHeader eyebrow="Admin" title="Content sections" description="Add editable sections with rich text and internal links to any page. Great for SEO content and internal linking." action={<Button onClick={() => setDialog({ open: true, section: null })} className="rounded-full"><Plus className="mr-2 h-4 w-4" /> New section</Button>} />
 
+      {sections.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="relative w-full max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input value={pathFilter} onChange={(e) => setPathFilter(e.target.value)} placeholder="Filter by page path (e.g. /solutions/agencies)" className="pl-9" />
+          </div>
+          {pathFilter.trim() && <span className="text-xs text-slate-400">{filtered.length} of {sections.length} sections</span>}
+        </div>
+      )}
+
       {sections.length === 0 ? (
         <div className="flex flex-col items-center rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-6 py-14 text-center">
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-600"><FileText className="h-5 w-5" /></div>
@@ -39,9 +52,11 @@ export default function AdminContent() {
           <p className="mt-1 max-w-sm text-sm text-slate-500">Add rich text sections to any page to expand your content and build internal links for SEO.</p>
           <Button onClick={() => setDialog({ open: true, section: null })} className="mt-4 rounded-full"><Plus className="mr-2 h-4 w-4" /> Add your first section</Button>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">No sections match &ldquo;{pathFilter}&rdquo;.</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {sections.map((s) => (
+          {filtered.map((s) => (
             <div key={s.id} className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>

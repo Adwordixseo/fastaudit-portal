@@ -11,66 +11,18 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import InternalLinkInserter from '@/components/admin/InternalLinkInserter';
-
-const INTERNAL_PATHS = ['/', '/app/audit', '/app/packages', '/app/projects', '/app/reports', '/app/support', '/platform/seo-audits', '/platform/keyword-tracking', '/platform/reporting', '/solutions/ecommerce', '/solutions/local-business', '/solutions/startups'];
-
-const PAGE_SECTIONS = {
-  '/': [
-    { value: 'hero', label: 'Hero' },
-    { value: 'platform', label: 'Platform features' },
-    { value: 'how_it_works', label: 'How it works' },
-    { value: 'solutions', label: 'Solutions' },
-    { value: 'pricing', label: 'Pricing' },
-    { value: 'resources', label: 'Resources' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-  '/platform/:slug': [
-    { value: 'hero', label: 'Hero' },
-    { value: 'features', label: 'Features grid' },
-    { value: 'steps', label: 'How it works steps' },
-    { value: 'faq', label: 'FAQ' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-  '/solutions/:slug': [
-    { value: 'hero', label: 'Hero' },
-    { value: 'features', label: 'Features grid' },
-    { value: 'steps', label: 'How it works steps' },
-    { value: 'faq', label: 'FAQ' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-  '/resources/:slug': [
-    { value: 'hero', label: 'Hero' },
-    { value: 'body', label: 'Article body' },
-    { value: 'faq', label: 'FAQ' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-  '/pricing': [
-    { value: 'pricing', label: 'Pricing packages' },
-    { value: 'faq', label: 'FAQ' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-  '/contact': [
-    { value: 'hero', label: 'Hero' },
-    { value: 'cta', label: 'CTA banner' },
-  ],
-};
-
-function getSectionsForPage(path) {
-  if (!path) return [];
-  if (PAGE_SECTIONS[path]) return PAGE_SECTIONS[path];
-  for (const [pattern, sections] of Object.entries(PAGE_SECTIONS)) {
-    if (pattern.includes(':')) {
-      const re = new RegExp('^' + pattern.replace(/:[^/]+/g, '[^/]+') + '$');
-      if (re.test(path)) return sections;
-    }
-  }
-  return [];
-}
+import { getSectionsForPage, getRouteLabel, INTERNAL_PATHS } from '@/lib/pageSections';
 
 export default function ContentSectionDialog({ open, onOpenChange, section, onSave }) {
   const [form, setForm] = useState({ page_path: '', section_name: '', heading: '', body: '', image_url: '', image_alt: '', image_position: 'top', columns: 1, link_url: '', link_label: '', extra_links: [], replace_section: '', hide_default: false, sort_order: 0, background: 'white', is_active: true });
   const [saving, setSaving] = useState(false);
   const [quillEditor, setQuillEditor] = useState(null);
+
+  // When the page path changes, drop a "replace section" choice that the new page template doesn't support.
+  useEffect(() => {
+    const available = getSectionsForPage(form.page_path).map((s) => s.value);
+    setForm((f) => (f.replace_section && !available.includes(f.replace_section) ? { ...f, replace_section: '' } : f));
+  }, [form.page_path]);
 
   useEffect(() => {
     if (open) {
@@ -128,6 +80,9 @@ export default function ContentSectionDialog({ open, onOpenChange, section, onSa
               <Label>Page path</Label>
               <Input value={form.page_path} onChange={(e) => set('page_path', e.target.value)} placeholder="/ or /platform/:slug" className="mt-1.5 font-mono text-sm" list="content-paths" />
               <datalist id="content-paths">{INTERNAL_PATHS.map((p) => <option key={p} value={p} />)}</datalist>
+              {form.page_path.trim() && (
+                <p className="mt-1 text-xs text-slate-500">{getRouteLabel(form.page_path) ? <>Matched page: <span className="font-medium text-slate-700">{getRouteLabel(form.page_path)}</span></> : <span className="text-amber-600">No known page template matches this path.</span>}</p>
+              )}
             </div>
             <div>
               <Label>Section name</Label>
