@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, FileText } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { resourceItems } from '@/lib/siteNav';
 
 export default function ResourcesSection() {
   const { data: dbResources = [] } = useQuery({
-    queryKey: ['resources-active'],
-    queryFn: () => base44.entities.Resource.filter({ is_active: true }, '-created_date', 50),
+    queryKey: ['resources-active-home'],
+    queryFn: () => base44.entities.Resource.filter({ is_active: true }, '-created_date', 3),
   });
 
-  const dynamicCards = dbResources.map((r) => ({
+  const cards = dbResources.map((r) => ({
     slug: r.slug,
     icon: FileText,
     tag: r.tag || 'Article',
@@ -20,8 +19,6 @@ export default function ResourcesSection() {
     image_url: r.image_url,
   }));
 
-  const allCards = [...resourceItems, ...dynamicCards];
-
   return (
     <section id="resources" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -29,10 +26,10 @@ export default function ResourcesSection() {
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Resources</span>
           <h2 className="mt-3 text-4xl font-bold text-slate-900">Learn How to Lead the Market With a Free SEO Audit</h2>
         </div>
-        <Link to="/app/audit" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">Start with a free audit <ArrowRight className="h-4 w-4" /></Link>
+        <Link to="/resources" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">View all resources <ArrowRight className="h-4 w-4" /></Link>
       </div>
       <div className="mt-12 grid gap-5 md:grid-cols-3">
-        {allCards.map((it) => {
+        {cards.map((it) => {
           const Icon = it.icon;
           return (
             <Link key={it.slug} to={`/resources/${it.slug}`} className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:border-indigo-200 hover:shadow-lg">

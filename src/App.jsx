@@ -11,6 +11,7 @@ import SeoHead from '@/components/seo/SeoHead';
 // Add page imports here
 import Landing from './pages/Landing';
 import FeatureDetail from './pages/FeatureDetail';
+import Resources from './pages/Resources';
 import ResourceDetail from './pages/ResourceDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/platform/:slug" element={<FeatureDetail />} />
       <Route path="/solutions/:slug" element={<FeatureDetail />} />
+      <Route path="/resources" element={<Resources />} />
       <Route path="/resources/:slug" element={<ResourceDetail />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms" element={<TermsOfService />} />
