@@ -50,7 +50,19 @@ export default async function(req) {
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
     if (url.length > 200) return Response.json({ error: 'URL too long' }, { status: 400 });
     let hostname, origin;
-    try { const u = new URL(url); hostname = u.hostname; origin = `${u.protocol}//${u.hostname}`; } catch { return Response.json({ error: 'Invalid URL' }, { status: 400 }); }
+    try {
+      const u = new URL(url);
+      hostname = u.hostname;
+      origin = `${u.protocol}//${u.hostname}`;
+      // Validate the hostname looks like a real domain (must contain a TLD)
+      if (!hostname || !hostname.includes('.') || hostname.length < 4) {
+        return Response.json({ error: 'Please enter a valid domain (e.g. example.com or example.com/about)' }, { status: 400 });
+      }
+      // If only a domain is entered (no path or just "/"), normalise to the homepage
+      if (!u.pathname || u.pathname === '/') {
+        url = origin + '/';
+      }
+    } catch { return Response.json({ error: 'Invalid URL' }, { status: 400 }); }
 
     const checks = [];
     const addCheck = (section, title, status, value, detail) => checks.push({ section, title, status, value: value || '', detail: detail || '' });
