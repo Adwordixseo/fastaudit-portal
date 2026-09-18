@@ -2,7 +2,9 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
 const STOPWORDS = new Set(['this','that','with','from','your','have','will','about','which','their','they','them','than','then','when','where','what','while','also','into','over','under','more','most','some','such','only','just','being','been','were','are','was','the','and','for','you','our','all','can','has','not','but','out','get','use','one','who','how','its','ing']);
 
-const stripTags = (h) => h.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const NAMED_ENTITIES = { amp:'&', lt:'<', gt:'>', quot:'"', apos:"'", nbsp:' ', mdash:'—', ndash:'–', rsquo:'\u2019', lsquo:'\u2018', rdquo:'\u201D', ldquo:'\u201C', hellip:'…', copy:'©', reg:'®', trade:'™', bull:'•', deg:'°', pound:'£', euro:'€', cent:'¢' };
+const decodeEntities = (s) => s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCharCode(parseInt(n, 16))).replace(/&([a-zA-Z]+);/g, (m, n) => NAMED_ENTITIES[n] !== undefined ? NAMED_ENTITIES[n] : m);
+const stripTags = (h) => decodeEntities(h.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 
 const matchAllText = (html, re) => [...html.matchAll(re)].map((m) => stripTags(m[1] || '').trim()).filter(Boolean);
 
@@ -77,7 +79,7 @@ export default async function(req) {
     let fetchFailed = false;
     try {
       const started = Date.now();
-      const res = await fetchWithTimeout(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FastAuditBot/1.0)' } }, 12000);
+      const res = await fetchWithTimeout(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9' } }, 12000);
       loadMs = Date.now() - started;
       fetchStatus = res.status;
       finalUrl = res.url || url;
@@ -176,7 +178,7 @@ export default async function(req) {
 
     let httpsRedirects = isHttps;
     try {
-      const httpRes = await fetchWithTimeout(`http://${hostname}`, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FastAuditBot/1.0)' } }, 8000);
+      const httpRes = await fetchWithTimeout(`http://${hostname}`, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' } }, 8000);
       httpsRedirects = (httpRes.url || '').startsWith('https://');
     } catch { /* leave as isHttps */ }
     addCheck('technical', 'HTTPS Redirect', httpsRedirects ? 'pass' : 'warning', httpsRedirects ? 'Redirects to HTTPS' : 'No redirect detected', httpsRedirects ? 'Your page successfully redirects to a HTTPS (SSL secure) version.' : 'The HTTP version of your page does not redirect to HTTPS.');
