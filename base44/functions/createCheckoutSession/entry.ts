@@ -6,8 +6,9 @@ const CYCLE_MONTHS = { monthly: 1, quarterly: 3, yearly: 12 };
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    // Guest checkout allowed — user may not be logged in (public app).
+    let user = null;
+    try { user = await base44.auth.me(); } catch { /* not authenticated — guest checkout */ }
 
     const body = await req.json();
     const packageId = String(body?.package_id || '');
@@ -34,18 +35,20 @@ export default async function(req) {
     params.append('line_items[0][price_data][recurring][interval]', 'month');
     params.append('line_items[0][price_data][recurring][interval_count]', String(intervalCount));
     params.append('metadata[base44_app_id]', appId);
-    params.append('metadata[client_id]', user.id);
-    params.append('metadata[client_email]', user.email || '');
+    params.append('metadata[client_id]', user?.id || '');
+    params.append('metadata[client_email]', user?.email || '');
     params.append('metadata[package_id]', packageId);
     params.append('metadata[package_name]', packageName);
     params.append('metadata[cycle]', cycle);
     params.append('metadata[amount]', String(amount));
     params.append('subscription_data[metadata][base44_app_id]', appId);
-    params.append('subscription_data[metadata][client_id]', user.id);
-    params.append('subscription_data[metadata][client_email]', user.email || '');
+    params.append('subscription_data[metadata][client_id]', user?.id || '');
+    params.append('subscription_data[metadata][client_email]', user?.email || '');
     params.append('subscription_data[metadata][package_id]', packageId);
     params.append('subscription_data[metadata][package_name]', packageName);
     params.append('subscription_data[metadata][cycle]', cycle);
+    // Prefill email for logged-in users; Stripe collects it for guests.
+    if (user?.email) params.append('customer_email', user.email);
     params.append('success_url', successUrl);
     params.append('cancel_url', cancelUrl);
 

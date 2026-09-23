@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 import BillingToggle from '@/components/packages/BillingToggle';
 import PackageCard from '@/components/packages/PackageCard';
+import PurchaseDialog from '@/components/packages/PurchaseDialog';
 
 export default function Pricing() {
   const [cycle, setCycle] = useState('monthly');
-  const navigate = useNavigate();
+  const [selected, setSelected] = useState(null);
   const { data: packages = [] } = useQuery({ queryKey: ['packages', 'active'], queryFn: () => base44.entities.Package.filter({ active: true }, 'sort_order') });
 
   return (
@@ -24,11 +24,12 @@ export default function Pricing() {
             <div className="mt-8"><BillingToggle value={cycle} onChange={setCycle} /></div>
           </div>
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {packages.map((p) => <PackageCard key={p.id} pkg={p} cycle={cycle} onSelect={() => navigate(`/app/packages?plan=${p.id}&cycle=${cycle}`)} ctaLabel="Choose package" />)}
+            {packages.map((p) => <PackageCard key={p.id} pkg={p} cycle={cycle} onSelect={() => setSelected(p)} ctaLabel="Choose package" />)}
           </div>
         </div>
       </section>
       <SiteFooter />
+      <PurchaseDialog pkg={selected} cycle={cycle} user={null} open={!!selected} onOpenChange={(o) => !o && setSelected(null)} />
     </div>
   );
 }

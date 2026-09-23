@@ -40,20 +40,28 @@ export default async function(req) {
       const obj = event.data.object;
       const sessionId = obj.id;
       const md = obj.metadata || {};
-      const clientId = md.client_id;
-      const clientEmail = md.client_email;
+      const clientId = md.client_id || '';
+      const clientEmail = md.client_email || obj.customer_details?.email || obj.customer_email || '';
       const packageId = md.package_id;
       const packageName = md.package_name;
       const cycle = ['monthly', 'quarterly', 'yearly'].includes(md.cycle) ? md.cycle : 'monthly';
       const amount = Number(md.amount) || 0;
-      if (clientId && packageId) {
+      if (packageId) {
         const existing = await base44.asServiceRole.entities.Subscription.filter({ stripe_session_id: sessionId });
         if (!existing || existing.length === 0) {
+          // For guest checkout, try to link to an existing user by email.
+          let resolvedClientId = clientId;
+          if (!resolvedClientId && clientEmail) {
+            try {
+              const users = await base44.asServiceRole.entities.User.filter({ email: clientEmail });
+              if (users.length) resolvedClientId = users[0].id;
+            } catch { /* ignore — keep as guest */ }
+          }
           const start = new Date();
           const end = new Date(start);
           end.setMonth(end.getMonth() + CYCLE_MONTHS[cycle]);
           await base44.asServiceRole.entities.Subscription.create({
-            client_id: clientId, client_email: clientEmail, package_id: packageId, package_name: packageName,
+            client_id: resolvedClientId, client_email: clientEmail, package_id: packageId, package_name: packageName,
             billing_cycle: cycle, amount, status: 'active',
             start_date: fmt(start), end_date: fmt(end), stripe_session_id: sessionId
           });
