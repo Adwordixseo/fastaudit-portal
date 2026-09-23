@@ -8,7 +8,7 @@ import PackageCard from '@/components/packages/PackageCard';
 import PurchaseDialog from '@/components/packages/PurchaseDialog';
 
 export default function Pricing() {
-  const [cycle, setCycle] = useState('quarterly');
+  const [cycle, setCycle] = useState('monthly');
   const [selected, setSelected] = useState(null);
   const { data: packages = [] } = useQuery({ queryKey: ['packages', 'active'], queryFn: () => base44.entities.Package.filter({ active: true }, 'sort_order') });
 
