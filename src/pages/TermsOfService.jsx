@@ -62,7 +62,7 @@ export default function TermsOfService() {
       </LegalSection>
 
       <LegalSection title="14. Contact Us">
-        <p>For questions about these Terms, email <a href="mailto:info@adwordix.com" className="text-indigo-600 underline">info@adwordix.com</a>.</p>
+        <p>For questions about these Terms, email <a href="mailto:info@adwordix.com" className="text-pink-400 underline">info@adwordix.com</a>.</p>
       </LegalSection>
     </LegalPage>
   );

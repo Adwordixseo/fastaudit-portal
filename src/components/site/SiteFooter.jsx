@@ -18,22 +18,22 @@ export default function SiteFooter() {
   });
 
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
+    <footer className="border-t border-white/10 bg-[#0a0815]">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
             <Logo />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-500">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
               Audit your website, choose a growth package and track every milestone, report and approval from one beautiful portal.
             </p>
           </div>
           {columns.map((c) => (
             <div key={c.title}>
-              <h4 className="text-sm font-semibold text-slate-900">{c.title}</h4>
+              <h4 className="text-sm font-semibold text-white">{c.title}</h4>
               <ul className="mt-4 space-y-2.5">
                 {c.links.map((x) => (
                   <li key={x.l}>
-                    <Link to={x.to} className="text-sm text-slate-500 hover:text-indigo-600">{x.l}</Link>
+                    <Link to={x.to} className="text-sm text-slate-400 hover:text-pink-400">{x.l}</Link>
                   </li>
                 ))}
               </ul>
@@ -41,20 +41,20 @@ export default function SiteFooter() {
           ))}
         </div>
         {latestPosts.length > 0 && (
-          <div className="mt-12 border-t border-slate-200 pt-10">
-            <h4 className="text-sm font-semibold text-slate-900">Latest from the blog</h4>
+          <div className="mt-12 border-t border-white/10 pt-10">
+            <h4 className="text-sm font-semibold text-white">Latest from the blog</h4>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
               {latestPosts.map((post) => (
-                <Link key={post.id} to={`/resources/${post.slug}`} className="group rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/30">
-                  {post.tag && <span className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{post.tag}</span>}
-                  <p className="mt-1.5 text-sm font-medium text-slate-900 group-hover:text-indigo-700">{post.title}</p>
-                  {post.read_time && <p className="mt-1 text-xs text-slate-400">{post.read_time}</p>}
+                <Link key={post.id} to={`/resources/${post.slug}`} className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition-colors hover:border-pink-400/40 hover:bg-white/[0.07]">
+                  {post.tag && <span className="text-xs font-semibold uppercase tracking-wide text-pink-400">{post.tag}</span>}
+                  <p className="mt-1.5 text-sm font-medium text-white group-hover:text-pink-300">{post.title}</p>
+                  {post.read_time && <p className="mt-1 text-xs text-slate-500">{post.read_time}</p>}
                 </Link>
               ))}
             </div>
           </div>
         )}
-        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center">
+        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center">
           <span>© {new Date().getFullYear()} Adwordix. All rights reserved.</span>
           <span>Built for agencies that deliver measurable growth.</span>
         </div>

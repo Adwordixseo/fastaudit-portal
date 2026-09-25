@@ -42,7 +42,7 @@ export default function KeywordRankingTicker() {
     <div className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-fuchsia-500">
             <Search className="h-4 w-4 text-white" />
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function KeywordRankingTicker() {
         </div>
         <div>
           <div className="text-xs text-slate-400">Improved</div>
-          <div className="text-sm font-bold text-indigo-400">+26 this week</div>
+          <div className="text-sm font-bold text-pink-400">+26 this week</div>
         </div>
       </div>
     </div>

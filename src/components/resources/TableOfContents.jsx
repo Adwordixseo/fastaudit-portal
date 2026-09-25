@@ -58,8 +58,8 @@ export default function TableOfContents({ headings }) {
 
   return (
     <nav className="text-sm pr-2">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">On this page</p>
-      <ul className="space-y-0.5 border-l border-slate-200">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">On this page</p>
+      <ul className="space-y-0.5 border-l border-white/10">
         {headings.map((h) => (
           <li key={h.id}>
             <a
@@ -72,8 +72,8 @@ export default function TableOfContents({ headings }) {
                 h.level === 'h3' ? 'pl-7' : 'pl-3'
               } ${
                 activeId === h.id
-                  ? 'border-indigo-500 font-medium text-indigo-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
+                  ? 'border-pink-500 font-medium text-pink-400'
+                  : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
               {h.text}

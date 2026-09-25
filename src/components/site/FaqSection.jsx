@@ -72,17 +72,17 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
   if (faqs.length === 0) return null;
 
   return (
-    <section id="faq" className="bg-slate-50 py-24">
+    <section id="faq" className="bg-[#0f0a1e] py-24">
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <div className="text-center">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">FAQs</span>
-          <h2 className="mt-3 text-4xl font-bold text-slate-900">Free SEO Audit Tool: Your Questions, Answered</h2>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">FAQs</span>
+          <h2 className="mt-3 text-4xl font-bold text-white">Free SEO Audit Tool: Your Questions, Answered</h2>
         </div>
         <Accordion type="single" collapsible className="mt-12 space-y-3">
           {faqs.map(([q, a], i) => (
-            <AccordionItem key={i} value={`f${i}`} className="rounded-2xl border border-slate-200 bg-white px-6">
-              <AccordionTrigger className="text-left text-base font-semibold text-slate-900 hover:no-underline">{q}</AccordionTrigger>
-              <AccordionContent className="text-slate-500">{a}</AccordionContent>
+            <AccordionItem key={i} value={`f${i}`} className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 backdrop-blur">
+              <AccordionTrigger className="text-left text-base font-semibold text-white hover:no-underline">{q}</AccordionTrigger>
+              <AccordionContent className="text-slate-400">{a}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

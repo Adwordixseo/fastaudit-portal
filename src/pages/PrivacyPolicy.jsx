@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
 
       <LegalSection title="7. Your Rights">
         <p>You have the right to: access the personal data we hold about you, request correction of inaccurate data, request deletion of your data (subject to legal obligations), export your data in a portable format, and withdraw consent for data processing at any time.</p>
-        <p>To exercise any of these rights, contact us at <a href="mailto:info@adwordix.com" className="text-indigo-600 underline">info@adwordix.com</a>.</p>
+        <p>To exercise any of these rights, contact us at <a href="mailto:info@adwordix.com" className="text-pink-400 underline">info@adwordix.com</a>.</p>
       </LegalSection>
 
       <LegalSection title="8. Data Retention">
@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
       </LegalSection>
 
       <LegalSection title="11. Contact Us">
-        <p>If you have questions about this Privacy Policy or your data, email <a href="mailto:info@adwordix.com" className="text-indigo-600 underline">info@adwordix.com</a>.</p>
+        <p>If you have questions about this Privacy Policy or your data, email <a href="mailto:info@adwordix.com" className="text-pink-400 underline">info@adwordix.com</a>.</p>
       </LegalSection>
     </LegalPage>
   );

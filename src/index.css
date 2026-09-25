@@ -96,10 +96,10 @@
 
 @layer utilities {
   .gradient-text {
-    @apply bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent;
   }
   .glow-card {
-    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 20px 60px -20px rgba(99,102,241,0.35);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 20px 60px -20px rgba(236,72,153,0.35);
   }
   .grid-fade {
     background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -143,6 +143,18 @@
   .rich-text td { padding: 0.5rem 0.875rem; text-align: left; color: #475569; border-bottom: 1px solid #f1f5f9; }
   .rich-text tr:last-child td { border-bottom: none; }
   .rich-text table tr:hover td { background: #f8fafc; }
+  .rich-text-dark h2, .rich-text-dark h3 { color: #ffffff !important; }
+  .rich-text-dark p, .rich-text-dark li, .rich-text-dark td { color: #cbd5e1 !important; }
+  .rich-text-dark a { color: #f472b6 !important; }
+  .rich-text-dark a:hover { color: #ec4899 !important; }
+  .rich-text-dark strong { color: #ffffff !important; }
+  .rich-text-dark th { color: #ffffff !important; }
+  .rich-text-dark thead { background: rgba(255,255,255,0.05) !important; }
+  .rich-text-dark table { border-color: rgba(255,255,255,0.1) !important; }
+  .rich-text-dark th { border-color: rgba(255,255,255,0.1) !important; }
+  .rich-text-dark td { border-color: rgba(255,255,255,0.06) !important; }
+  .rich-text-dark blockquote { border-left-color: #f472b6 !important; color: #cbd5e1 !important; }
+  .rich-text-dark table tr:hover td { background: rgba(255,255,255,0.04) !important; }
   .portal-sidebar-scroll::-webkit-scrollbar { width: 4px; }
   .portal-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
   .portal-sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }

@@ -49,7 +49,7 @@ export default function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Left: copy + form */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }} className="mx-auto max-w-2xl text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-indigo-200 backdrop-blur">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-pink-200 backdrop-blur">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -67,17 +67,17 @@ export default function Hero() {
                 <Globe className="h-4 w-4 shrink-0 text-slate-400" />
                 <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="yourwebsite.com" className="h-12 w-full bg-transparent text-white outline-none placeholder:text-slate-500" />
               </div>
-              <Button type="submit" size="lg" className="h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-6 text-base font-semibold shadow-xl shadow-indigo-500/30 transition-all hover:scale-[1.02] hover:from-indigo-400 hover:to-violet-400">
+              <Button type="submit" size="lg" className="h-12 rounded-xl bg-gradient-to-r from-pink-500 to-fuchsia-500 px-6 text-base font-semibold shadow-xl shadow-pink-500/30 transition-all hover:scale-[1.02] hover:from-pink-400 hover:to-fuchsia-400">
                 Audit my site <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
             <p className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400 lg:justify-start"><ShieldCheck className="h-3.5 w-3.5" /> Free scan · Full PDF report unlocked with any package</p>
 
             {/* Live scanning status */}
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-indigo-200/80 lg:justify-start">
+            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-pink-200/80 lg:justify-start">
               <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pink-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-pink-400" />
               </span>
               <motion.span key={scanIdx} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="font-medium">
                 {scanSteps[scanIdx]}
@@ -137,7 +137,7 @@ export default function Hero() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
                     className="absolute h-44 w-44 rounded-full opacity-40 blur-2xl"
-                    style={{ background: 'conic-gradient(from 0deg, #6366f1, #d946ef, #22d3ee, #6366f1)' }}
+                    style={{ background: 'conic-gradient(from 0deg, #ec4899, #d946ef, #a855f7, #ec4899)' }}
                   />
                   <svg className="h-40 w-40 -rotate-90" viewBox="0 0 160 160">
                     <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
@@ -149,7 +149,7 @@ export default function Hero() {
                     />
                     <defs>
                       <linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="#6366f1" />
+                        <stop offset="0%" stopColor="#ec4899" />
                         <stop offset="100%" stopColor="#d946ef" />
                       </linearGradient>
                     </defs>
@@ -164,7 +164,7 @@ export default function Hero() {
               {/* Sub-scores */}
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'SEO', value: 82, color: 'from-indigo-500 to-violet-500' },
+                  { label: 'SEO', value: 82, color: 'from-pink-500 to-fuchsia-500' },
                   { label: 'Performance', value: 64, color: 'from-amber-500 to-orange-500' },
                   { label: 'Content', value: 90, color: 'from-emerald-500 to-teal-500' },
                   { label: 'AI-readiness', value: 71, color: 'from-fuchsia-500 to-pink-500' },
@@ -228,7 +228,7 @@ export default function Hero() {
               transition={{ type: 'spring', stiffness: 300 }}
               className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-left backdrop-blur transition-colors hover:bg-white/[0.07]"
             >
-              <Icon className="mb-2 h-5 w-5 text-indigo-400" />
+              <Icon className="mb-2 h-5 w-5 text-pink-400" />
               <div className="font-heading text-3xl font-bold">{n}</div>
               <div className="mt-1 text-sm text-slate-400">{t}</div>
             </motion.div>
