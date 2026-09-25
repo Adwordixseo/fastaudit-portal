@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-const LOGO_URL = 'https://media.base44.com/images/public/6a9fa0eaed1bc73f6d4dc233/0fb97570a_generated_image.png';
+const LOGO_URL = 'https://media.base44.com/images/public/6a9fa0eaed1bc73f6d4dc233/d53e53ea0_adwordixlogowithwhitebg11.png';
 
 export default function Logo({ dark = false, className }) {
   return (
