@@ -7,46 +7,47 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import { lazy, Suspense } from 'react';
 import SeoHead from '@/components/seo/SeoHead';
-// Add page imports here
+// Landing stays eager (public entry); all other routes are code-split
 import Landing from './pages/Landing';
-import FeatureDetail from './pages/FeatureDetail';
-import Resources from './pages/Resources';
-import ResourceDetail from './pages/ResourceDetail';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import ClientLayout from '@/components/portal/ClientLayout';
-import AdminLayout from '@/components/portal/AdminLayout';
-import Dashboard from './pages/app/Dashboard';
-import AuditPage from './pages/app/AuditPage';
-import PackagesPage from './pages/app/PackagesPage';
-import ProjectsPage from './pages/app/ProjectsPage';
-import ReportsPage from './pages/app/ReportsPage';
-import SupportPage from './pages/app/SupportPage';
-import AdminOverview from './pages/admin/AdminOverview';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminProjects from './pages/admin/AdminProjects';
-import AdminPackages from './pages/admin/AdminPackages';
-import AdminDocuments from './pages/admin/AdminDocuments';
-import AdminSubscriptions from './pages/admin/AdminSubscriptions';
-import AdminFinancials from './pages/admin/AdminFinancials';
-import AdminTickets from './pages/admin/AdminTickets';
-import TeamLayout from '@/components/portal/TeamLayout';
-import TeamDashboard from './pages/team/TeamDashboard';
-import TeamProjects from './pages/team/TeamProjects';
-import TeamKeywordTool from './pages/team/TeamKeywordTool';
-import TeamTasks from './pages/team/TeamTasks';
-import AdminSeo from './pages/admin/AdminSeo';
-import AdminContent from './pages/admin/AdminContent';
-import AdminResources from './pages/admin/AdminResources';
-import AdminFaqs from './pages/admin/AdminFaqs';
-import PostLoginRedirect from './pages/PostLoginRedirect';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import Contact from './pages/Contact';
-import Pricing from './pages/Pricing';
+const FeatureDetail = lazy(() => import('./pages/FeatureDetail'));
+const Resources = lazy(() => import('./pages/Resources'));
+const ResourceDetail = lazy(() => import('./pages/ResourceDetail'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const ClientLayout = lazy(() => import('@/components/portal/ClientLayout'));
+const AdminLayout = lazy(() => import('@/components/portal/AdminLayout'));
+const Dashboard = lazy(() => import('./pages/app/Dashboard'));
+const AuditPage = lazy(() => import('./pages/app/AuditPage'));
+const PackagesPage = lazy(() => import('./pages/app/PackagesPage'));
+const ProjectsPage = lazy(() => import('./pages/app/ProjectsPage'));
+const ReportsPage = lazy(() => import('./pages/app/ReportsPage'));
+const SupportPage = lazy(() => import('./pages/app/SupportPage'));
+const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
+const AdminPackages = lazy(() => import('./pages/admin/AdminPackages'));
+const AdminDocuments = lazy(() => import('./pages/admin/AdminDocuments'));
+const AdminSubscriptions = lazy(() => import('./pages/admin/AdminSubscriptions'));
+const AdminFinancials = lazy(() => import('./pages/admin/AdminFinancials'));
+const AdminTickets = lazy(() => import('./pages/admin/AdminTickets'));
+const TeamLayout = lazy(() => import('@/components/portal/TeamLayout'));
+const TeamDashboard = lazy(() => import('./pages/team/TeamDashboard'));
+const TeamProjects = lazy(() => import('./pages/team/TeamProjects'));
+const TeamKeywordTool = lazy(() => import('./pages/team/TeamKeywordTool'));
+const TeamTasks = lazy(() => import('./pages/team/TeamTasks'));
+const AdminSeo = lazy(() => import('./pages/admin/AdminSeo'));
+const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
+const AdminResources = lazy(() => import('./pages/admin/AdminResources'));
+const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
+const PostLoginRedirect = lazy(() => import('./pages/PostLoginRedirect'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Pricing = lazy(() => import('./pages/Pricing'));
 
 const AuthenticatedApp = () => {
   const { authError, navigateToLogin } = useAuth();
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#0a0815]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-pink-500" /></div>}>
     <Routes>
       {/* Add your page Route elements here */}
       <Route path="/" element={<Landing />} />
@@ -116,6 +118,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
