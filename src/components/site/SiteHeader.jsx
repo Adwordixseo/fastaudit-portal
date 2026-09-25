@@ -8,6 +8,7 @@ import NavDropdown from '@/components/site/NavDropdown';
 import { platformItems, solutionsItems } from '@/lib/siteNav';
 
 const nav = [
+  { label: 'SEO Service', href: 'https://adwordix.com/', external: true },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Free Audit', to: '/app/audit' },
   { label: 'Resources', href: '/#resources' },
@@ -46,7 +47,7 @@ export default function SiteHeader() {
         <nav className="hidden items-center gap-8 md:flex">
           <NavDropdown label="Features" items={platformItems} basePath="/platform" />
           <NavDropdown label="Solutions" items={solutionsItems} basePath="/solutions" />
-          {nav.map((n) => n.to ? <Link key={n.label} to={n.to} className={linkCls}>{n.label}</Link> : <a key={n.label} href={n.href} className={linkCls}>{n.label}</a>)}
+          {nav.map((n) => n.to ? <Link key={n.label} to={n.to} className={linkCls}>{n.label}</Link> : <a key={n.label} href={n.href} target={n.external ? '_blank' : undefined} rel={n.external ? 'noopener noreferrer' : undefined} className={linkCls}>{n.label}</a>)}
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
@@ -69,7 +70,7 @@ export default function SiteHeader() {
             <MobileGroup label="Solutions" items={solutionsItems} basePath="/solutions" onNav={() => setOpen(false)} />
             {nav.map((n) => n.to
               ? <Link key={n.label} to={n.to} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-white">{n.label}</Link>
-              : <a key={n.label} href={n.href} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-white">{n.label}</a>)}
+              : <a key={n.label} href={n.href} target={n.external ? '_blank' : undefined} rel={n.external ? 'noopener noreferrer' : undefined} onClick={() => setOpen(false)} className="py-1.5 text-base font-medium text-white">{n.label}</a>)}
             <div className="mt-2 flex gap-3">
               {user ? <Button asChild className="flex-1 rounded-full border-none bg-gradient-to-r from-pink-500 to-fuchsia-500"><Link to={isAdmin ? '/admin' : isTeam ? '/team' : '/app'}>Dashboard</Link></Button> : (
                 <>
