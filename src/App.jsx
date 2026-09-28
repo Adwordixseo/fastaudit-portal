@@ -32,6 +32,7 @@ const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
 const AdminPackages = lazy(() => import('./pages/admin/AdminPackages'));
 const AdminDocuments = lazy(() => import('./pages/admin/AdminDocuments'));
 const AdminSubscriptions = lazy(() => import('./pages/admin/AdminSubscriptions'));
+const AdminCoupons = lazy(() => import('./pages/admin/AdminCoupons'));
 const AdminFinancials = lazy(() => import('./pages/admin/AdminFinancials'));
 const AdminTickets = lazy(() => import('./pages/admin/AdminTickets'));
 const TeamLayout = lazy(() => import('@/components/portal/TeamLayout'));
@@ -98,6 +99,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/packages" element={<AdminPackages />} />
           <Route path="/admin/documents" element={<AdminDocuments />} />
           <Route path="/admin/financials" element={<AdminFinancials />} />
+          <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
           <Route path="/admin/tickets" element={<AdminTickets />} />
           <Route path="/admin/seo" element={<AdminSeo />} />

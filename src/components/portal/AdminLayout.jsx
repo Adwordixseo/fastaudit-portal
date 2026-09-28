@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { BarChart3, Users, FolderKanban, Package, Upload, CreditCard, MessageSquare, LayoutDashboard, Wallet, Search, FileText, BookOpen, HelpCircle } from 'lucide-react';
+import { BarChart3, Users, FolderKanban, Package, Upload, CreditCard, MessageSquare, LayoutDashboard, Wallet, Search, FileText, BookOpen, HelpCircle, TicketPercent } from 'lucide-react';
 import PortalLayout from '@/components/portal/PortalLayout';
 import { useUser } from '@/hooks/useUser';
 
@@ -12,6 +12,7 @@ const nav = [
   { to: '/admin/documents', label: 'Documents', icon: Upload },
   { to: '/admin/financials', label: 'Financials', icon: Wallet },
   { to: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
+  { to: '/admin/coupons', label: 'Coupons', icon: TicketPercent },
   { to: '/admin/tickets', label: 'Tickets', icon: MessageSquare },
   { to: '/admin/seo', label: 'SEO settings', icon: Search },
   { to: '/admin/content', label: 'Content sections', icon: FileText },
