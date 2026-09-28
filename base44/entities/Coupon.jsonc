@@ -1,0 +1,33 @@
+{
+  "name": "Coupon",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Coupon code the client enters, e.g. WELCOME40"
+    },
+    "discount_percent": {
+      "type": "number",
+      "default": 40,
+      "description": "Percentage discount applied to the checkout (0-100)"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "uses": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times this coupon has been used"
+    },
+    "max_uses": {
+      "type": "number",
+      "default": 0,
+      "description": "0 = unlimited, otherwise cap on total uses"
+    }
+  },
+  "required": [
+    "code",
+    "discount_percent"
+  ]
+}

@@ -14,7 +14,20 @@ export default async function(req) {
     const packageName = String(body?.package_name || 'Subscription');
     const cycle = ['monthly', 'quarterly', 'yearly'].includes(body?.cycle) ? body.cycle : 'monthly';
     const amount = Number(body?.amount);
+    const couponCode = String(body?.coupon || '').trim();
     if (!packageId || !amount || amount <= 0) return Response.json({ error: 'Package and amount are required' }, { status: 400 });
+
+    // Validate coupon, if one was provided
+    let discountPercent = 0;
+    let couponId = '';
+    if (couponCode) {
+      const coupons = await base44.entities.Coupon.filter({ code: couponCode, active: true });
+      const coupon = coupons[0];
+      if (!coupon) return Response.json({ error: 'Invalid or inactive coupon code' }, { status: 400 });
+      if (coupon.max_uses > 0 && (coupon.uses || 0) >= coupon.max_uses) return Response.json({ error: 'This coupon has reached its usage limit' }, { status: 400 });
+      discountPercent = Math.max(0, Math.min(100, Number(coupon.discount_percent) || 0));
+      couponId = coupon.code;
+    }
 
     const intervalCount = CYCLE_MONTHS[cycle];
     const origin = req.headers.get('origin') || 'https://apricot-audit-growth-flow.base44.app';
@@ -48,6 +61,47 @@ export default async function(req) {
     params.append('subscription_data[metadata][cycle]', cycle);
     params.append('success_url', successUrl);
     params.append('cancel_url', cancelUrl);
+
+    // Apply coupon discount, if a valid code was supplied
+    if (couponId) {
+      // Reuse an existing Stripe coupon (id = code) when present, otherwise create it with the configured discount
+      try {
+        // fall through and reuse if the coupon already exists with the same discount
+        const couponRes = await fetch(`https://api.stripe.com/v1/coupons/${encodeURIComponent(couponId)}`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${stripeKey}`, 'Stripe-Version': '2025-10-29.clover' }
+        });
+        const couponData = await couponRes.json();
+        if (!couponRes.ok || couponData.valid === false) {
+          // If the GET failed or the coupon is invalid, try to create it fresh
+          const createRes = await fetch('https://api.stripe.com/v1/coupons', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${stripeKey}`, 'Stripe-Version': '2025-10-29.clover', 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              id: couponId,
+              name: couponId,
+              percent_off: String(discountPercent),
+              duration: 'once'
+            }).toString()
+          });
+          const createData = await createRes.json();
+          // "already exists" is fine — the coupon valid at least once; otherwise surface the error
+          if (!createRes.ok && !/already exists/i.test(createData?.error?.message || '')) {
+            console.error('Stripe coupon error', createData?.error?.message);
+            return Response.json({ error: createData?.error?.message || 'Could not apply coupon' }, { status: 400 });
+          }
+        }
+      } catch (couponError) {
+        console.error('Stripe coupon error', couponError);
+        return Response.json({ error: 'Could not apply coupon' }, { status: 400 });
+      }
+      params.append('discounts[0][coupon]', couponId);
+      params.append('metadata[coupon]', couponId);
+      params.append('metadata[discount_percent]', String(discountPercent));
+      params.append('metadata[amount_before_discount]', String(amount));
+      params.append('subscription_data[metadata][coupon]', couponId);
+      params.append('subscription_data[metadata][discount_percent]', String(discountPercent));
+    }
 
     const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
