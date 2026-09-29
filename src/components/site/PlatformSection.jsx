@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Search, FolderKanban, FileText, CheckCircle2, LifeBuoy, RefreshCw, ArrowRight } from 'lucide-react';
 
 const items = [
@@ -21,7 +20,7 @@ export default function PlatformSection() {
       </div>
       <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((it, i) => (
-          <motion.div key={it.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
+          <div key={it.title} className="anim-hero-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
             <Link to={it.to}
               className="group flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur transition-all hover:-translate-y-1 hover:border-pink-400/40 hover:bg-white/[0.07]">
               <span className="grid h-11 w-11 place-items-center rounded-2xl bg-pink-500/15 text-pink-400 transition-colors group-hover:bg-pink-500 group-hover:text-white">
@@ -31,7 +30,7 @@ export default function PlatformSection() {
               <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{it.text}</p>
               <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-pink-400 opacity-0 transition-opacity group-hover:opacity-100">Learn more <ArrowRight className="h-4 w-4" /></span>
             </Link>
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>

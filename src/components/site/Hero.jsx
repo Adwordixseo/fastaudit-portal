@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowRight, Globe, ShieldCheck, Sparkles, Star, TrendingUp, Zap, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import KeywordRankingTicker from '@/components/site/KeywordRankingTicker';
@@ -29,26 +28,20 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-[#070B1A] text-white">
       {/* Background layers */}
       <div className="grid-fade absolute inset-0" />
-      <motion.div
-        animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.7, 0.5] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-600/40 via-violet-600/30 to-fuchsia-600/30 blur-3xl"
+      <div
+        className="anim-blob-center absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-600/40 via-violet-600/30 to-fuchsia-600/30 blur-3xl"
       />
-      <motion.div
-        animate={{ x: [0, 40, 0], y: [0, -30, 0], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-        className="absolute -bottom-32 -right-20 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-fuchsia-600/30 to-indigo-600/20 blur-3xl"
+      <div
+        className="anim-blob-drift-1 absolute -bottom-32 -right-20 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-fuchsia-600/30 to-indigo-600/20 blur-3xl"
       />
-      <motion.div
-        animate={{ x: [0, -30, 0], y: [0, 20, 0], opacity: [0.25, 0.4, 0.25] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-        className="absolute -top-20 -left-24 h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-violet-600/25 to-cyan-500/20 blur-3xl"
+      <div
+        className="anim-blob-drift-2 absolute -top-20 -left-24 h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-violet-600/25 to-cyan-500/20 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-20 lg:px-8 lg:pb-32 lg:pt-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* Left: copy + form */}
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }} className="mx-auto max-w-2xl text-center lg:text-left">
+          {/* Left: copy + form (renders immediately to protect LCP) */}
+          <div className="mx-auto max-w-2xl text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-pink-200 backdrop-blur sm:gap-2 sm:px-4 sm:text-xs">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -79,9 +72,9 @@ export default function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pink-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-pink-400" />
               </span>
-              <motion.span key={scanIdx} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="font-medium">
+              <span key={scanIdx} className="scan-text font-medium">
                 {scanSteps[scanIdx]}
-              </motion.span>
+              </span>
             </div>
 
             {/* Trust row */}
@@ -98,20 +91,11 @@ export default function Hero() {
                 <span className="text-xs text-slate-400">Trusted by 1,200+ sites</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right: floating audit preview card */}
-          <motion.div
-            initial={{ opacity: 0, y: 40, rotateX: 8 }}
-            animate={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: 'easeOut' }}
-            className="relative hidden lg:block"
-          >
-            <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="glow-card relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
-            >
+          <div className="anim-hero-fade relative hidden lg:block">
+            <div className="anim-float-y glow-card relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl">
               {/* Scan line */}
               <div className="scan-line pointer-events-none absolute left-0 h-px w-full" />
 
@@ -133,19 +117,15 @@ export default function Hero() {
               <div className="my-6 flex items-center justify-center">
                 <div className="relative flex h-40 w-40 items-center justify-center">
                   {/* Rotating conic glow */}
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-                    className="absolute h-44 w-44 rounded-full opacity-40 blur-2xl"
+                  <div
+                    className="anim-spin-slow absolute h-44 w-44 rounded-full opacity-40 blur-2xl"
                     style={{ background: 'conic-gradient(from 0deg, #ec4899, #d946ef, #a855f7, #ec4899)' }}
                   />
                   <svg className="h-40 w-40 -rotate-90" viewBox="0 0 160 160">
                     <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
-                    <motion.circle
+                    <circle
                       cx="80" cy="80" r="68" fill="none" stroke="url(#scoreGrad)" strokeWidth="12" strokeLinecap="round"
-                      initial={{ strokeDasharray: 427, strokeDashoffset: 427 }}
-                      animate={{ strokeDashoffset: 427 - (427 * 78) / 100 }}
-                      transition={{ duration: 1.4, delay: 0.6, ease: 'easeOut' }}
+                      strokeDasharray="427" className="ring-fill"
                     />
                     <defs>
                       <linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="1">
@@ -155,7 +135,7 @@ export default function Hero() {
                     </defs>
                   </svg>
                   <div className="absolute flex flex-col items-center">
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="font-heading text-5xl font-extrabold text-white">78</motion.span>
+                    <span className="anim-hero-fade font-heading text-5xl font-extrabold text-white">78</span>
                     <span className="text-xs font-medium text-slate-400">Overall score</span>
                   </div>
                 </div>
@@ -175,24 +155,15 @@ export default function Hero() {
                       <span className="text-xs font-semibold text-white">{s.value}</span>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${s.value}%` }}
-                        transition={{ duration: 1, delay: 0.8 }}
-                        className={`h-full rounded-full bg-gradient-to-r ${s.color}`}
-                      />
+                      <div className={`score-bar h-full rounded-full bg-gradient-to-r ${s.color}`} style={{ width: `${s.value}%` }} />
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
             {/* Floating badges */}
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              className="absolute -left-6 top-10 rounded-2xl border border-white/10 bg-[#0d1230]/90 px-4 py-3 backdrop-blur-xl"
-            >
+            <div className="anim-float-y-small absolute -left-6 top-10 rounded-2xl border border-white/10 bg-[#0d1230]/90 px-4 py-3 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-emerald-400" />
                 <div>
@@ -200,12 +171,8 @@ export default function Hero() {
                   <div className="text-sm font-bold text-emerald-400">+34 positions</div>
                 </div>
               </div>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute -right-4 bottom-8 rounded-2xl border border-white/10 bg-[#0d1230]/90 px-4 py-3 backdrop-blur-xl"
-            >
+            </div>
+            <div className="anim-float-y-neg absolute -right-4 bottom-8 rounded-2xl border border-white/10 bg-[#0d1230]/90 px-4 py-3 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
                   <Sparkles className="h-4 w-4 text-amber-400" />
@@ -215,30 +182,28 @@ export default function Hero() {
                   <div className="text-sm font-bold text-amber-300">Optimized</div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
 
         {/* Stat cards */}
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.25 }} className="mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="anim-hero-fade mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map(({ n, t, icon: Icon }) => (
-            <motion.div
+            <div
               key={t}
-              whileHover={{ y: -4 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-              className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-left backdrop-blur transition-colors hover:bg-white/[0.07]"
+              className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-left backdrop-blur transition-all hover:bg-white/[0.07] hover:-translate-y-1"
             >
               <Icon className="mb-2 h-5 w-5 text-pink-400" />
               <div className="font-heading text-3xl font-bold">{n}</div>
               <div className="mt-1 text-sm text-slate-400">{t}</div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Live keyword ranking board */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="mx-auto mt-10 max-w-4xl">
+        <div className="anim-hero-fade mx-auto mt-10 max-w-4xl">
           <KeywordRankingTicker />
-        </motion.div>
+        </div>
       </div>
     </section>
   );

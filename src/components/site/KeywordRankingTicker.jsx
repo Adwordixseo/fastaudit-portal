@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp, ArrowDown, Minus, Search } from 'lucide-react';
 
 const seedKeywords = [
@@ -60,43 +59,31 @@ export default function KeywordRankingTicker() {
       </div>
 
       <div className="space-y-1.5">
-        <AnimatePresence mode="popLayout">
-          {keywords.map((k) => {
-            const m = movement(k.pos, k.prev);
-            return (
-              <motion.div
-                key={k.kw}
-                layout
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4 }}
-                className="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-white/[0.04]"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/5 text-xs font-bold text-slate-300">
-                    {k.pos}
-                  </span>
-                  <span className="truncate text-sm text-slate-200">{k.kw}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={`${k.kw}-${tick}`}
-                      initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 6 }}
-                      transition={{ duration: 0.3 }}
-                      className={`flex items-center gap-0.5 text-xs font-semibold ${m.tone}`}
-                    >
-                      <m.Icon className="h-3 w-3" />
-                      {m.diff > 0 ? m.diff : m.dir === 'same' ? '—' : m.diff}
-                    </motion.span>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+        {keywords.map((k) => {
+          const m = movement(k.pos, k.prev);
+          return (
+            <div
+              key={k.kw}
+              className="ticker-row flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-white/[0.04]"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/5 text-xs font-bold text-slate-300">
+                  {k.pos}
+                </span>
+                <span className="truncate text-sm text-slate-200">{k.kw}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  key={`${k.kw}-${tick}`}
+                  className={`scan-text flex items-center gap-0.5 text-xs font-semibold ${m.tone}`}
+                >
+                  <m.Icon className="h-3 w-3" />
+                  {m.diff > 0 ? m.diff : m.dir === 'same' ? '—' : m.diff}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
