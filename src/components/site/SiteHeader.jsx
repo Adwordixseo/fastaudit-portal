@@ -11,7 +11,7 @@ const nav = [
   { label: 'SEO Service', href: 'https://adwordix.com/', external: true },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Free Audit', to: '/app/audit' },
-  { label: 'Resources', href: '/#resources' },
+  { label: 'Resources', to: '/resources' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', to: '/contact' },
 ];

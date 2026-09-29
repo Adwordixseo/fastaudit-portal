@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import { Search, FolderKanban, FileText, CheckCircle2, LifeBuoy, RefreshCw, ArrowRight } from 'lucide-react';
 
 const items = [
-  { icon: Search, title: 'Instant Website Audit', text: "Find what is working against your website's success with our instant, free SEO audit reports.", to: '/app/audit' },
-  { icon: FolderKanban, title: 'Project Progress', text: 'Access an advanced dashboard to see what\u2019s happening and keep track of milestone achievements.', to: '/app/projects' },
-  { icon: FileText, title: 'Monthly Reports', text: 'Get easy-to-understand and downloadable SEO audit reports from one online SEO platform every month.', to: '/app/reports' },
-  { icon: CheckCircle2, title: 'One-Click Approvals', text: 'Handle approvals and key SEO deliverables with a one-click, easy-to-access automated dashboard.', to: '/app/reports' },
-  { icon: LifeBuoy, title: 'Support Tickets', text: 'Need help or have a question? Raise a support ticket, and the entire conversation will be together.', to: '/app/support' },
-  { icon: RefreshCw, title: 'Renew & Upgrade', text: 'Review your SEO package and plan status, and renew or upgrade it for continuous SEO improvement.', to: '/app/packages' },
+  { icon: Search, title: 'Instant Website Audit', text: "Find what is working against your website's success with our instant, free SEO audit reports.", to: '/platform/instant-audit' },
+  { icon: FolderKanban, title: 'Project Progress', text: 'Access an advanced dashboard to see what\u2019s happening and keep track of milestone achievements.', to: '/platform/project-progress' },
+  { icon: FileText, title: 'Monthly Reports', text: 'Get easy-to-understand and downloadable SEO audit reports from one online SEO platform every month.', to: '/platform/monthly-reports' },
+  { icon: CheckCircle2, title: 'One-Click Approvals', text: 'Handle approvals and key SEO deliverables with a one-click, easy-to-access automated dashboard.', to: '/platform/approvals' },
+  { icon: LifeBuoy, title: 'Support Tickets', text: 'Need help or have a question? Raise a support ticket, and the entire conversation will be together.', to: '/platform/support-tickets' },
+  { icon: RefreshCw, title: 'Renew & Upgrade', text: 'Review your SEO package and plan status, and renew or upgrade it for continuous SEO improvement.', to: '/platform/renew-upgrade' },
 ];
 
 export default function PlatformSection() {
@@ -29,7 +29,7 @@ export default function PlatformSection() {
               </span>
               <h3 className="mt-5 text-lg font-semibold text-white">{it.title}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{it.text}</p>
-              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-pink-400 opacity-0 transition-opacity group-hover:opacity-100">Open dashboard <ArrowRight className="h-4 w-4" /></span>
+              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-pink-400 opacity-0 transition-opacity group-hover:opacity-100">Learn more <ArrowRight className="h-4 w-4" /></span>
             </Link>
           </motion.div>
         ))}
