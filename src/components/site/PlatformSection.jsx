@@ -14,7 +14,7 @@ const items = [
 
 export default function PlatformSection() {
   return (
-    <section id="platform" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+    <section id="platform" className="mx-auto max-w-7xl px-5 pb-24 pt-12 lg:px-8 lg:pt-16">
       <div className="max-w-2xl">
         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Features Beyond Audit</span>
         <h2 className="mt-3 text-4xl font-bold text-white sm:text-5xl">From SEO audits to monthly progress, everything is done right on a single-click-accessible platform by Adwordix LLC.</h2>

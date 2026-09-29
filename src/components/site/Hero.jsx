@@ -45,7 +45,7 @@ export default function Hero() {
         className="absolute -top-20 -left-24 h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-violet-600/25 to-cyan-500/20 blur-3xl"
       />
 
-      <div className="relative mx-auto max-w-7xl px-5 pb-24 pt-20 lg:px-8 lg:pb-32 lg:pt-28">
+      <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-20 lg:px-8 lg:pb-32 lg:pt-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Left: copy + form */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }} className="mx-auto max-w-2xl text-center lg:text-left">
