@@ -1,20 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import SiteHeader from '@/components/site/SiteHeader';
 import { useAuth } from '@/lib/AuthContext';
-import SiteFooter from '@/components/site/SiteFooter';
 import Hero from '@/components/site/Hero';
-import PlatformSection from '@/components/site/PlatformSection';
-import HowItWorks from '@/components/site/HowItWorks';
-import SolutionsSection from '@/components/site/SolutionsSection';
-import PricingSection from '@/components/site/PricingSection';
-import ResourcesSection from '@/components/site/ResourcesSection';
-import FaqSection from '@/components/site/FaqSection';
-import CtaBanner from '@/components/site/CtaBanner';
-import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
-import ContentSectionBlock from '@/components/content/ContentSectionBlock';
+
+// Sections below the fold are code-split so they never block the above-the-fold
+// content (FCP/LCP). The hero, header, and content-section fetch stay critical.
+const SiteFooter = lazy(() => import('@/components/site/SiteFooter'));
+const PlatformSection = lazy(() => import('@/components/site/PlatformSection'));
+const HowItWorks = lazy(() => import('@/components/site/HowItWorks'));
+const SolutionsSection = lazy(() => import('@/components/site/SolutionsSection'));
+const PricingSection = lazy(() => import('@/components/site/PricingSection'));
+const ResourcesSection = lazy(() => import('@/components/site/ResourcesSection'));
+const FaqSection = lazy(() => import('@/components/site/FaqSection'));
+const CtaBanner = lazy(() => import('@/components/site/CtaBanner'));
+const ContentSectionsRenderer = lazy(() => import('@/components/content/ContentSectionsRenderer'));
+const ContentSectionBlock = lazy(() => import('@/components/content/ContentSectionBlock'));
+
+// Prevent layout jump while a lazy section's chunk streams in — render a stable
+// empty shell of the same height instead of collapsing the page.
+const Lazy = ({ children }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export default function Landing() {
   const { user, isLoadingAuth } = useAuth();
@@ -35,8 +44,10 @@ export default function Landing() {
 
   const renderSlot = (key, Component) => {
     if (hidden.has(key)) return null;
-    if (replacements[key]) return <ContentSectionBlock section={replacements[key]} />;
-    return <Component />;
+    const node = replacements[key]
+      ? <ContentSectionBlock section={replacements[key]} />
+      : <Component />;
+    return <Lazy>{node}</Lazy>;
   };
 
   return (
@@ -49,11 +60,11 @@ export default function Landing() {
         {renderSlot('solutions', SolutionsSection)}
         {renderSlot('pricing', PricingSection)}
         {renderSlot('resources', ResourcesSection)}
-        <FaqSection pagePath="/" />
-        <ContentSectionsRenderer />
+        <Lazy><FaqSection pagePath="/" /></Lazy>
+        <Lazy><ContentSectionsRenderer /></Lazy>
         {renderSlot('cta', CtaBanner)}
       </main>
-      <SiteFooter />
+      <Lazy><SiteFooter /></Lazy>
     </div>
   );
 }
