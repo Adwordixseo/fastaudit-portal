@@ -249,4 +249,26 @@
   }
   .nav-drop-in { animation: nav-drop-in 0.18s ease-out both; }
   .panel-in { animation: panel-in 0.2s ease-out both; }
+
+  /* Mobile performance: the decorative blur/blob/shimmer/spin loops burn big main-thread
+     time on low-end phones and inflate TBT/Speed Index. Keep one-shot fades, drop the
+     infinite expensive loops below desktop so small screens paint and settle quickly. */
+  @media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+    .anim-blob-center,
+    .anim-blob-drift-1,
+    .anim-blob-drift-2,
+    .anim-spin-slow,
+    .anim-float-y,
+    .anim-float-y-small,
+    .anim-float-y-neg {
+      animation: none !important;
+    }
+    .shimmer-text {
+      animation: none !important;
+      background-size: 100% 100%;
+    }
+    .scan-line {
+      animation: none !important;
+    }
+  }
 }

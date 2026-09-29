@@ -24,21 +24,30 @@ export default function KeywordRankingTicker() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setKeywords((prev) =>
-        prev.map((k) => {
-          const delta = Math.floor(Math.random() * 5) - 2; // -2..+2
-          const newPos = Math.max(1, Math.min(50, k.pos + delta));
-          return { ...k, prev: k.pos, pos: newPos };
-        })
-      );
-      setTick((t) => t + 1);
-    }, 2500);
-    return () => clearInterval(interval);
+    const el = document.getElementById('keyword-ticker');
+    if (!el) return undefined;
+    let interval;
+    const start = () => {
+      if (interval) return;
+      interval = setInterval(() => {
+        setKeywords((prev) =>
+          prev.map((k) => {
+            const delta = Math.floor(Math.random() * 5) - 2; // -2..+2
+            const newPos = Math.max(1, Math.min(50, k.pos + delta));
+            return { ...k, prev: k.pos, pos: newPos };
+          })
+        );
+        setTick((t) => t + 1);
+      }, 4000);
+    };
+    const stop = () => { if (interval) { clearInterval(interval); interval = null; } };
+    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), { threshold: 0 });
+    io.observe(el);
+    return () => { stop(); io.disconnect(); };
   }, []);
 
   return (
-    <div className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur">
+    <div id="keyword-ticker" className="glow-card rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-fuchsia-500">

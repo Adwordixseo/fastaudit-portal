@@ -20,8 +20,14 @@ export default function Hero() {
   const go = (e) => { e.preventDefault(); navigate(`/app/audit${url ? `?url=${encodeURIComponent(url)}` : ''}`); };
 
   useEffect(() => {
-    const id = setInterval(() => setScanIdx((i) => (i + 1) % scanSteps.length), 2200);
-    return () => clearInterval(id);
+    const el = document.getElementById('hero-scan-status');
+    if (!el) return undefined;
+    let id;
+    const start = () => { if (!id) id = setInterval(() => setScanIdx((i) => (i + 1) % scanSteps.length), 2200); };
+    const stop = () => { if (id) { clearInterval(id); id = null; } };
+    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), { threshold: 0 });
+    io.observe(el);
+    return () => { stop(); io.disconnect(); };
   }, []);
 
   return (
@@ -67,7 +73,7 @@ export default function Hero() {
             <p className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400 lg:justify-start"><ShieldCheck className="h-3.5 w-3.5" /> Free scan · Full PDF report unlocked with any package</p>
 
             {/* Live scanning status */}
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-pink-200/80 lg:justify-start">
+            <div id="hero-scan-status" className="mt-3 flex items-center justify-center gap-2 text-xs text-pink-200/80 lg:justify-start">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pink-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-pink-400" />

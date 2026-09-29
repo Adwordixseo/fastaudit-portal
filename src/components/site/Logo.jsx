@@ -1,13 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { Image } from '@/components/ui/image';
 
 const LOGO_URL = 'https://media.base44.com/images/public/6a9fa0eaed1bc73f6d4dc233/d53e53ea0_adwordixlogowithwhitebg11.png';
 
 export default function Logo({ dark = false, className }) {
   return (
     <Link to="/" className={cn('flex items-center', className)}>
-      <img src={LOGO_URL} alt="Adwordix — AI Based SEO" width="3584" height="657" fetchpriority="high" className="h-9 w-auto object-contain" />
+      <Image
+        src={LOGO_URL}
+        alt="Adwordix — AI Based SEO"
+        originWidth={3584}
+        originHeight={657}
+        fittingType="fit"
+        loading="eager"
+        fetchPriority="high"
+        className="h-9 w-auto object-contain"
+      />
     </Link>
   );
 }
