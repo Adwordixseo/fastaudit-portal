@@ -95,7 +95,7 @@ export default async function(req) {
     if (fetchFailed || !html) {
       addCheck('technical', 'Website Reachability', 'fail', `HTTP ${fetchStatus || 'timeout'}`, 'We could not successfully load the live page, so most checks could not run.');
       const audit = await base44.entities.Audit.create({
-        url, client_id: user.id, client_email: user.email,
+        url, client_id: user.id, client_email: user.email, client_name: user.full_name || '', client_phone: user.phone || '',
         overall_score: 0,
         scores: { seo: 0, performance: 0, content: 0, technical: 0, ai_readiness: 0 },
         summary: 'The page could not be reached, so a full audit could not be performed. Verify the URL is correct and publicly accessible.',
@@ -328,7 +328,7 @@ Write for a business owner, plain language, no invented facts beyond what's list
     if (!summary) summary = `This page scores ${overall}/100 overall. ${problemChecks.length ? `The main areas to improve are: ${problemChecks.slice(0, 3).map((c) => c.title).join(', ')}.` : 'No major issues were found.'}`;
 
     const audit = await base44.entities.Audit.create({
-      url, client_id: user.id, client_email: user.email,
+      url, client_id: user.id, client_email: user.email, client_name: user.full_name || '', client_phone: user.phone || '',
       overall_score: overall, scores,
       summary,
       issues,

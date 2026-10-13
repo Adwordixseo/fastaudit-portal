@@ -81,7 +81,9 @@ export default function AdminAudits() {
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="px-4 py-3">Website</th>
-                    <th className="px-4 py-3">Client email</th>
+                    <th className="px-4 py-3">Client</th>
+                    <th className="px-4 py-3">Email</th>
+                    <th className="px-4 py-3">Phone</th>
                     <th className="px-4 py-3">Score</th>
                     <th className="px-4 py-3">Date</th>
                   </tr>
@@ -90,7 +92,9 @@ export default function AdminAudits() {
                   {items.map((a) => (
                     <tr key={a.id} className="hover:bg-slate-50/60">
                       <td className="max-w-xs truncate px-4 py-3 text-slate-800">{a.url}</td>
+                      <td className="px-4 py-3 font-medium text-slate-700">{a.client_name || '—'}</td>
                       <td className="px-4 py-3 text-slate-500">{a.client_email || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500">{a.client_phone || '—'}</td>
                       <td className="px-4 py-3">
                         <span className={`font-heading text-base font-bold ${scoreColor(a.overall_score)}`}>{a.overall_score ?? '—'}</span>
                       </td>

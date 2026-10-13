@@ -11,6 +11,14 @@
     "client_email": {
       "type": "string"
     },
+    "client_name": {
+      "type": "string",
+      "description": "Display name of the client who ran the audit"
+    },
+    "client_phone": {
+      "type": "string",
+      "description": "Phone number of the client who ran the audit"
+    },
     "overall_score": {
       "type": "number"
     },
