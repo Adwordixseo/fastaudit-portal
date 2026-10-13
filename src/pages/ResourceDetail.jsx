@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -31,9 +31,24 @@ export default function ResourceDetail() {
   const item = dbResource || hardcoded;
   const isDynamic = !!dbResource;
 
+  // Large articles store their body as a public file (body_url); fetch it when present
+  const [fetchedBody, setFetchedBody] = useState('');
+  useEffect(() => {
+    if (isDynamic && dbResource?.body_url && !dbResource?.body) {
+      let active = true;
+      fetch(dbResource.body_url)
+        .then((r) => r.text())
+        .then((html) => { if (active) setFetchedBody(html); })
+        .catch(() => {});
+      return () => { active = false; };
+    }
+    setFetchedBody('');
+  }, [isDynamic, dbResource?.body_url, dbResource?.body]);
+
+  const bodyHtml = dbResource?.body || fetchedBody;
   const { headings: tocHeadings, html: processedBody } = useMemo(
-    () => (isDynamic && dbResource?.body ? extractHeadings(dbResource.body) : { headings: [], html: '' }),
-    [isDynamic, dbResource?.body]
+    () => (isDynamic && bodyHtml ? extractHeadings(bodyHtml) : { headings: [], html: '' }),
+    [isDynamic, bodyHtml]
   );
 
   if (!item) {

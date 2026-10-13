@@ -19,7 +19,11 @@
     },
     "body": {
       "type": "string",
-      "description": "Rich text HTML content for the article body"
+      "description": "Rich text HTML content for the article body. For large articles this is kept empty and the content is stored as a public file referenced by body_url."
+    },
+    "body_url": {
+      "type": "string",
+      "description": "Public file URL holding the article body HTML when the content is too large to store inline in body."
     },
     "image_url": {
       "type": "string",

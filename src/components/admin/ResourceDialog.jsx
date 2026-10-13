@@ -8,13 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { base44 } from '@/api/base44Client';
+
+// Bodies larger than this exceed the entity field size limit, so they are stored
+// as a public file and referenced via body_url instead of inline in body.
+const BODY_INLINE_LIMIT = 30000;
 
 function slugify(str) {
   return (str || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/[\s-]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 export default function ResourceDialog({ open, onOpenChange, resource, onSave }) {
-  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', image_url: '', image_alt: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
+  const [form, setForm] = useState({ slug: '', title: '', tag: '', excerpt: '', body: '', body_url: '', image_url: '', image_alt: '', author: '', author_name: '', author_position: '', author_description: '', author_image_url: '', author_twitter: '', author_linkedin: '', author_website: '', read_time: '', date: '', sort_order: 0, is_active: true });
   const [saving, setSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
 
@@ -27,6 +32,7 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
         tag: resource?.tag || '',
         excerpt: resource?.excerpt || '',
         body: resource?.body || '',
+        body_url: resource?.body_url || '',
         image_url: resource?.image_url || '',
         image_alt: resource?.image_alt || '',
         author: resource?.author || '',
@@ -42,6 +48,13 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
         sort_order: resource?.sort_order || 0,
         is_active: resource?.is_active !== false,
       });
+      // If the body is stored as a public file (large article), fetch it into the editor
+      if (resource?.body_url && !resource?.body) {
+        fetch(resource.body_url)
+          .then((r) => r.text())
+          .then((html) => setForm((f) => ({ ...f, body: html })))
+          .catch(() => {});
+      }
     }
   }, [open, resource]);
 
@@ -65,7 +78,19 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
     if (!form.slug.trim() || !form.title.trim()) { toast.error('Slug and title are required'); return; }
     setSaving(true);
     try {
-      await onSave(form);
+      const payload = { ...form };
+      const bodyLen = (payload.body || '').length;
+      if (bodyLen > BODY_INLINE_LIMIT) {
+        // Store large bodies as a public file to stay within the entity field size limit
+        const file = new File([payload.body], `${payload.slug || 'article'}.html`, { type: 'text/html' });
+        const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
+        payload.body_url = file_url;
+        payload.body = '';
+      } else if (payload.body_url) {
+        // Body shrank back within the inline limit — clear the file reference
+        payload.body_url = '';
+      }
+      await onSave(payload);
       onOpenChange(false);
     } catch (e) {
       toast.error(e.message || 'Could not save');
@@ -137,7 +162,7 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
           <div>
             <Label>Body content</Label>
             <p className="mb-1.5 text-xs text-slate-400">Use the link button for internal links and the image button to upload inline images.</p>
-            <RichTextEditor value={form.body} onChange={(v) => set('body', v)} placeholder="Write your article..." minHeight={220} maxWords={2000} />
+            <RichTextEditor value={form.body} onChange={(v) => set('body', v)} placeholder="Write your article..." minHeight={220} />
           </div>
 
           <div className="grid grid-cols-3 gap-3">
