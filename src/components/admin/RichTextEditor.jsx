@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { base44 } from '@/api/base44Client';
@@ -48,7 +49,7 @@ try {
   console.error('Table blot registration failed:', e);
 }
 
-export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady }) {
+export default function RichTextEditor({ value, onChange, placeholder, minHeight = 180, onEditorReady, maxWords }) {
   const quillRef = useRef(null);
   const [tablePanel, setTablePanel] = useState(false);
   const [rows, setRows] = useState(3);
@@ -238,6 +239,14 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
 
   const formats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'image', 'table-embed', 'blockquote'];
 
+  const wordCount = useMemo(() => {
+    if (!value) return 0;
+    const text = String(value).replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').trim();
+    return text ? text.split(/\s+/).filter(Boolean).length : 0;
+  }, [value]);
+
+  const overLimit = maxWords && wordCount > maxWords;
+
   return (
     <div>
       <div className="rich-text-editor" style={{ '--ql-min-height': `${minHeight}px` }}>
@@ -251,6 +260,12 @@ export default function RichTextEditor({ value, onChange, placeholder, minHeight
           placeholder={placeholder}
         />
       </div>
+
+      {maxWords && (
+        <div className={cn('mt-1.5 text-xs', overLimit ? 'font-semibold text-red-600' : 'text-slate-400')}>
+          {wordCount} / {maxWords} words{overLimit ? ' — over the limit' : ''}
+        </div>
+      )}
 
       {/* Alt text for a selected existing image */}
       {selectedImage && (

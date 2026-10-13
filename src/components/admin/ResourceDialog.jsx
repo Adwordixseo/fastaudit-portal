@@ -137,7 +137,7 @@ export default function ResourceDialog({ open, onOpenChange, resource, onSave })
           <div>
             <Label>Body content</Label>
             <p className="mb-1.5 text-xs text-slate-400">Use the link button for internal links and the image button to upload inline images.</p>
-            <RichTextEditor value={form.body} onChange={(v) => set('body', v)} placeholder="Write your article..." minHeight={220} />
+            <RichTextEditor value={form.body} onChange={(v) => set('body', v)} placeholder="Write your article..." minHeight={220} maxWords={2000} />
           </div>
 
           <div className="grid grid-cols-3 gap-3">
