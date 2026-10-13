@@ -31,14 +31,16 @@ export default function ResourceDetail() {
   const item = dbResource || hardcoded;
   const isDynamic = !!dbResource;
 
-  // Large articles store their body as a public file (body_url); fetch it when present
+  // Large articles store their body as a public file (body_url); fetch it via a
+  // backend function because the file URL redirects cross-origin without CORS
+  // headers, which blocks a direct browser fetch.
   const [fetchedBody, setFetchedBody] = useState('');
   useEffect(() => {
     if (isDynamic && dbResource?.body_url && !dbResource?.body) {
       let active = true;
-      fetch(dbResource.body_url)
-        .then((r) => r.text())
-        .then((html) => { if (active) setFetchedBody(html); })
+      base44.functions
+        .invoke('fetchResourceBody', { body_url: dbResource.body_url })
+        .then((res) => { if (active) setFetchedBody(res.data?.html || ''); })
         .catch(() => {});
       return () => { active = false; };
     }
