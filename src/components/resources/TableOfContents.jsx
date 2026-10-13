@@ -14,6 +14,15 @@ export function extractHeadings(html) {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
+    // Pasted articles may use non-breaking spaces between every word. Normalize
+    // text only, keeping HTML attributes and preformatted/code content intact.
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (!node.parentElement?.closest('pre, code, script, style')) {
+        node.nodeValue = node.nodeValue.replace(/[\u00a0\u202f]/g, ' ');
+      }
+    }
     const headings = [];
     const usedIds = new Set();
     doc.querySelectorAll('h2, h3').forEach((el) => {
@@ -68,7 +77,7 @@ export default function TableOfContents({ headings }) {
                 e.preventDefault();
                 document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className={`-ml-px block break-words border-l-2 py-1 pr-2 transition-colors ${
+              className={`-ml-px block whitespace-normal break-normal border-l-2 py-1 pr-2 transition-colors ${
                 h.level === 'h3' ? 'pl-7' : 'pl-3'
               } ${
                 activeId === h.id
