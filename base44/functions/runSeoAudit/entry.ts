@@ -45,6 +45,7 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user.phone) return Response.json({ error: 'A phone number is required to run an audit. Please add your phone number in your account first.' }, { status: 400 });
 
     const body = await req.json();
     let url = String(body?.url || '').trim();

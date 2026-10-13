@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
 import PageHeader from '@/components/portal/PageHeader';
 import AuditForm from '@/components/audit/AuditForm';
+import PhoneRequired from '@/components/audit/PhoneRequired';
 import AuditResult from '@/components/audit/AuditResult';
 import AuditHistory from '@/components/audit/AuditHistory';
 import UpgradeDialog from '@/components/audit/UpgradeDialog';
@@ -22,6 +23,7 @@ export default function AuditPage() {
 
   const { data: audits = [] } = useQuery({ queryKey: ['audits', user?.id], queryFn: () => base44.entities.Audit.filter({ client_id: user.id }, '-created_date', 50), enabled: !!user });
   const current = selected || audits[0] || null;
+  const needsPhone = !!user && !user.phone;
 
   const run = async (url) => {
     setRunning(true);
@@ -41,7 +43,11 @@ export default function AuditPage() {
   return (
     <div className="space-y-8">
       <PageHeader eyebrow="Website audit" title="Audit your website" description="Score your SEO, performance, content, technical health and AI-readiness in under a minute." />
-      <AuditForm initialUrl={initialUrl} onRun={run} running={running} />
+      {needsPhone ? (
+        <PhoneRequired onSaved={() => qc.invalidateQueries({ queryKey: ['me'] })} />
+      ) : (
+        <AuditForm initialUrl={initialUrl} onRun={run} running={running} />
+      )}
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div>
           {current ? <AuditResult audit={current} canDownload={hasActive} onDownload={download} /> : (
