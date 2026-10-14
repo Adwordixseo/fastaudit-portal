@@ -81,6 +81,7 @@ export default function FeatureDetail() {
       {/* Features */}
       <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
         <h2 className="text-2xl font-bold text-white">What you get</h2>
+        {item.featuresIntro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.featuresIntro}</p>}
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {item.features.map((f, i) => (
             <motion.div key={f.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}
@@ -100,7 +101,8 @@ export default function FeatureDetail() {
         <section className="bg-[#0f0a1e]">
           <div className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
             <h2 className="text-2xl font-bold text-white">How it works</h2>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {item.stepsIntro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.stepsIntro}</p>}
+            <div className={`mt-10 grid gap-6 ${item.steps.length === 5 ? 'sm:grid-cols-2 lg:grid-cols-5' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
               {item.steps.map((s, i) => (
                 <motion.div key={s.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-sm font-bold text-white">{i + 1}</span>
@@ -110,6 +112,28 @@ export default function FeatureDetail() {
               ))}
             </div>
           </div>
+        </section>
+      )}
+
+      {/* What's Beyond Support */}
+      {item.beyond && (
+        <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
+          <h2 className="text-2xl font-bold text-white">{item.beyond.heading}</h2>
+          {item.beyond.intro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.beyond.intro}</p>}
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+            {item.beyond.items.map((b, i) => (
+              <motion.div key={b.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
+                <h3 className="text-base font-semibold text-white">{b.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{b.text}</p>
+              </motion.div>
+            ))}
+          </div>
+          {item.beyond.cta && (
+            <div className="mt-10">
+              <Button asChild size="lg" className="rounded-full border-none bg-gradient-to-r from-pink-500 to-fuchsia-500 px-6 shadow-lg shadow-pink-500/25 hover:from-pink-400 hover:to-fuchsia-400"><Link to={item.beyond.cta.to}>{item.beyond.cta.label} <ArrowRight className="ml-1.5 h-4 w-4" /></Link></Button>
+            </div>
+          )}
         </section>
       )}
 
