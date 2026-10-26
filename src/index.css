@@ -170,12 +170,31 @@
   .rich-text-dark a:hover { color: #ec4899 !important; }
   .rich-text-dark strong { color: #ffffff !important; }
   .rich-text-dark th { color: #ffffff !important; }
-  .rich-text-dark thead { background: rgba(255,255,255,0.08) !important; }
-  .rich-text-dark table { border: 1px solid rgba(255,255,255,0.3) !important; }
-  .rich-text-dark td { border: 1px solid rgba(255,255,255,0.2) !important; }
-  .rich-text-dark th { border: 1px solid rgba(255,255,255,0.3) !important; background: rgba(255,255,255,0.08) !important; }
+  /* Article tables: a distinct surface, a clear grid and a tinted header so they
+     read as a highlighted block instead of blending into the dark page. */
+  .rich-text-dark table {
+    background: rgba(255,255,255,0.035) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 18px 40px -24px rgba(0,0,0,0.9) !important;
+  }
+  .rich-text-dark thead { background: rgba(244,114,182,0.16) !important; }
+  .rich-text-dark th {
+    color: #ffffff !important;
+    background: rgba(244,114,182,0.16) !important;
+    border: 1px solid rgba(255,255,255,0.24) !important;
+    border-bottom: 2px solid rgba(244,114,182,0.55) !important;
+    padding: 0.75rem 1rem !important;
+    letter-spacing: 0.01em;
+  }
+  .rich-text-dark td {
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    padding: 0.7rem 1rem !important;
+    vertical-align: top;
+  }
+  .rich-text-dark tbody tr:nth-child(even) td { background: rgba(255,255,255,0.03) !important; }
   .rich-text-dark blockquote { border-left-color: #f472b6 !important; color: #cbd5e1 !important; }
-  .rich-text-dark table tr:hover td { background: rgba(255,255,255,0.04) !important; }
+  .rich-text-dark table tr:hover td { background: rgba(244,114,182,0.1) !important; }
   .rich-text-dark td p, .rich-text-dark td span, .rich-text-dark td strong, .rich-text-dark td em, .rich-text-dark td a, .rich-text-dark td li,
   .rich-text-dark th p, .rich-text-dark th span, .rich-text-dark th strong, .rich-text-dark th em, .rich-text-dark th a, .rich-text-dark th li {
     color: inherit !important;
