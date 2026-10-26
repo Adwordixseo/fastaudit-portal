@@ -126,9 +126,23 @@
   .ql-editor table td[contenteditable="true"], .ql-editor table th[contenteditable="true"] { cursor: text; }
   .ql-editor table td:focus, .ql-editor table th:focus { outline: 2px solid #c7d2fe; outline-offset: -2px; }
   .ql-snow button.ql-table::before { content: '▦'; font-size: 14px; }
-  .rich-text-editor .ql-toolbar { border-radius: 0.5rem 0.5rem 0 0; border-color: #e2e8f0; }
+  /* The body content scrolls inside a fixed-height area, with the formatting toolbar
+     pinned as a fixed navigation bar above it. No z-index, so the dialog's close
+     button (later in the DOM) keeps painting above it and stays clickable. */
+  .rich-text-editor .ql-toolbar {
+    position: sticky;
+    top: 0;
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-color: #e2e8f0;
+    background: #ffffff;
+  }
   .rich-text-editor .ql-container { border-radius: 0 0 0.5rem 0.5rem; border-color: #e2e8f0; }
-  .rich-text-editor .ql-editor { min-height: var(--ql-min-height, 180px); overscroll-behavior: contain; }
+  .rich-text-editor .ql-editor {
+    min-height: var(--ql-min-height, 180px);
+    max-height: var(--ql-max-height, 440px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .ql-raw-html { padding: 0.25rem 0; }
   .ql-raw-html table { margin: 0.5rem 0; }
   .rich-text { overflow-x: auto; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word; }
