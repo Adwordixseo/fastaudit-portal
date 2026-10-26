@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Clock, FileText } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clock, FileText, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { findResource, resourceItems } from '@/lib/siteNav';
@@ -19,7 +19,7 @@ export default function ResourceDetail() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: dbResource } = useQuery({
+  const { data: dbResource, isLoading } = useQuery({
     queryKey: ['resource', slug],
     queryFn: async () => {
       const list = await base44.entities.Resource.filter({ slug, is_active: true });
@@ -36,16 +36,20 @@ export default function ResourceDetail() {
   // backend function because the file URL redirects cross-origin without CORS
   // headers, which blocks a direct browser fetch.
   const [fetchedBody, setFetchedBody] = useState('');
+  const [bodyLoading, setBodyLoading] = useState(false);
   useEffect(() => {
     if (isDynamic && dbResource?.body_url && !dbResource?.body) {
       let active = true;
+      setBodyLoading(true);
       base44.functions
         .invoke('fetchResourceBody', { body_url: dbResource.body_url })
         .then((res) => { if (active) setFetchedBody(res.data?.html || ''); })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => { if (active) setBodyLoading(false); });
       return () => { active = false; };
     }
     setFetchedBody('');
+    setBodyLoading(false);
   }, [isDynamic, dbResource?.body_url, dbResource?.body]);
 
   const bodyHtml = dbResource?.body || fetchedBody;
@@ -53,6 +57,21 @@ export default function ResourceDetail() {
     () => (isDynamic && bodyHtml ? extractHeadings(bodyHtml) : { headings: [], html: '' }),
     [isDynamic, bodyHtml]
   );
+
+  // Never render the not-found state while the article record is still loading,
+  // otherwise it flashes before the published article appears.
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0a0815]">
+        <SiteHeader />
+        <div className="mx-auto flex max-w-3xl flex-col items-center justify-center px-5 py-40 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-pink-400" />
+          <p className="mt-4 text-sm text-slate-400">Loading article…</p>
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -111,18 +130,25 @@ export default function ResourceDetail() {
           )}
           <article className="min-w-0">
             {isDynamic ? (
-              <>
-                <div className="rich-text rich-text-dark space-y-4" dangerouslySetInnerHTML={{ __html: processedBody }} />
-                <AuthorBox
-                  name={dbResource.author_name || dbResource.author}
-                  position={dbResource.author_position}
-                  description={dbResource.author_description}
-                  image_url={dbResource.author_image_url}
-                  twitter={dbResource.author_twitter}
-                  linkedin={dbResource.author_linkedin}
-                  website={dbResource.author_website}
-                />
-              </>
+              bodyLoading ? (
+                <div className="flex items-center gap-3 py-16 text-slate-400">
+                  <Loader2 className="h-5 w-5 animate-spin text-pink-400" />
+                  <span className="text-sm">Loading article…</span>
+                </div>
+              ) : (
+                <>
+                  <div className="rich-text rich-text-dark space-y-4" dangerouslySetInnerHTML={{ __html: processedBody }} />
+                  <AuthorBox
+                    name={dbResource.author_name || dbResource.author}
+                    position={dbResource.author_position}
+                    description={dbResource.author_description}
+                    image_url={dbResource.author_image_url}
+                    twitter={dbResource.author_twitter}
+                    linkedin={dbResource.author_linkedin}
+                    website={dbResource.author_website}
+                  />
+                </>
+              )
             ) : (
               <div className="space-y-12">
                 {item.sections.map((s, i) => (
