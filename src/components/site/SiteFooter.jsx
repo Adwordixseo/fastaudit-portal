@@ -7,8 +7,7 @@ import Logo from '@/components/site/Logo';
 const columns = [
   { title: 'Features', links: [{ l: 'Website Audit', to: '/app/audit' }, { l: 'Monthly Reports', to: '/app/reports' }, { l: 'Project Tracking', to: '/app/projects' }, { l: 'Approvals', to: '/app/reports' }] },
   { title: 'Solutions', links: [{ l: 'For Agencies', to: '/solutions/agencies' }, { l: 'For SaaS', to: '/solutions/saas-startups' }, { l: 'For E-Commerce', to: '/solutions/ecommerce' }, { l: 'For Local Business', to: '/solutions/local-business' }] },
-  { title: 'Resources', links: [{ l: 'Free Audit', to: '/app/audit' }, { l: 'Pricing', to: '/pricing' }, { l: 'FAQ', to: '/#faq' }, { l: 'Support', to: '/app/support' }] },
-  { title: 'Company', links: [{ l: 'Contact', to: '/contact' }, { l: 'Login', to: '/login' }, { l: 'Team login', to: '/team' }, { l: 'Get started', to: '/register' }, { l: 'Privacy Policy', to: '/privacy-policy' }, { l: 'Terms of Service', to: '/terms' }] },
+  { title: 'Company', links: [{ l: 'Contact', to: '/contact' }, { l: 'Login', to: '/login' }, { l: 'Get started', to: '/register' }, { l: 'Privacy Policy', to: '/privacy-policy' }, { l: 'Terms of Service', to: '/terms' }] },
 ];
 
 export default function SiteFooter() {
@@ -20,10 +19,13 @@ export default function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-[#0a0815]">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
             <Logo />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+            <h3 className="mt-6 max-w-sm font-heading text-2xl font-bold leading-tight text-white">
+              Grow visibility, <span className="gradient-text">the measurable way.</span>
+            </h3>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-400">
               Audit your website, choose a growth package and track every milestone, report and approval from one beautiful portal.
             </p>
           </div>

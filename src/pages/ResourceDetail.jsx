@@ -11,6 +11,7 @@ import SiteFooter from '@/components/site/SiteFooter';
 import ContentSectionsRenderer from '@/components/content/ContentSectionsRenderer';
 import FaqSection from '@/components/site/FaqSection';
 import TableOfContents, { extractHeadings } from '@/components/resources/TableOfContents';
+import BlogSidebarCta from '@/components/resources/BlogSidebarCta';
 import AuthorBox from '@/components/resources/AuthorBox';
 
 export default function ResourceDetail() {
@@ -99,11 +100,12 @@ export default function ResourceDetail() {
         {isDynamic && dbResource?.image_url && (
           <img src={dbResource.image_url} alt={dbResource.image_alt || dbResource.title || ''} className="mb-10 aspect-[16/9] w-full rounded-2xl object-cover" />
         )}
-        <div className={`grid gap-12 ${isDynamic && tocHeadings.length > 0 ? 'lg:grid-cols-[220px_1fr]' : ''}`}>
-          {isDynamic && tocHeadings.length > 0 && (
-            <aside className="hidden lg:block min-w-0">
-              <div className="sticky top-24 overflow-hidden">
-                <TableOfContents headings={tocHeadings} />
+        <div className={`grid gap-12 ${isDynamic ? 'lg:grid-cols-[240px_1fr]' : ''}`}>
+          {isDynamic && (
+            <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
+              <div className="space-y-6">
+                {tocHeadings.length > 0 && <TableOfContents headings={tocHeadings} />}
+                <BlogSidebarCta />
               </div>
             </aside>
           )}
