@@ -24,12 +24,12 @@ export default function FaqDialog({ open, onOpenChange, faq, onSave }) {
         setPagePath(faq.page_path || '');
         setSortOrder(faq.sort_order || 0);
         setIsActive(faq.is_active !== false);
-        setItems([{ question: faq.question || '', answer: faq.answer || '' }]);
+        setItems([{ question: faq.question || '', answer: faq.answer || '', links: faq.links || [] }]);
       } else {
         setPagePath('');
         setSortOrder(0);
         setIsActive(true);
-        setItems([{ question: '', answer: '' }]);
+        setItems([{ question: '', answer: '', links: [] }]);
       }
     }
   }, [open, faq]);
@@ -37,6 +37,10 @@ export default function FaqDialog({ open, onOpenChange, faq, onSave }) {
   const addItem = () => setItems((prev) => [...prev, { question: '', answer: '' }]);
   const removeItem = (i) => setItems((prev) => prev.filter((_, idx) => idx !== i));
   const updateItem = (i, key, val) => setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, [key]: val } : it)));
+  const addLink = (i) => setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, links: [...(it.links || []), { label: '', url: '' }] } : it)));
+  const updateLink = (i, li, key, val) => setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, links: it.links.map((l, j) => (j === li ? { ...l, [key]: val } : l)) } : it)));
+  const removeLink = (i, li) => setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, links: it.links.filter((_, j) => j !== li) } : it)));
+  const cleanLinks = (links) => (links || []).filter((l) => l.label?.trim() && l.url?.trim()).map((l) => ({ label: l.label.trim(), url: l.url.trim() }));
 
   const submit = async () => {
     if (!pagePath.trim()) { toast.error('Page path is required'); return; }
@@ -47,9 +51,9 @@ export default function FaqDialog({ open, onOpenChange, faq, onSave }) {
     setSaving(true);
     try {
       if (isEdit) {
-        await onSave({ page_path: pagePath, question: items[0].question, answer: items[0].answer, sort_order: sortOrder, is_active: isActive });
+        await onSave({ page_path: pagePath, question: items[0].question, answer: items[0].answer, links: cleanLinks(items[0].links), sort_order: sortOrder, is_active: isActive });
       } else {
-        const forms = items.map((it, i) => ({ page_path: pagePath, question: it.question, answer: it.answer, sort_order: sortOrder + i, is_active: isActive }));
+        const forms = items.map((it, i) => ({ page_path: pagePath, question: it.question, answer: it.answer, links: cleanLinks(it.links), sort_order: sortOrder + i, is_active: isActive }));
         await onSave(forms);
       }
       onOpenChange(false);
@@ -93,6 +97,22 @@ export default function FaqDialog({ open, onOpenChange, faq, onSave }) {
               <div className="mt-3">
                 <Label>Answer</Label>
                 <Textarea value={item.answer} onChange={(e) => updateItem(i, 'answer', e.target.value)} placeholder="Yes. Create an account, enter your URL..." className="mt-1.5 min-h-[100px]" />
+              </div>
+              <div className="mt-3">
+                <Label>Interlinking links</Label>
+                <p className="mt-1 text-xs text-slate-400">Optional links shown under this answer. Use an internal path like <code className="font-mono">/pricing</code> or a full URL.</p>
+                {(item.links || []).map((link, li) => (
+                  <div key={li} className="mt-2 flex items-center gap-2">
+                    <Input value={link.label} onChange={(e) => updateLink(i, li, 'label', e.target.value)} placeholder="Link text" className="flex-1" />
+                    <Input value={link.url} onChange={(e) => updateLink(i, li, 'url', e.target.value)} placeholder="/pricing" className="flex-1 font-mono text-sm" />
+                    <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(i, li)} className="h-9 shrink-0 px-2 text-red-500 hover:bg-red-50 hover:text-red-600">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={() => addLink(i)} className="mt-2 h-8 text-xs">
+                  <Plus className="h-3.5 w-3.5" /> Add interlink
+                </Button>
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2, HelpCircle, Filter } from 'lucide-react';
+import { Plus, Pencil, Trash2, HelpCircle, Filter, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
@@ -108,6 +108,11 @@ export default function AdminFaqs() {
                 </div>
               </div>
               <p className="mt-3 line-clamp-3 text-sm text-slate-500">{f.answer}</p>
+              {f.links?.length > 0 && (
+                <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-pink-600">
+                  <Link2 className="h-3.5 w-3.5" /> {f.links.length} interlink{f.links.length > 1 ? 's' : ''}
+                </p>
+              )}
             </div>
           ))}
         </div>

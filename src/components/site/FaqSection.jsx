@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -41,7 +42,7 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
   );
 
   const faqs = matched.length > 0
-    ? matched.map((f) => [f.question, f.answer])
+    ? matched.map((f) => [f.question, f.answer, (f.links || []).filter((l) => l?.label?.trim() && l?.url?.trim())])
     : (fallbackFaqs || DEFAULT_FAQS).map((f) => (Array.isArray(f) ? f : [f.q, f.a]));
 
   // Auto-inject FAQPage JSON-LD schema from the FAQs actually displayed on this page
@@ -79,10 +80,25 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
           <h2 className="mt-3 text-4xl font-bold text-white">Free SEO Audit Tool: Your Questions, Answered</h2>
         </div>
         <Accordion type="single" collapsible className="mt-12 space-y-3">
-          {faqs.map(([q, a], i) => (
+          {faqs.map(([q, a, links = []], i) => (
             <AccordionItem key={i} value={`f${i}`} className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 backdrop-blur">
               <AccordionTrigger className="text-left text-base font-semibold text-white hover:no-underline">{q}</AccordionTrigger>
-              <AccordionContent className="text-slate-400">{a}</AccordionContent>
+              <AccordionContent className="text-slate-400">
+                {a}
+                {links.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+                    {links.map((l, li) => l.url.startsWith('http') ? (
+                      <a key={li} href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-pink-400 hover:text-pink-300 hover:underline">
+                        {l.label}<ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+                    ) : (
+                      <Link key={li} to={l.url} className="inline-flex items-center gap-1 text-sm font-medium text-pink-400 hover:text-pink-300 hover:underline">
+                        {l.label}<ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
