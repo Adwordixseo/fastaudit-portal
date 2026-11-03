@@ -100,16 +100,23 @@ export default function FaqDialog({ open, onOpenChange, faq, onSave }) {
               </div>
               <div className="mt-3">
                 <Label>Interlinking links</Label>
-                <p className="mt-1 text-xs text-slate-400">Optional links shown under this answer. Use an internal path like <code className="font-mono">/pricing</code> or a full URL.</p>
-                {(item.links || []).map((link, li) => (
-                  <div key={li} className="mt-2 flex items-center gap-2">
-                    <Input value={link.label} onChange={(e) => updateLink(i, li, 'label', e.target.value)} placeholder="Link text" className="flex-1" />
-                    <Input value={link.url} onChange={(e) => updateLink(i, li, 'url', e.target.value)} placeholder="/pricing" className="flex-1 font-mono text-sm" />
-                    <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(i, li)} className="h-9 shrink-0 px-2 text-red-500 hover:bg-red-50 hover:text-red-600">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                ))}
+                <p className="mt-1 text-xs text-slate-400">Type a word or phrase exactly as it appears in the answer above. That word becomes the link inside the paragraph. Use an internal path like <code className="font-mono">/pricing</code> or a full URL.</p>
+                {(item.links || []).map((link, li) => {
+                  const label = (link.label || '').trim();
+                  const notInAnswer = label && !(item.answer || '').toLowerCase().includes(label.toLowerCase());
+                  return (
+                    <div key={li} className="mt-2">
+                      <div className="flex items-center gap-2">
+                        <Input value={link.label} onChange={(e) => updateLink(i, li, 'label', e.target.value)} placeholder="Text in the answer" className="flex-1" />
+                        <Input value={link.url} onChange={(e) => updateLink(i, li, 'url', e.target.value)} placeholder="/pricing" className="flex-1 font-mono text-sm" />
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(i, li)} className="h-9 shrink-0 px-2 text-red-500 hover:bg-red-50 hover:text-red-600">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      {notInAnswer && <p className="mt-1 text-xs text-amber-600">This text isn't in the answer yet. Add it to the answer so it links inline.</p>}
+                    </div>
+                  );
+                })}
                 <Button type="button" variant="outline" size="sm" onClick={() => addLink(i)} className="mt-2 h-8 text-xs">
                   <Plus className="h-3.5 w-3.5" /> Add interlink
                 </Button>

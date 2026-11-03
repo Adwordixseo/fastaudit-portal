@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import FaqAnswer from '@/components/site/FaqAnswer';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const DEFAULT_FAQS = [
@@ -84,20 +84,7 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
             <AccordionItem key={i} value={`f${i}`} className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 backdrop-blur">
               <AccordionTrigger className="text-left text-base font-semibold text-white hover:no-underline">{q}</AccordionTrigger>
               <AccordionContent className="text-slate-400">
-                {a}
-                {links.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-                    {links.map((l, li) => l.url.startsWith('http') ? (
-                      <a key={li} href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-pink-400 hover:text-pink-300 hover:underline">
-                        {l.label}<ArrowUpRight className="h-3.5 w-3.5" />
-                      </a>
-                    ) : (
-                      <Link key={li} to={l.url} className="inline-flex items-center gap-1 text-sm font-medium text-pink-400 hover:text-pink-300 hover:underline">
-                        {l.label}<ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                <FaqAnswer text={a} links={links} />
               </AccordionContent>
             </AccordionItem>
           ))}
