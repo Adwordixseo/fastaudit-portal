@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { UserCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -13,9 +13,17 @@ const empty = { name: '', website: '', client_id: '', assigned_to_email: '', ass
 
 export default function ProjectDialog({ open, onOpenChange, project, users, onSave }) {
   const [form, setForm] = useState(empty);
-  const { data: teamAccess = [] } = useQuery({ queryKey: ['team-access'], queryFn: () => base44.entities.TeamAccess.list() });
-  const teamEmails = new Set(teamAccess.map((t) => t.email));
-  const teamMembers = users.filter((u) => teamEmails.has(u.email));
+  const { data: teamAccess = [], isLoading: teamLoading } = useQuery({ queryKey: ['team-access'], queryFn: () => base44.entities.TeamAccess.list() });
+
+  // A team member counts if they are marked "Team" on the Users page, invited as
+  // team, or hold a team-access record. Admins are assignable too.
+  const teamMembers = useMemo(() => {
+    const invited = new Set(teamAccess.map((t) => (t.email || '').trim().toLowerCase()));
+    return users.filter((u) => {
+      const email = (u.email || '').trim().toLowerCase();
+      return u.role === 'admin' || u.role === 'team' || u.is_team_member === true || invited.has(email);
+    });
+  }, [users, teamAccess]);
 
   useEffect(() => { setForm(project ? { ...empty, ...project } : empty); }, [project, open]);
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
@@ -46,7 +54,7 @@ export default function ProjectDialog({ open, onOpenChange, project, users, onSa
                 {teamMembers.map((u) => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email}</SelectItem>)}
               </SelectContent>
             </Select>
-            {teamMembers.length === 0 && <p className="mt-1.5 text-xs text-slate-400">No team members yet. Invite team members from Team Access settings.</p>}
+            {!teamLoading && users.length > 0 && teamMembers.length === 0 && <p className="mt-1.5 text-xs text-slate-400">No team members yet. Mark a user as Team on the Users page, then assign them here.</p>}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div><Label>Status</Label>
