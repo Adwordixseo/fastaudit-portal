@@ -60,7 +60,7 @@ export default function Landing() {
         {renderSlot('solutions', SolutionsSection)}
         {renderSlot('pricing', PricingSection)}
         {renderSlot('resources', ResourcesSection)}
-        <Lazy><FaqSection pagePath="/" /></Lazy>
+        <Lazy><FaqSection pagePath="/" heading="Free SEO Audit Tool: Your Questions, Answered" /></Lazy>
         <Lazy><ContentSectionsRenderer /></Lazy>
         {renderSlot('cta', CtaBanner)}
       </main>

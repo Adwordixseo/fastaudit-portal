@@ -27,7 +27,7 @@ function matchPath(pathname, items) {
   });
 }
 
-export default function FaqSection({ pagePath, fallbackFaqs }) {
+export default function FaqSection({ pagePath, fallbackFaqs, heading = 'Frequently asked questions' }) {
   const location = useLocation();
   const path = pagePath || location.pathname;
 
@@ -77,7 +77,7 @@ export default function FaqSection({ pagePath, fallbackFaqs }) {
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <div className="text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">FAQs</span>
-          <h2 className="mt-3 text-4xl font-bold text-white">Free SEO Audit Tool: Your Questions, Answered</h2>
+          <h2 className="mt-3 text-4xl font-bold text-white">{heading}</h2>
         </div>
         <Accordion type="single" collapsible className="mt-12 space-y-3">
           {faqs.map(([q, a, links = []], i) => (

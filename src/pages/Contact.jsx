@@ -11,6 +11,14 @@ import { base44 } from '@/api/base44Client';
 
 const initialForm = { name: '', phone: '', email: '', company: '', location: '', message: '' };
 
+// Format as a US number while typing: (307) 336-7338
+const formatPhoneUS = (value) => {
+  const digits = value.replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+};
+
 export default function Contact() {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
@@ -61,8 +69,7 @@ export default function Contact() {
                   <h3 className="text-base font-semibold text-white">Phone</h3>
                 </div>
                 <div className="mt-4 space-y-1.5">
-                  <a href="tel:9953269191" className="block text-sm text-slate-300 hover:text-pink-400">+91-9953269191</a>
-                  <a href="tel:+918104330050" className="block text-sm text-slate-300 hover:text-pink-400">+91-8104330050</a>
+                  <a href="tel:+13073367338" className="block text-sm text-slate-300 hover:text-pink-400">+1 (307) 336-7338</a>
                 </div>
               </div>
 
@@ -106,7 +113,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <Label htmlFor="c-phone" className="text-slate-200">Phone Number</Label>
-                      <Input id="c-phone" type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="+91 98765 43210" className="mt-1.5 border-white/15 bg-white/5 text-white placeholder:text-slate-500" />
+                      <Input id="c-phone" type="tel" value={form.phone} onChange={(e) => set('phone', formatPhoneUS(e.target.value))} placeholder="(307) 336-7338" className="mt-1.5 border-white/15 bg-white/5 text-white placeholder:text-slate-500" />
                     </div>
                   </div>
 

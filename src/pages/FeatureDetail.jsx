@@ -138,7 +138,7 @@ export default function FeatureDetail() {
       )}
 
       {/* FAQ */}
-      <FaqSection pagePath={location.pathname} fallbackFaqs={item.faq} />
+      <FaqSection pagePath={location.pathname} fallbackFaqs={item.faq} heading={`${item.title}: Your Questions, Answered`} />
 
       {/* Prev / next */}
       <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">
