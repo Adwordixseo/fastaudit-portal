@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, ArrowRight, Globe } from 'lucide-react';
+import { Search, Loader2, ArrowRight, Globe, Download } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import ExportButtons from '@/components/portal/ExportButtons';
+import { generateAuditPdf } from '@/lib/generateAuditPdf';
 import { fmtDate, scoreColor } from '@/lib/format';
 
 const PAGE_SIZE = 50;
+
+const EXPORT_HEADERS = [
+  { key: 'url', label: 'Website' },
+  { key: 'client_name', label: 'Client' },
+  { key: 'client_email', label: 'Email' },
+  { key: 'client_phone', label: 'Phone' },
+  { key: 'overall_score', label: 'Score' },
+  { key: 'date', label: 'Date' },
+];
 
 export default function AdminAudits() {
   const [items, setItems] = useState([]);
@@ -55,9 +66,16 @@ export default function AdminAudits() {
 
   useEffect(() => { loadFirst(debounced); }, [debounced]);
 
+  const exportData = items.map((a) => ({ ...a, date: fmtDate(a.created_date) }));
+
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Admin" title="Audits" description="Every website audit run by clients and visitors, newest first. Search by URL or email." />
+      <PageHeader
+        eyebrow="Admin"
+        title="Audits"
+        description="Every website audit run by clients and visitors, newest first. Search by URL or email."
+        action={<ExportButtons data={exportData} headers={EXPORT_HEADERS} filename="audits" title="Audit report" disabled={loading} />}
+      />
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -86,6 +104,7 @@ export default function AdminAudits() {
                     <th className="px-4 py-3">Phone</th>
                     <th className="px-4 py-3">Score</th>
                     <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3 text-right">Report</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -99,6 +118,11 @@ export default function AdminAudits() {
                         <span className={`font-heading text-base font-bold ${scoreColor(a.overall_score)}`}>{a.overall_score ?? '—'}</span>
                       </td>
                       <td className="px-4 py-3 text-slate-500">{fmtDate(a.created_date)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Button variant="outline" size="sm" className="rounded-full" onClick={() => generateAuditPdf(a)}>
+                          <Download className="mr-1.5 h-3.5 w-3.5" /> PDF
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

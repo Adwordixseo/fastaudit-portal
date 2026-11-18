@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Users, FolderKanban, CreditCard, MessageSquare, FileText, Search, ListTodo, ArrowRight } from 'lucide-react';
+import { Users, FolderKanban, CreditCard, MessageSquare, FileText, Search, ListTodo, ArrowRight, Download, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
 import StatCard from '@/components/portal/StatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/portal/EmptyState';
+import { Button } from '@/components/ui/button';
+import { exportToPdf } from '@/lib/exports';
 import WeeklyTaskCompletionChart from '@/components/team/WeeklyTaskCompletionChart';
 import TeamTaskKanban from '@/components/team/TeamTaskKanban';
 import { fmtDate, scoreColor } from '@/lib/format';
@@ -22,6 +24,22 @@ export default function AdminOverview() {
   const { data: tasks = [] } = useQuery({ queryKey: ['team-tasks'], queryFn: () => base44.entities.TeamTask.list('-updated_date') });
 
   const saveTaskStatus = async (id, status) => { await base44.entities.TeamTask.update(id, { status }); qc.invalidateQueries({ queryKey: ['team-tasks'] }); };
+
+  const [downloading, setDownloading] = useState(false);
+  const downloadAuditReport = async () => {
+    setDownloading(true);
+    try {
+      const all = await base44.entities.Audit.list('-created_date', 500);
+      exportToPdf(
+        'Audit report',
+        ['Website', 'Client', 'Email', 'Phone', 'Score', 'Date'],
+        all.map((a) => [a.url, a.client_name || '', a.client_email || '', a.client_phone || '', a.overall_score ?? '', fmtDate(a.created_date)]),
+        'audit-report'
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
   const approved = docs.filter((d) => d.status === 'approved').length;
   const popular = Object.entries(subs.reduce((a, s) => ({ ...a, [s.package_name]: (a[s.package_name] || 0) + 1 }), {})).sort((a, b) => b[1] - a[1]);
 
@@ -42,7 +60,12 @@ export default function AdminOverview() {
         <section className="rounded-3xl border border-slate-200 bg-white p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900">Recent audits</h2>
-            <Link to="/admin/audits" className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" className="rounded-full" onClick={downloadAuditReport} disabled={downloading}>
+                {downloading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />} Audit report
+              </Button>
+              <Link to="/admin/audits" className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
+            </div>
           </div>
           <ul className="mt-4 divide-y divide-slate-100">{audits.map((a) => <li key={a.id} className="flex items-center justify-between py-2.5"><div className="min-w-0"><div className="truncate text-sm text-slate-800">{a.url}</div><div className="text-xs text-slate-400">{a.client_email} · {fmtDate(a.created_date)}</div></div><span className={`font-heading text-lg font-bold ${scoreColor(a.overall_score)}`}>{a.overall_score}</span></li>)}</ul></section>
         <section className="rounded-3xl border border-slate-200 bg-white p-6"><h2 className="text-base font-semibold text-slate-900">Latest tickets</h2>
