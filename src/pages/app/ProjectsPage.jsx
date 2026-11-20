@@ -5,6 +5,7 @@ import { FolderKanban, Globe, ArrowRight, List, CalendarDays, Plus, UserPlus } f
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useClientProjects, useClientDocuments } from '@/hooks/useClientProjects';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
@@ -26,9 +27,9 @@ export default function ProjectsPage() {
   const [view, setView] = useState('list');
   const [addSlot, setAddSlot] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
+  const { data: projects = [] } = useClientProjects();
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id }, 'due_date')))).flat(), enabled: projects.length > 0 });
-  const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
+  const { data: docs = [] } = useClientDocuments(projects);
   const { data: access = [] } = useQuery({ queryKey: ['project-access', uid], queryFn: () => base44.entities.ProjectAccess.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
   const qc = useQueryClient();
   const { activeSubscriptions } = useSubscription();

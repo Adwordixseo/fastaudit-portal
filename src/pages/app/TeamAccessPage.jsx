@@ -26,7 +26,7 @@ export default function TeamAccessPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader eyebrow="Team access" title="Share projects with your team" description="Give a team member access with their email id — they join the team panel and set their own password from the invite." />
+      <PageHeader eyebrow="Team access" title="Share projects with your team" description="Give a team member access with their email id — they sign in and see the shared project in this client portal." />
 
       {projects.length === 0 ? (
         <EmptyState icon={FolderKanban} title="No projects yet" text="Once you have a project you can share it with your team here." />

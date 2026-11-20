@@ -40,7 +40,17 @@ export default function Landing() {
     return { hidden, replacements };
   }, [sections]);
 
-  if (!isLoadingAuth && user?.is_team_member) return <Navigate to="/team" replace />;
+  // Team members go straight to the team panel, unless a client shared a project with
+  // their email — then they stay in that client's portal instead.
+  const sharedCheck = useQuery({
+    queryKey: ['shared-access', user?.email],
+    queryFn: () => base44.entities.ProjectAccess.filter({ email: user.email, status: { $ne: 'revoked' } }),
+    enabled: !!user?.email && user?.is_team_member === true,
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  if (!isLoadingAuth && user?.is_team_member && !sharedCheck.isLoading && !(sharedCheck.data?.length > 0)) return <Navigate to="/team" replace />;
 
   const renderSlot = (key, Component) => {
     if (hidden.has(key)) return null;

@@ -5,6 +5,7 @@ import { FolderKanban, Package, Search, Clock, ArrowRight, FileText } from 'luci
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useClientProjects, useClientDocuments } from '@/hooks/useClientProjects';
 import StatCard from '@/components/portal/StatCard';
 import WelcomeBanner from '@/components/dashboard/WelcomeBanner';
 import UpsellBanner from '@/components/dashboard/UpsellBanner';
@@ -23,10 +24,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { activeSubscriptions, activeCount, hasActive, isLoading: subLoading } = useSubscription();
   const uid = user?.id;
-  const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
+  const { data: projects = [] } = useClientProjects();
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id })))).flat(), enabled: projects.length > 0 });
   const { data: audits = [] } = useQuery({ queryKey: ['audits', uid], queryFn: () => base44.entities.Audit.filter({ client_id: uid }, '-created_date', 5), enabled: !!uid });
-  const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
+  const { data: docs = [] } = useClientDocuments(projects);
   const pending = docs.filter((d) => d.status === 'awaiting_approval');
 
   return (

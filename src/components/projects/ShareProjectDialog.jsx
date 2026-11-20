@@ -27,8 +27,7 @@ export default function ShareProjectDialog({ open, onOpenChange, project, onShar
         name: name.trim() || undefined,
         status: 'invited',
       });
-      // Flag the address for the team panel; their own password is set from the invite email.
-      try { await base44.entities.TeamAccess.create({ email: target, invited_by: project.client_email || '' }); } catch { /* already a team member */ }
+      // They set their own password from the invite email, then land in this client portal.
       try {
         await base44.users.inviteUser(target, 'user');
         toast.success(`Access shared with ${target} — invite email sent`);
@@ -52,7 +51,7 @@ export default function ShareProjectDialog({ open, onOpenChange, project, onShar
         <DialogHeader>
           <DialogTitle>Share project with your team</DialogTitle>
           <DialogDescription>
-            Give a team member access to {project?.name || 'this project'}. They join the team panel with this email and set their own password from the invite.
+            Give a team member access to {project?.name || 'this project'}. They sign in with this email and see it in the client portal.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={share} className="space-y-4">

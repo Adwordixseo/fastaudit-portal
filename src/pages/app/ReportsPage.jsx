@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
+import { useClientProjects, useClientDocuments } from '@/hooks/useClientProjects';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import DocumentCard from '@/components/reports/DocumentCard';
@@ -21,8 +22,8 @@ export default function ReportsPage() {
   const [viewing, setViewing] = useState(null);
   const [changing, setChanging] = useState(null);
 
-  const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }), enabled: !!uid });
-  const { data: docs = [], isLoading } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
+  const { data: projects = [] } = useClientProjects();
+  const { data: docs = [], isLoading } = useClientDocuments(projects);
   const projectName = (id) => projects.find((p) => p.id === id)?.name || 'Project';
   const filtered = docs.filter((d) => (projectFilter === 'all' || d.project_id === projectFilter) && (!monthFilter || d.report_month === monthFilter) && d.status !== 'draft');
 
