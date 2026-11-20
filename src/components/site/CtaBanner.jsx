@@ -9,8 +9,8 @@ export default function CtaBanner() {
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-pink-600 via-fuchsia-600 to-purple-600 px-8 py-16 text-center text-white sm:px-16">
         <div className="grid-fade absolute inset-0 opacity-60" />
         <div className="relative">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Free SEO Audit</h2>
-          <p className="mt-3 text-4xl font-bold sm:text-5xl">Your competitors are already ranking.</p>
+          <h2 className="text-2xl font-bold uppercase tracking-[0.14em] text-white sm:text-3xl">Free SEO Audit</h2>
+          <p className="mt-3 text-lg font-medium leading-relaxed text-pink-50 sm:text-xl">Your competitors are already ranking.</p>
           <p className="mx-auto mt-4 max-w-xl text-pink-100">Run your free audit now and see exactly what to fix first. It takes less than a minute.</p>
           <Button asChild size="lg" className="mt-8 h-13 rounded-full border-none bg-white px-8 text-base font-semibold text-pink-600 hover:bg-pink-50">
             <Link to="/app/audit">Get my free audit <ArrowRight className="ml-2 h-4 w-4" /></Link>

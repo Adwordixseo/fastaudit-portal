@@ -11,8 +11,8 @@ export default function HowItWorks() {
     <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">How It Works</h2>
-          <p className="mt-3 text-4xl font-bold text-white sm:text-5xl">From a free SEO report to a stronger website.</p>
+          <h2 className="text-2xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-3xl">How It Works</h2>
+          <p className="mt-3 text-lg leading-relaxed text-slate-300 sm:text-xl">From a free SEO report to a stronger website.</p>
           <p className="mt-5 text-slate-400">The first report shows what\u2019s wrong, and you enroll in monthly progress and AI-SEO success.</p>
         </div>
         <ol className="space-y-4">

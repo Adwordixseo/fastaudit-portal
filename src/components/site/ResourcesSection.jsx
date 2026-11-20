@@ -23,8 +23,8 @@ export default function ResourcesSection() {
     <section id="resources" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Resources</h2>
-          <p className="mt-3 text-4xl font-bold text-white">Learn How to Lead the Market With a Free SEO Audit</p>
+          <h2 className="text-2xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-3xl">Resources</h2>
+          <p className="mt-3 text-lg leading-relaxed text-slate-300 sm:text-xl">Learn How to Lead the Market With a Free SEO Audit</p>
         </div>
         <Link to="/resources" className="inline-flex items-center gap-1 text-sm font-semibold text-pink-400 hover:text-pink-300">View all resources <ArrowRight className="h-4 w-4" /></Link>
       </div>

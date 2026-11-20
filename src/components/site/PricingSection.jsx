@@ -14,8 +14,8 @@ export default function PricingSection() {
     <section id="pricing" className="bg-[#0f0a1e] py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Pricing</h2>
-          <p className="mt-3 text-4xl font-bold text-white sm:text-5xl">Start for Free & Choose the Right Plan to Succeed</p>
+          <h2 className="text-2xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-3xl">Pricing</h2>
+          <p className="mt-3 text-lg leading-relaxed text-slate-300 sm:text-xl">Start for Free & Choose the Right Plan to Succeed</p>
           <p className="mt-4 text-slate-400">You can access website audit services and more on one dashboard with our subscription-based website audit packages.</p>
           <div className="mt-8"><BillingToggle value={cycle} onChange={setCycle} dark /></div>
         </div>

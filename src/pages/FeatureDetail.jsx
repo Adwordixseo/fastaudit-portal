@@ -80,8 +80,8 @@ export default function FeatureDetail() {
 
       {/* Features */}
       <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Features</h2>
-        <p className="mt-3 text-2xl font-bold text-white">What you get</p>
+        <h2 className="text-xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-2xl">Features</h2>
+        <p className="mt-2 text-base leading-relaxed text-slate-300 sm:text-lg">What you get</p>
         {item.featuresIntro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.featuresIntro}</p>}
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {item.features.map((f, i) => (
@@ -101,8 +101,8 @@ export default function FeatureDetail() {
       {item.steps && (
         <section className="bg-[#0f0a1e]">
           <div className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Process</h2>
-            <p className="mt-3 text-2xl font-bold text-white">How it works</p>
+            <h2 className="text-xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-2xl">Process</h2>
+            <p className="mt-2 text-base leading-relaxed text-slate-300 sm:text-lg">How it works</p>
             {item.stepsIntro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.stepsIntro}</p>}
             <div className={`mt-10 grid gap-6 ${item.steps.length === 5 ? 'sm:grid-cols-2 lg:grid-cols-5' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
               {item.steps.map((s, i) => (
@@ -120,8 +120,8 @@ export default function FeatureDetail() {
       {/* What's Beyond Support */}
       {item.beyond && (
         <section className="mx-auto max-w-5xl px-5 py-20 lg:px-8">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Beyond support</h2>
-          <p className="mt-3 text-2xl font-bold text-white">{item.beyond.heading}</p>
+          <h2 className="text-xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-2xl">Beyond support</h2>
+          <p className="mt-2 text-base leading-relaxed text-slate-300 sm:text-lg">{item.beyond.heading}</p>
           {item.beyond.intro && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">{item.beyond.intro}</p>}
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {item.beyond.items.map((b, i) => (

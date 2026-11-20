@@ -76,8 +76,8 @@ export default function FaqSection({ pagePath, fallbackFaqs, heading = 'Frequent
     <section id="faq" className="bg-[#0f0a1e] py-24">
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <div className="text-center">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">FAQs</h2>
-          <p className="mt-3 text-4xl font-bold text-white">{heading}</p>
+          <h2 className="text-2xl font-bold uppercase tracking-[0.14em] text-pink-400 sm:text-3xl">FAQs</h2>
+          <p className="mt-3 text-lg leading-relaxed text-slate-300 sm:text-xl">{heading}</p>
         </div>
         <Accordion type="single" collapsible className="mt-12 space-y-3">
           {faqs.map(([q, a, links = []], i) => (
