@@ -5,7 +5,7 @@ import { FolderKanban, Package, Search, Clock, ArrowRight, FileText } from 'luci
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useClientProjects, useClientDocuments } from '@/hooks/useClientProjects';
+import { useClientProjects, useClientDocuments, useIsSharedMember } from '@/hooks/useClientProjects';
 import StatCard from '@/components/portal/StatCard';
 import WelcomeBanner from '@/components/dashboard/WelcomeBanner';
 import UpsellBanner from '@/components/dashboard/UpsellBanner';
@@ -28,17 +28,18 @@ export default function Dashboard() {
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id })))).flat(), enabled: projects.length > 0 });
   const { data: audits = [] } = useQuery({ queryKey: ['audits', uid], queryFn: () => base44.entities.Audit.filter({ client_id: uid }, '-created_date', 5), enabled: !!uid });
   const { data: docs = [] } = useClientDocuments(projects);
+  const isSharedMember = useIsSharedMember();
   const pending = docs.filter((d) => d.status === 'awaiting_approval');
 
   return (
     <div className="space-y-8">
-      <OnboardingWalkthrough user={user} />
+      {!isSharedMember && <OnboardingWalkthrough user={user} />}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         <ExportButtons data={audits} filename="audit-history" title="Audit History" headers={[{ key: 'url', label: 'URL' }, { key: 'overall_score', label: 'Score' }, { key: 'created_date', label: 'Date' }]} />
       </div>
       <WelcomeBanner user={user} auditCount={audits.length} projectCount={projects.filter((p) => p.status === 'in_progress').length} />
 
-      {!subLoading && !hasActive && <UpsellBanner />}
+      {!subLoading && !hasActive && !isSharedMember && <UpsellBanner />}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={FolderKanban} label="Websites" value={projects.length} hint={activeCount ? `${projects.length} of ${activeCount} slot${activeCount !== 1 ? 's' : ''} used` : 'No slots'} />

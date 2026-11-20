@@ -5,7 +5,7 @@ import { FolderKanban, Globe, ArrowRight, List, CalendarDays, Plus, UserPlus } f
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useClientProjects, useClientDocuments } from '@/hooks/useClientProjects';
+import { useClientProjects, useClientDocuments, useIsSharedMember } from '@/hooks/useClientProjects';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
@@ -28,6 +28,7 @@ export default function ProjectsPage() {
   const [addSlot, setAddSlot] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
   const { data: projects = [] } = useClientProjects();
+  const isSharedMember = useIsSharedMember();
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id }, 'due_date')))).flat(), enabled: projects.length > 0 });
   const { data: docs = [] } = useClientDocuments(projects);
   const { data: access = [] } = useQuery({ queryKey: ['project-access', uid], queryFn: () => base44.entities.ProjectAccess.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
@@ -92,7 +93,9 @@ export default function ProjectsPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div><h2 className="text-2xl font-bold text-slate-900">{project.name}</h2>{project.website && <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Globe className="h-3.5 w-3.5" /> {project.website}</p>}</div>
                 <div className="flex items-center gap-2"><StatusBadge status={project.status} />
-                  <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share with team</Button>
+                  {!isSharedMember && (
+                    <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share with team</Button>
+                  )}
                 </div>
               </div>
               {project.description && <p className="mt-4 text-sm text-slate-600">{project.description}</p>}
@@ -105,13 +108,15 @@ export default function ProjectsPage() {
               <h3 className="mb-4 text-base font-semibold text-slate-900">Milestones ({pm.filter((m) => m.status === 'done').length}/{pm.length} done)</h3>
               <MilestoneList milestones={pm} />
             </div>
-            <div className="rounded-3xl border border-slate-200 bg-white p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-semibold text-slate-900">Team access</h3>
-                <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share</Button>
+            {!isSharedMember && (
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-slate-900">Team access</h3>
+                  <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share</Button>
+                </div>
+                <ProjectAccessList access={pAccess} onRevoke={revokeAccess} />
               </div>
-              <ProjectAccessList access={pAccess} onRevoke={revokeAccess} />
-            </div>
+            )}
             <div className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between"><h3 className="text-base font-semibold text-slate-900">Deliverables</h3><Link to="/app/reports" className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600">Open reports <ArrowRight className="h-3.5 w-3.5" /></Link></div>
               {pd.length === 0 ? <p className="text-sm text-slate-500">No documents uploaded for this project yet.</p> : (

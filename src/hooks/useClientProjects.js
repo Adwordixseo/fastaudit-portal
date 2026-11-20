@@ -23,6 +23,15 @@ export function useClientProjects() {
   });
 }
 
+// True when the signed-in user is a team member who only sees projects shared with
+// them by a main client (they own no projects of their own).
+export function useIsSharedMember() {
+  const { user } = useUser();
+  const { data: projects } = useClientProjects();
+  if (!user?.id || !projects) return false;
+  return projects.length > 0 && !projects.some((p) => p.client_id === user.id);
+}
+
 // Documents for the client's own projects and for projects shared with them.
 export function useClientDocuments(projects = []) {
   const { user } = useUser();

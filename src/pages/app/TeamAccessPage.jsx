@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FolderKanban, Globe, UserPlus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
+import { useIsSharedMember } from '@/hooks/useClientProjects';
 import PageHeader from '@/components/portal/PageHeader';
 import EmptyState from '@/components/portal/EmptyState';
 import ShareProjectDialog from '@/components/projects/ShareProjectDialog';
@@ -13,6 +15,7 @@ export default function TeamAccessPage() {
   const { user } = useUser();
   const uid = user?.id;
   const qc = useQueryClient();
+  const isSharedMember = useIsSharedMember();
   const [shareProject, setShareProject] = useState(null);
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
   const { data: access = [] } = useQuery({ queryKey: ['project-access', uid], queryFn: () => base44.entities.ProjectAccess.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
@@ -23,6 +26,9 @@ export default function TeamAccessPage() {
     await base44.entities.ProjectAccess.delete(a.id);
     refresh();
   };
+
+  // Shared team members can't share projects onward.
+  if (isSharedMember) return <Navigate to="/app" replace />;
 
   return (
     <div className="space-y-8">

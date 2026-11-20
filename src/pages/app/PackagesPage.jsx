@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
+import { useIsSharedMember } from '@/hooks/useClientProjects';
 import { useSubscription } from '@/hooks/useSubscription';
 import PageHeader from '@/components/portal/PageHeader';
 import BillingToggle from '@/components/packages/BillingToggle';
@@ -13,6 +15,7 @@ export default function PackagesPage() {
   const params = new URLSearchParams(window.location.search);
   const { user } = useUser();
   const { subscriptions, activeSubscription } = useSubscription();
+  const isSharedMember = useIsSharedMember();
   const qc = useQueryClient();
   const [cycle, setCycle] = useState(params.get('cycle') || 'monthly');
   const [selected, setSelected] = useState(null);
@@ -22,6 +25,9 @@ export default function PackagesPage() {
   React.useEffect(() => { if (preselect && packages.length && !selected) { const p = packages.find((x) => x.id === preselect); if (p) setSelected(p); } }, [preselect, packages]); // eslint-disable-line
 
   const renew = (sub) => { const p = packages.find((x) => x.id === sub.package_id); if (p) { setCycle(sub.billing_cycle); setSelected(p); } };
+
+  // Shared team members work inside the client's projects, not the packages portal.
+  if (isSharedMember) return <Navigate to="/app" replace />;
 
   return (
     <div className="space-y-8">
