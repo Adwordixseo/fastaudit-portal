@@ -5,6 +5,7 @@ import StatusBadge from '@/components/ui/StatusBadge';
 
 export default function ProjectProgressCard({ project, milestones = [], onClick }) {
   const done = milestones.filter((m) => m.status === 'done').length;
+  const pct = milestones.length ? Math.round((done / milestones.length) * 100) : (project.progress || 0);
   return (
     <button onClick={onClick} className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-left transition hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5">
       <div className="flex items-start justify-between gap-3">
@@ -15,9 +16,9 @@ export default function ProjectProgressCard({ project, milestones = [], onClick 
         <StatusBadge status={project.status} />
       </div>
       <div className="mt-5 flex items-center justify-between text-xs text-slate-500">
-        <span>Progress</span><span className="font-semibold text-slate-900">{project.progress || 0}%</span>
+        <span>Progress</span><span className="font-semibold text-slate-900">{pct}%</span>
       </div>
-      <Progress value={project.progress || 0} className="mt-2 h-2" />
+      <Progress value={pct} className="mt-2 h-2" />
       <p className="mt-3 text-xs text-slate-500">{done} of {milestones.length} milestones completed</p>
     </button>
   );

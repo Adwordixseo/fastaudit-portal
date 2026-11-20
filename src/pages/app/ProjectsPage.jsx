@@ -42,6 +42,8 @@ export default function ProjectsPage() {
 
   const pm = milestones.filter((m) => m.project_id === project?.id);
   const pd = docs.filter((d) => d.project_id === project?.id);
+  const pmDone = pm.filter((m) => m.status === 'done').length;
+  const pmPct = pm.length ? Math.round((pmDone / pm.length) * 100) : (project?.progress || 0);
 
   return (
     <div className="space-y-8">
@@ -81,8 +83,9 @@ export default function ProjectsPage() {
                 <StatusBadge status={project.status} />
               </div>
               {project.description && <p className="mt-4 text-sm text-slate-600">{project.description}</p>}
-              <div className="mt-6 flex items-center justify-between text-sm"><span className="text-slate-500">Overall progress</span><span className="font-semibold text-slate-900">{project.progress || 0}%</span></div>
-              <Progress value={project.progress || 0} className="mt-2 h-2.5" />
+              <div className="mt-6 flex items-center justify-between text-sm"><span className="text-slate-500">Overall progress</span><span className="font-semibold text-slate-900">{pmPct}%</span></div>
+              <Progress value={pmPct} className="mt-2 h-2.5" />
+              <p className="mt-2 text-xs text-slate-500">{pmDone} of {pm.length} milestones completed</p>
               <p className="mt-2 text-xs text-slate-400">Started {fmtDate(project.created_date)}</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6">
