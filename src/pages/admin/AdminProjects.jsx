@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/portal/PageHeader';
@@ -20,6 +20,8 @@ export default function AdminProjects() {
   const { data: users = [] } = useQuery({ queryKey: ['admin-users'], queryFn: () => base44.entities.User.list() });
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
+  const { data: access = [] } = useQuery({ queryKey: ['admin-project-access'], queryFn: () => base44.entities.ProjectAccess.list('-created_date') });
+  const accessOf = (pid) => access.filter((a) => a.project_id === pid);
   const progressOf = (p) => projectProgress(p, milestones.filter((m) => m.project_id === p.id));
   const selected = projects.find((p) => p.id === selectedId) || projects[0];
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin-projects'] });
@@ -47,6 +49,12 @@ export default function AdminProjects() {
               <div className="mt-4 flex items-center gap-3"><Progress value={progressOf(p).pct} className="h-2" /><span className="text-xs font-semibold text-slate-700">{progressOf(p).pct}%</span></div>
               <p className="mt-1.5 text-xs text-slate-500">{progressOf(p).done} of {progressOf(p).total} milestones completed</p>
               {p.assigned_to_name && <p className="mt-2 text-xs text-slate-500">Assigned to <span className="font-medium text-indigo-600">{p.assigned_to_name}</span></p>}
+              {accessOf(p.id).length > 0 && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                  <span className="inline-flex items-center gap-1 font-medium text-slate-600"><Users className="h-3.5 w-3.5" /> Client shared with:</span>
+                  {accessOf(p.id).map((a) => <span key={a.id} className="rounded-full bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700">{a.name ? `${a.name} · ${a.email}` : a.email}</span>)}
+                </div>
+              )}
             </div>
           ))}
         </div>

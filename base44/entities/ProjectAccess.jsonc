@@ -1,0 +1,85 @@
+{
+  "name": "ProjectAccess",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email of the team member the client shared the project with"
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional display name of the team member"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "active",
+        "revoked"
+      ],
+      "default": "invited",
+      "enumColors": [
+        "yellow",
+        "green",
+        "gray"
+      ]
+    }
+  },
+  "required": [
+    "project_id",
+    "email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FolderKanban, Globe, ArrowRight, List, CalendarDays, Plus } from 'lucide-react';
+import { FolderKanban, Globe, ArrowRight, List, CalendarDays, Plus, UserPlus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useUser } from '@/hooks/useUser';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -11,6 +11,8 @@ import ProjectProgressCard from '@/components/dashboard/ProjectProgressCard';
 import AddWebsiteDialog from '@/components/dashboard/AddWebsiteDialog';
 import MilestoneList from '@/components/projects/MilestoneList';
 import ProjectCalendar from '@/components/projects/ProjectCalendar';
+import ShareProjectDialog from '@/components/projects/ShareProjectDialog';
+import ProjectAccessList from '@/components/projects/ProjectAccessList';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -23,9 +25,11 @@ export default function ProjectsPage() {
   const [selectedId, setSelectedId] = useState(new URLSearchParams(window.location.search).get('id'));
   const [view, setView] = useState('list');
   const [addSlot, setAddSlot] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const { data: projects = [] } = useQuery({ queryKey: ['projects', uid], queryFn: () => base44.entities.Project.filter({ client_id: uid }, '-updated_date'), enabled: !!uid });
   const { data: milestones = [] } = useQuery({ queryKey: ['milestones', uid], queryFn: async () => (await Promise.all(projects.map((p) => base44.entities.Milestone.filter({ project_id: p.id }, 'due_date')))).flat(), enabled: projects.length > 0 });
   const { data: docs = [] } = useQuery({ queryKey: ['documents', uid], queryFn: () => base44.entities.Document.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
+  const { data: access = [] } = useQuery({ queryKey: ['project-access', uid], queryFn: () => base44.entities.ProjectAccess.filter({ client_id: uid }, '-created_date'), enabled: !!uid });
   const qc = useQueryClient();
   const { activeSubscriptions } = useSubscription();
   const linkedProjectIds = activeSubscriptions.map((s) => s.project_id).filter(Boolean);
@@ -40,6 +44,12 @@ export default function ProjectsPage() {
       <EmptyState icon={FolderKanban} title="No projects yet" text="Choose a package and add your first website to get started." action={<Button asChild className="rounded-full"><Link to="/app/packages">Browse packages</Link></Button>} /></div>
   );
 
+  const pAccess = access.filter((a) => a.project_id === project?.id);
+  const revokeAccess = async (a) => {
+    if (!confirm(`Remove ${a.email}'s access to this project?`)) return;
+    await base44.entities.ProjectAccess.delete(a.id);
+    qc.invalidateQueries({ queryKey: ['project-access', uid] });
+  };
   const pm = milestones.filter((m) => m.project_id === project?.id);
   const pd = docs.filter((d) => d.project_id === project?.id);
   const pmDone = pm.filter((m) => m.status === 'done').length;
@@ -80,7 +90,9 @@ export default function ProjectsPage() {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div><h2 className="text-2xl font-bold text-slate-900">{project.name}</h2>{project.website && <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Globe className="h-3.5 w-3.5" /> {project.website}</p>}</div>
-                <StatusBadge status={project.status} />
+                <div className="flex items-center gap-2"><StatusBadge status={project.status} />
+                  <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share with team</Button>
+                </div>
               </div>
               {project.description && <p className="mt-4 text-sm text-slate-600">{project.description}</p>}
               <div className="mt-6 flex items-center justify-between text-sm"><span className="text-slate-500">Overall progress</span><span className="font-semibold text-slate-900">{pmPct}%</span></div>
@@ -93,6 +105,13 @@ export default function ProjectsPage() {
               <MilestoneList milestones={pm} />
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-slate-900">Team access</h3>
+                <Button size="sm" variant="outline" className="rounded-full" onClick={() => setShareOpen(true)}><UserPlus className="mr-1.5 h-3.5 w-3.5" /> Share</Button>
+              </div>
+              <ProjectAccessList access={pAccess} onRevoke={revokeAccess} />
+            </div>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between"><h3 className="text-base font-semibold text-slate-900">Deliverables</h3><Link to="/app/reports" className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600">Open reports <ArrowRight className="h-3.5 w-3.5" /></Link></div>
               {pd.length === 0 ? <p className="text-sm text-slate-500">No documents uploaded for this project yet.</p> : (
                 <ul className="divide-y divide-slate-100">{pd.slice(0, 6).map((d) => <li key={d.id} className="flex items-center justify-between py-2.5 text-sm"><span className="truncate text-slate-800">{d.title} <span className="text-slate-400">· {fmtMonth(d.report_month)}</span></span><StatusBadge status={d.status} /></li>)}</ul>
@@ -103,6 +122,7 @@ export default function ProjectsPage() {
       </div>
       )}
       <AddWebsiteDialog open={!!addSlot} onOpenChange={(o) => !o && setAddSlot(null)} subscription={addSlot} onDone={refresh} />
+      <ShareProjectDialog open={shareOpen} onOpenChange={setShareOpen} project={project} onShared={() => qc.invalidateQueries({ queryKey: ['project-access', uid] })} />
     </div>
   );
 }
