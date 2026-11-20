@@ -15,11 +15,10 @@ import TeamTaskPanel from '@/components/team/TeamTaskPanel';
 import ProjectKeywordRankings from '@/components/team/ProjectKeywordRankings';
 import ExportButtons from '@/components/portal/ExportButtons';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { fmtDate, fileTypeFromName } from '@/lib/format';
+import { fmtDate, fileTypeFromName, projectProgress } from '@/lib/format';
 
 export default function TeamProjects() {
   const qc = useQueryClient();
@@ -30,6 +29,8 @@ export default function TeamProjects() {
   const { user } = useUser();
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
+  const { data: milestones = [] } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
+  const progressOf = (p) => projectProgress(p, milestones.filter((m) => m.project_id === p.id));
 
   const filtered = projects.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.client_email?.toLowerCase().includes(search.toLowerCase()));
   const selected = projects.find((p) => p.id === selectedId) || filtered[0] || null;
@@ -37,7 +38,6 @@ export default function TeamProjects() {
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin-projects'] }); qc.invalidateQueries({ queryKey: ['admin-docs'] }); };
 
-  const saveProgress = async (val) => { if (!selected) return; await base44.entities.Project.update(selected.id, { progress: Number(val) || 0 }); refresh(); };
   const saveStatus = async (val) => { if (!selected) return; await base44.entities.Project.update(selected.id, { status: val }); refresh(); };
   const reply = async (doc, note) => {
     const project = projects.find((p) => p.id === doc.project_id);
@@ -76,7 +76,7 @@ export default function TeamProjects() {
                     <ChevronRight className={`h-4 w-4 shrink-0 ${active ? 'text-indigo-500' : 'text-slate-300'}`} />
                   </div>
                   <p className="mt-0.5 truncate text-xs text-slate-500">{p.client_email}</p>
-                  <div className="mt-2 flex items-center justify-between"><StatusBadge status={p.status} /><span className="text-xs font-medium text-slate-700">{p.progress || 0}%</span></div>
+                  <div className="mt-2 flex items-center justify-between"><StatusBadge status={p.status} /><span className="text-xs font-medium text-slate-700">{progressOf(p).pct}%</span></div>
                   {p.assigned_to_name && <p className="mt-1.5 truncate text-xs text-slate-500">Assigned to <span className="font-medium text-slate-700">{p.assigned_to_name}</span></p>}
                   {pending > 0 && <p className="mt-1.5 text-xs text-amber-600">{pending} deliverable{pending > 1 ? 's' : ''} pending approval</p>}
                 </button>
@@ -101,11 +101,12 @@ export default function TeamProjects() {
               {selected.description && <p className="mt-3 text-sm text-slate-600">{selected.description}</p>}
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="text-xs text-slate-500">Progress (%)</Label>
+                  <Label className="text-xs text-slate-500">Progress</Label>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <Input type="number" min={0} max={100} defaultValue={selected.progress || 0} onBlur={(e) => saveProgress(e.target.value)} className="w-24" />
-                    <Progress value={selected.progress || 0} className="h-2 flex-1" />
+                    <Progress value={progressOf(selected).pct} className="h-2 flex-1" />
+                    <span className="text-xs font-semibold text-slate-700">{progressOf(selected).pct}%</span>
                   </div>
+                  <p className="mt-1 text-xs text-slate-400">{progressOf(selected).done} of {progressOf(selected).total} milestones completed</p>
                 </div>
                 <div>
                   <Label className="text-xs text-slate-500">Status</Label>

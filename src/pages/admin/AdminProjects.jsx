@@ -10,6 +10,7 @@ import MilestonePanel from '@/components/admin/MilestonePanel';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { projectProgress } from '@/lib/format';
 import ExportButtons from '@/components/portal/ExportButtons';
 
 export default function AdminProjects() {
@@ -18,6 +19,8 @@ export default function AdminProjects() {
   const [selectedId, setSelectedId] = useState(null);
   const { data: users = [] } = useQuery({ queryKey: ['admin-users'], queryFn: () => base44.entities.User.list() });
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
+  const { data: milestones = [] } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
+  const progressOf = (p) => projectProgress(p, milestones.filter((m) => m.project_id === p.id));
   const selected = projects.find((p) => p.id === selectedId) || projects[0];
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin-projects'] });
 
@@ -41,7 +44,8 @@ export default function AdminProjects() {
                   <button onClick={(e) => { e.stopPropagation(); setDialog({ open: true, project: p }); }} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800"><Pencil className="h-4 w-4" /></button>
                   <button onClick={(e) => { e.stopPropagation(); remove(p); }} className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button></div>
               </div>
-              <div className="mt-4 flex items-center gap-3"><Progress value={p.progress || 0} className="h-2" /><span className="text-xs font-semibold text-slate-700">{p.progress || 0}%</span></div>
+              <div className="mt-4 flex items-center gap-3"><Progress value={progressOf(p).pct} className="h-2" /><span className="text-xs font-semibold text-slate-700">{progressOf(p).pct}%</span></div>
+              <p className="mt-1.5 text-xs text-slate-500">{progressOf(p).done} of {progressOf(p).total} milestones completed</p>
               {p.assigned_to_name && <p className="mt-2 text-xs text-slate-500">Assigned to <span className="font-medium text-indigo-600">{p.assigned_to_name}</span></p>}
             </div>
           ))}
