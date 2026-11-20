@@ -15,8 +15,8 @@ export default function SolutionsSection() {
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Solutions</span>
-            <h2 className="mt-3 text-4xl font-bold sm:text-5xl">SEO insights aligned with your business model</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Solutions</h2>
+            <p className="mt-3 text-4xl font-bold sm:text-5xl">SEO insights aligned with your business model</p>
           </div>
           <p className="max-w-md text-slate-400">Whether you sell a product, a service, or software, get free SEO audits and more for precise results.</p>
         </div>
