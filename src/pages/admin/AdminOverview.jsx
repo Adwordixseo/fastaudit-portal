@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { exportToPdf } from '@/lib/exports';
 import WeeklyTaskCompletionChart from '@/components/team/WeeklyTaskCompletionChart';
 import TeamTaskKanban from '@/components/team/TeamTaskKanban';
+import ProjectProgressOverview from '@/components/admin/ProjectProgressOverview';
 import { fmtDate, scoreColor } from '@/lib/format';
 
 export default function AdminOverview() {
@@ -22,6 +23,7 @@ export default function AdminOverview() {
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
   const { data: audits = [] } = useQuery({ queryKey: ['admin-audits'], queryFn: () => base44.entities.Audit.list('-created_date', 8) });
   const { data: tasks = [] } = useQuery({ queryKey: ['team-tasks'], queryFn: () => base44.entities.TeamTask.list('-updated_date') });
+  const { data: milestones = [] } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
 
   const saveTaskStatus = async (id, status) => { await base44.entities.TeamTask.update(id, { status }); qc.invalidateQueries({ queryKey: ['team-tasks'] }); };
 
@@ -54,6 +56,20 @@ export default function AdminOverview() {
         <StatCard icon={FileText} label="Approval ratio" value={docs.length ? Math.round((approved / docs.length) * 100) + '%' : '—'} hint={`${approved}/${docs.length} approved`} tone="emerald" />
         <StatCard icon={Search} label="Audits run" value={audits.length >= 8 ? '8+' : audits.length} hint="Recent" />
       </div>
+      <section className="rounded-3xl border border-slate-200 bg-white p-6">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-indigo-50 text-indigo-600"><FolderKanban className="h-5 w-5" /></span>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Project progress</h2>
+              <p className="text-sm text-slate-500">Live progress from each project's completed milestones.</p>
+            </div>
+          </div>
+          <Link to="/admin/projects" className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700">Manage <ArrowRight className="h-3.5 w-3.5" /></Link>
+        </div>
+        <ProjectProgressOverview projects={projects} milestones={milestones} />
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="rounded-3xl border border-slate-200 bg-white p-6"><h2 className="text-base font-semibold text-slate-900">Most popular packages</h2>
           <ul className="mt-4 space-y-3">{popular.length === 0 ? <li className="text-sm text-slate-500">No orders yet.</li> : popular.map(([n, c]) => <li key={n} className="flex items-center justify-between text-sm"><span className="text-slate-700">{n}</span><span className="font-semibold text-slate-900">{c}</span></li>)}</ul></section>

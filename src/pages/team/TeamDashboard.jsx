@@ -35,6 +35,7 @@ export default function TeamDashboard() {
   const { data: projects = [] } = useQuery({ queryKey: ['admin-projects'], queryFn: () => base44.entities.Project.list('-updated_date') });
   const { data: docs = [] } = useQuery({ queryKey: ['admin-docs'], queryFn: () => base44.entities.Document.list('-created_date') });
   const { data: tasks = [] } = useQuery({ queryKey: ['team-tasks'], queryFn: () => base44.entities.TeamTask.list('-updated_date') });
+  const { data: milestones = [] } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
 
   const inProgress = projects.filter((p) => p.status === 'in_progress');
   const filtered = projects.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.client_email?.toLowerCase().includes(search.toLowerCase()));
@@ -112,7 +113,7 @@ export default function TeamDashboard() {
       {projects.length === 0 ? (
         <EmptyState icon={FolderKanban} title="No projects yet" text="No projects have been created yet." />
       ) : (
-        <ProjectKanban projects={filtered} onMove={saveStatus} />
+        <ProjectKanban projects={filtered} milestones={milestones} onMove={saveStatus} />
       )}
 
       <section>

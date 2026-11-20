@@ -42,5 +42,13 @@ export const fileTypeFromName = (name = '') => {
   return 'other';
 };
 
+// Project progress is derived from its milestones; falls back to the stored value
+// when a project has no milestones yet.
+export const projectProgress = (project, milestones = []) => {
+  const total = milestones.length;
+  const done = milestones.filter((m) => m.status === 'done').length;
+  return { done, total, pct: total ? Math.round((done / total) * 100) : (project?.progress || 0) };
+};
+
 export const scoreColor = (n) => (n >= 75 ? 'text-emerald-500' : n >= 50 ? 'text-amber-500' : 'text-rose-500');
 export const scoreStroke = (n) => (n >= 75 ? '#10b981' : n >= 50 ? '#f59e0b' : '#f43f5e');

@@ -2,6 +2,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Globe } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { projectProgress } from '@/lib/format';
 
 const columns = [
   { id: 'todo', title: 'To Do', accent: 'border-slate-300', dot: 'bg-slate-400' },
@@ -13,7 +14,7 @@ const columns = [
 const legacyMap = { active: 'in_progress', on_hold: 'todo' };
 const bucket = (p) => (columns.some((c) => c.id === p.status) ? p.status : legacyMap[p.status] || 'todo');
 
-export default function ProjectKanban({ projects, onMove }) {
+export default function ProjectKanban({ projects, onMove, milestones = [] }) {
   const onDragEnd = (res) => {
     if (!res.destination || res.destination.droppableId === res.source.droppableId) return;
     onMove(res.draggableId, res.destination.droppableId);
@@ -40,7 +41,7 @@ export default function ProjectKanban({ projects, onMove }) {
                             <h4 className="text-sm font-semibold text-slate-900">{p.name}</h4>
                             {p.website && <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-slate-500"><Globe className="h-3 w-3 shrink-0" /> {p.website}</p>}
                             <p className="mt-0.5 truncate text-xs text-slate-400">{p.client_email}</p>
-                            <div className="mt-2.5 flex items-center gap-2"><Progress value={p.progress || 0} className="h-1.5" /><span className="text-xs font-medium text-slate-600">{p.progress || 0}%</span></div>
+                            <div className="mt-2.5 flex items-center gap-2"><Progress value={projectProgress(p, milestones.filter((m) => m.project_id === p.id)).pct} className="h-1.5" /><span className="text-xs font-medium text-slate-600">{projectProgress(p, milestones.filter((m) => m.project_id === p.id)).pct}%</span></div>
                           </div>
                         )}
                       </Draggable>

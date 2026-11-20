@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import EmptyState from '@/components/portal/EmptyState';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { Progress } from '@/components/ui/progress';
-import { fmtDate } from '@/lib/format';
+import { fmtDate, projectProgress } from '@/lib/format';
 
 export default function ProjectProgressReport({ projects = [] }) {
   const { data: milestones = [], isLoading } = useQuery({ queryKey: ['milestones', 'all'], queryFn: () => base44.entities.Milestone.list('-due_date') });
@@ -32,7 +32,7 @@ export default function ProjectProgressReport({ projects = [] }) {
         </div>
         <div className="rounded-2xl bg-slate-50 p-4">
           <p className="text-xs font-medium text-slate-500">Avg. progress</p>
-          <p className="mt-1 text-2xl font-bold text-slate-900">{projects.length ? Math.round(projects.reduce((a, p) => a + (p.progress || 0), 0) / projects.length) : 0}%</p>
+          <p className="mt-1 text-2xl font-bold text-slate-900">{projects.length ? Math.round(projects.reduce((a, p) => a + projectProgress(p, byProject(p.id)).pct, 0) / projects.length) : 0}%</p>
         </div>
         <div className="rounded-2xl bg-slate-50 p-4">
           <p className="text-xs font-medium text-slate-500">Milestones done</p>
@@ -47,6 +47,7 @@ export default function ProjectProgressReport({ projects = [] }) {
           {projects.map((p) => {
             const ms = byProject(p.id);
             const done = ms.filter((m) => m.status === 'done');
+            const { pct } = projectProgress(p, ms);
             return (
               <div key={p.id} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -57,8 +58,8 @@ export default function ProjectProgressReport({ projects = [] }) {
                   <StatusBadge status={p.status} />
                 </div>
                 <div className="mt-3 flex items-center gap-3">
-                  <Progress value={p.progress || 0} className="h-2 flex-1" />
-                  <span className="text-xs font-semibold text-slate-700">{p.progress || 0}%</span>
+                  <Progress value={pct} className="h-2 flex-1" />
+                  <span className="text-xs font-semibold text-slate-700">{pct}%</span>
                 </div>
                 <div className="mt-3">
                   <p className="text-xs font-medium text-slate-500">Completed milestones · {done.length}/{ms.length}</p>
