@@ -26,6 +26,7 @@ const PackagesPage = lazy(() => import('./pages/app/PackagesPage'));
 const ProjectsPage = lazy(() => import('./pages/app/ProjectsPage'));
 const ReportsPage = lazy(() => import('./pages/app/ReportsPage'));
 const SupportPage = lazy(() => import('./pages/app/SupportPage'));
+const TeamAccessPage = lazy(() => import('./pages/app/TeamAccessPage'));
 const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
@@ -92,6 +93,7 @@ const AuthenticatedApp = () => {
           <Route path="/app/projects" element={<ProjectsPage />} />
           <Route path="/app/reports" element={<ReportsPage />} />
           <Route path="/app/support" element={<SupportPage />} />
+          <Route path="/app/team-access" element={<TeamAccessPage />} />
         </Route>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminOverview />} />

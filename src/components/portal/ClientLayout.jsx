@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Search, Package, FolderKanban, FileText, LifeBuoy, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Search, Package, FolderKanban, FileText, LifeBuoy, ShieldCheck, UserPlus } from 'lucide-react';
 import PortalLayout from '@/components/portal/PortalLayout';
 import { useUser } from '@/hooks/useUser';
 
@@ -10,6 +10,7 @@ const nav = [
   { to: '/app/projects', label: 'Projects', icon: FolderKanban },
   { to: '/app/reports', label: 'Reports', icon: FileText },
   { to: '/app/support', label: 'Support', icon: LifeBuoy },
+  { to: '/app/team-access', label: 'Team access', icon: UserPlus },
 ];
 
 export default function ClientLayout() {
